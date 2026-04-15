@@ -6,6 +6,31 @@ import { spawn } from "child_process";
 import { PrismaClient } from "@prisma/client";
 import { buildScheduledDispatchPlan, getTaskRunLogPath } from "../src/lib/task-execution";
 
+const DEFAULT_PATH_SEGMENTS = [
+  process.env.HOME ? path.join(process.env.HOME, ".npm-global", "bin") : null,
+  "/usr/local/sbin",
+  "/usr/local/bin",
+  "/usr/sbin",
+  "/usr/bin",
+  "/sbin",
+  "/bin",
+].filter((value): value is string => Boolean(value));
+
+function buildCommandEnv() {
+  const pathSegments = [
+    ...DEFAULT_PATH_SEGMENTS,
+    ...(process.env.PATH || "").split(":").filter(Boolean),
+  ];
+
+  return {
+    ...process.env,
+    PATH: Array.from(new Set(pathSegments)).join(":"),
+  };
+}
+
+const commandEnv = buildCommandEnv();
+const openClawCommand = process.env.OPENCLAW_BIN || (process.env.HOME ? path.join(process.env.HOME, ".npm-global", "bin", "openclaw") : "openclaw");
+
 const prisma = new PrismaClient();
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(scriptDir, "..");
@@ -42,7 +67,7 @@ function runCommand(command: string, args: string[], input?: string): Promise<Ru
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       cwd: rootDir,
-      env: process.env,
+      env: commandEnv,
       stdio: ["pipe", "pipe", "pipe"],
     });
 
@@ -93,7 +118,7 @@ function parseJsonBlock<T>(raw: string): T | null {
 }
 
 async function listOpenClawAgents() {
-  const result = await runCommand("openclaw", ["agents", "list", "--json"]);
+  const result = await runCommand(openClawCommand, ["agents", "list", "--json"]);
   if (result.code !== 0) return [] as OpenClawAgentInfo[];
   const parsed = parseJsonBlock<OpenClawAgentInfo[]>(result.stdout);
   return Array.isArray(parsed) ? parsed : [];
@@ -139,7 +164,7 @@ function scoreUserFacingSession(session: OpenClawSession) {
 }
 
 async function resolveLatestUserFacingSession(agentId?: string) {
-  const result = await runCommand("openclaw", ["sessions", "--json"]);
+  const result = await runCommand(openClawCommand, ["sessions", "--json"]);
   if (result.code !== 0) return null;
 
   const payload = parseJsonBlock<OpenClawSessionsPayload>(result.stdout);
@@ -179,7 +204,7 @@ async function runOpenClawAgent(task: {
       allowUserFacingReply: Boolean(plan.allowUserFacingReply),
       routeThroughUserSession: Boolean(plan.routeThroughUserSession),
     },
-    result: await runCommand("openclaw", args),
+    result: await runCommand(openClawCommand, args),
   };
 }
 
@@ -215,7 +240,7 @@ async function runSessionSend(task: {
     "--json",
   ];
 
-  const result = await runCommand("openclaw", args);
+  const result = await runCommand(openClawCommand, args);
 
   return {
     meta: {

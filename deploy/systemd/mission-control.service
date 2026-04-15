@@ -9,6 +9,8 @@ WorkingDirectory=/home/jr/MissionControl
 Environment=NODE_ENV=production
 Environment=HOST=0.0.0.0
 Environment=PORT=3001
+Environment=PATH=/home/jr/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=OPENCLAW_BIN=/home/jr/.npm-global/bin/openclaw
 EnvironmentFile=-/home/jr/MissionControl/.env
 ExecStartPre=/usr/bin/bash /home/jr/MissionControl/scripts/prepare-runtime.sh
 ExecStart=/usr/bin/npm run start:service
