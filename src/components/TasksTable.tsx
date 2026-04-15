@@ -29,6 +29,8 @@ type TaskRow = {
   nextStepLabel: string;
   cronEnabled: boolean;
   cronExpression: string | null;
+  lastRunStatus: string | null;
+  lastRunAt: string | null;
 };
 
 type TaskViewKey = "today" | "scheduled" | "waiting" | "completed" | "overdue" | "assigned" | "created" | "all";
@@ -218,6 +220,7 @@ export default function TasksTable({ tasks }: { tasks: TaskRow[] }) {
                           <span>{task.billableLabel === "Yes" ? task.amount : "Internal / non-billable"}</span>
                           {task.isAssignedToMe ? <><span>•</span><span className="font-medium text-[#405189]">Assigned to me</span></> : null}
                           {task.isCreatedByMe ? <><span>•</span><span>Created by me</span></> : null}
+                          {task.lastRunStatus ? <><span>•</span><span className={task.lastRunStatus === "failed" ? "font-medium text-rose-600" : "font-medium text-emerald-700"}>Last run {formatTaskLabel(task.lastRunStatus)}</span></> : null}
                         </div>
                       </div>
                     </td>
@@ -259,6 +262,7 @@ export default function TasksTable({ tasks }: { tasks: TaskRow[] }) {
                     </td>
                     <td className="px-4 py-4 align-top text-gray-600">
                       <div>{task.nextStepLabel}</div>
+                      {task.lastRunAt ? <div className="mt-1 text-xs text-gray-400">Latest run update {task.lastRunAt}</div> : null}
                       {task.cronEnabled && task.cronExpression ? <div className="mt-1 text-xs text-emerald-700">{task.cronExpression}</div> : null}
                     </td>
                     <td className="px-4 py-4 align-top">

@@ -22,7 +22,7 @@ const tabs = [
   { label: "Edit", href: (id: string) => `/tasks/${id}/edit` },
 ];
 
-export default function TaskWorkspaceShell({ task, activeTab, children }: { task: TaskWorkspaceSummary; activeTab: "overview" | "edit"; children: React.ReactNode }) {
+export default function TaskWorkspaceShell({ task, activeTab, children, liveBadge }: { task: TaskWorkspaceSummary; activeTab: "overview" | "edit"; children: React.ReactNode; liveBadge?: React.ReactNode }) {
   return (
     <div className="space-y-6">
       <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -35,6 +35,7 @@ export default function TaskWorkspaceShell({ task, activeTab, children }: { task
                   <h1 className="text-2xl font-semibold tracking-tight">{task.title}</h1>
                   <TaskStatusBadge status={task.status} />
                   <span className="inline-flex rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold capitalize text-white ring-1 ring-inset ring-white/20">{formatTaskLabel(task.executorType)}</span>
+                  {liveBadge}
                 </div>
               </div>
               <div className="grid gap-3 text-sm text-white/90 md:grid-cols-4">

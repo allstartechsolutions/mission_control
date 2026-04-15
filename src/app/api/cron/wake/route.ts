@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { computeNextRunAt } from "@/lib/cron";
 import { dispatchScheduledTask } from "@/lib/task-execution";
+import { addTaskEvent } from "@/lib/task-runs";
 import { defaultCronTimezone, isNonHumanExecutor } from "@/lib/tasks";
 
 export const dynamic = "force-dynamic";
@@ -98,6 +99,13 @@ export async function POST(request: Request) {
 
     try {
       const dispatch = await dispatchScheduledTask(task);
+      await addTaskEvent({
+        taskId: task.id,
+        runId: dispatch.runId,
+        eventType: "task.dispatch.scheduled",
+        message: "Scheduled dispatch queued by cron wake.",
+        details: { runId: dispatch.runId, logPath: dispatch.logPath, evaluatedAt: now.toISOString(), nextRunAt: nextRunAt?.toISOString() || null },
+      });
       results.push({
         id: task.id,
         title: task.title,
@@ -107,6 +115,13 @@ export async function POST(request: Request) {
       });
     } catch (error) {
       await prisma.task.update({ where: { id: task.id }, data: { status: "waiting" } });
+      await addTaskEvent({
+        taskId: task.id,
+        level: "error" as never,
+        eventType: "task.dispatch.failed",
+        message: error instanceof Error ? error.message : "Dispatch failed.",
+        details: { evaluatedAt: now.toISOString() },
+      });
       results.push({
         id: task.id,
         title: task.title,

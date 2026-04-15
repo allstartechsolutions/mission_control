@@ -3,7 +3,8 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { spawn } from "child_process";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, TaskEventLevel, TaskRunStatus } from "@prisma/client";
+import { addTaskEvent, markTaskRunStatus, truncateText } from "../src/lib/task-runs";
 import { buildScheduledDispatchPlan, getTaskRunLogPath } from "../src/lib/task-execution";
 
 const DEFAULT_PATH_SEGMENTS = [
@@ -57,8 +58,8 @@ type OpenClawAgentInfo = {
   identityName?: string;
 };
 
-async function appendLog(taskId: string, content: string) {
-  const logPath = getTaskRunLogPath(taskId);
+async function appendLog(runId: string, content: string) {
+  const logPath = getTaskRunLogPath(runId);
   await fs.mkdir(path.dirname(logPath), { recursive: true });
   await fs.appendFile(logPath, content);
 }
@@ -180,10 +181,7 @@ async function resolveLatestUserFacingSession(agentId?: string) {
   return latest || null;
 }
 
-async function runOpenClawAgent(task: {
-  id: string;
-  executorType: string;
-}, plan: ReturnType<typeof buildScheduledDispatchPlan>) {
+async function runOpenClawAgent(task: { id: string; executorType: string }, plan: ReturnType<typeof buildScheduledDispatchPlan>) {
   const agentId = await resolveAgentId(plan.preferredAgentId);
   const args = ["agent", "--agent", agentId, "--message", plan.commandOrPrompt, "--timeout", "600", "--json"];
   const routedSession = plan.routeThroughUserSession ? await resolveLatestUserFacingSession(agentId) : null;
@@ -208,9 +206,7 @@ async function runOpenClawAgent(task: {
   };
 }
 
-async function runSessionSend(task: {
-  id: string;
-}, plan: ReturnType<typeof buildScheduledDispatchPlan>) {
+async function runSessionSend(task: { id: string }, plan: ReturnType<typeof buildScheduledDispatchPlan>) {
   const agentId = await resolveAgentId(plan.preferredAgentId);
   const routedSession = plan.routeThroughUserSession ? await resolveLatestUserFacingSession(agentId) : null;
 
@@ -260,7 +256,9 @@ async function runSessionSend(task: {
 
 async function main() {
   const taskId = process.argv[2];
+  const runId = process.argv[3];
   if (!taskId) throw new Error("Task id argument is required.");
+  if (!runId) throw new Error("Task run id argument is required.");
 
   const task = await prisma.task.findUnique({
     where: { id: taskId },
@@ -281,51 +279,144 @@ async function main() {
 
   if (!task) throw new Error(`Task ${taskId} was not found.`);
 
-  await appendLog(task.id, `\n[${new Date().toISOString()}] Starting scheduled execution for ${task.executorType} task \"${task.title}\"\n`);
+  const startedAt = new Date();
+  await markTaskRunStatus(runId, {
+    status: TaskRunStatus.running,
+    startedAt,
+    logPath: getTaskRunLogPath(runId),
+    summary: `Running ${task.executorType} task \"${task.title}\"`,
+  });
+  await addTaskEvent({
+    taskId,
+    runId,
+    eventType: "task.run.started",
+    message: `Started ${task.executorType} task run.`,
+    details: { startedAt: startedAt.toISOString(), title: task.title },
+  });
+  await appendLog(runId, `\n[${startedAt.toISOString()}] Starting scheduled execution for ${task.executorType} task \"${task.title}\"\n`);
 
   const plan = buildScheduledDispatchPlan(task);
-  await appendLog(task.id, `[${new Date().toISOString()}] Dispatch plan: ${plan.summary}\n`);
+  await addTaskEvent({
+    taskId,
+    runId,
+    eventType: "task.run.plan",
+    message: `Dispatch plan: ${plan.summary}`,
+    details: { mode: plan.mode, summary: plan.summary },
+  });
+  await appendLog(runId, `[${new Date().toISOString()}] Dispatch plan: ${plan.summary}\n`);
 
   let result: RunCommandResult;
+  let meta: Record<string, unknown> | undefined;
   if (plan.mode === "shell") {
     result = await runCommand("bash", ["-lc", plan.commandOrPrompt]);
   } else if (plan.mode === "session-send") {
     const sessionSendRun = await runSessionSend(task, plan);
-    await appendLog(task.id, `[${new Date().toISOString()}] Session send agent: ${sessionSendRun.meta.agentId} | session key: ${sessionSendRun.meta.routedSessionKey} | session id: ${sessionSendRun.meta.routedSessionId || "none"} | queued: ${sessionSendRun.meta.queued} | routeThroughUserSession: ${sessionSendRun.meta.routeThroughUserSession} | allowUserFacingReply: ${sessionSendRun.meta.allowUserFacingReply} | delivery channel: ${sessionSendRun.meta.explicitDeliveryChannel} | delivery to: ${sessionSendRun.meta.explicitDeliveryTo} | delivery account: ${sessionSendRun.meta.explicitDeliveryAccount}\n`);
+    meta = sessionSendRun.meta as Record<string, unknown>;
+    await addTaskEvent({
+      taskId,
+      runId,
+      eventType: "task.run.dispatch",
+      message: `Session send queued through ${sessionSendRun.meta.agentId}.`,
+      details: sessionSendRun.meta,
+    });
+    await appendLog(runId, `[${new Date().toISOString()}] Session send agent: ${sessionSendRun.meta.agentId} | session key: ${sessionSendRun.meta.routedSessionKey} | session id: ${sessionSendRun.meta.routedSessionId || "none"} | queued: ${sessionSendRun.meta.queued} | routeThroughUserSession: ${sessionSendRun.meta.routeThroughUserSession} | allowUserFacingReply: ${sessionSendRun.meta.allowUserFacingReply} | delivery channel: ${sessionSendRun.meta.explicitDeliveryChannel} | delivery to: ${sessionSendRun.meta.explicitDeliveryTo} | delivery account: ${sessionSendRun.meta.explicitDeliveryAccount}\n`);
     result = sessionSendRun.result;
   } else {
     const openclawRun = await runOpenClawAgent(task, plan);
-    await appendLog(task.id, `[${new Date().toISOString()}] OpenClaw agent: ${openclawRun.meta.agentId} | session: ${openclawRun.meta.targetSessionId} | deliver: ${openclawRun.meta.delivery} | routed session key: ${openclawRun.meta.routedSessionKey || "none"} | routeThroughUserSession: ${openclawRun.meta.routeThroughUserSession} | allowUserFacingReply: ${openclawRun.meta.allowUserFacingReply}\n`);
+    meta = openclawRun.meta as Record<string, unknown>;
+    await addTaskEvent({
+      taskId,
+      runId,
+      eventType: "task.run.dispatch",
+      message: `Agent dispatch queued through ${openclawRun.meta.agentId}.`,
+      details: openclawRun.meta,
+    });
+    await appendLog(runId, `[${new Date().toISOString()}] OpenClaw agent: ${openclawRun.meta.agentId} | session: ${openclawRun.meta.targetSessionId} | deliver: ${openclawRun.meta.delivery} | routed session key: ${openclawRun.meta.routedSessionKey || "none"} | routeThroughUserSession: ${openclawRun.meta.routeThroughUserSession} | allowUserFacingReply: ${openclawRun.meta.allowUserFacingReply}\n`);
     result = openclawRun.result;
   }
 
+  const finishedAt = new Date();
+  const finalStatus = result.code === 0 ? (task.cronEnabled ? "scheduled" : "completed") : "waiting";
+  const stdout = truncateText(result.stdout, 6000);
+  const stderr = truncateText(result.stderr, 6000);
+  const summary = result.code === 0 ? `Run finished successfully (${finalStatus}).` : `Run failed with exit code ${result.code ?? "null"}.`;
+
   await appendLog(
-    task.id,
+    runId,
     [
-      `[${new Date().toISOString()}] Exit code: ${result.code ?? "null"}`,
+      `[${finishedAt.toISOString()}] Exit code: ${result.code ?? "null"}`,
       result.stdout ? `STDOUT:\n${result.stdout.trim()}\n` : "",
       result.stderr ? `STDERR:\n${result.stderr.trim()}\n` : "",
     ].filter(Boolean).join("\n") + "\n",
   );
 
-  const succeeded = result.code === 0;
   await prisma.task.update({
     where: { id: task.id },
     data: {
-      status: succeeded ? (task.cronEnabled ? "scheduled" : "completed") : "waiting",
+      status: finalStatus as never,
     },
   });
 
-  await appendLog(task.id, `[${new Date().toISOString()}] Final task status: ${succeeded ? (task.cronEnabled ? "scheduled" : "completed") : "waiting"}\n`);
+  await markTaskRunStatus(runId, {
+    status: result.code === 0 ? TaskRunStatus.succeeded : TaskRunStatus.failed,
+    finishedAt,
+    exitCode: result.code,
+    summary,
+    errorMessage: result.code === 0 ? null : truncateText(result.stderr || result.stdout || `Exit code ${result.code ?? "null"}`, 1000),
+    errorStack: result.code === 0 ? null : stderr,
+    metadata: {
+      ...(meta || {}),
+      stdout,
+      stderr,
+      finalTaskStatus: finalStatus,
+    },
+  });
+
+  await addTaskEvent({
+    taskId,
+    runId,
+    level: result.code === 0 ? TaskEventLevel.info : TaskEventLevel.error,
+    eventType: result.code === 0 ? "task.run.succeeded" : "task.run.failed",
+    message: summary,
+    details: {
+      exitCode: result.code,
+      stdout,
+      stderr,
+      finalTaskStatus: finalStatus,
+      finishedAt: finishedAt.toISOString(),
+    },
+  });
+
+  await appendLog(runId, `[${new Date().toISOString()}] Final task status: ${finalStatus}\n`);
 }
 
 main()
   .catch(async (error) => {
     const taskId = process.argv[2];
-    if (taskId) {
-      await appendLog(taskId, `[${new Date().toISOString()}] Runner failed: ${error instanceof Error ? error.stack || error.message : String(error)}\n`);
+    const runId = process.argv[3];
+    if (taskId && runId) {
+      const message = error instanceof Error ? error.message : String(error);
+      const stack = error instanceof Error ? error.stack || error.message : String(error);
+      await appendLog(runId, `[${new Date().toISOString()}] Runner failed: ${stack}\n`);
       try {
         await prisma.task.update({ where: { id: taskId }, data: { status: "waiting" } });
+      } catch {}
+      try {
+        await markTaskRunStatus(runId, {
+          status: TaskRunStatus.failed,
+          finishedAt: new Date(),
+          errorMessage: truncateText(message, 1000),
+          errorStack: truncateText(stack, 6000),
+          summary: `Runner failed before completion: ${message}`,
+        });
+        await addTaskEvent({
+          taskId,
+          runId,
+          level: TaskEventLevel.error,
+          eventType: "task.run.crashed",
+          message: `Runner crashed: ${message}`,
+          details: { stack: truncateText(stack, 6000) },
+        });
       } catch {}
     }
     console.error(error);

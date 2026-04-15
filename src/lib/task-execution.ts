@@ -1,6 +1,8 @@
 import { spawn } from "child_process";
 import fs from "fs/promises";
 import path from "path";
+import { TaskRunTrigger } from "@prisma/client";
+import { addTaskEvent, createTaskRun, markTaskRunStatus } from "@/lib/task-runs";
 
 const TASK_RUNS_DIR = path.join(process.cwd(), "task-runs");
 const RUNNER_ENTRY = path.join(process.cwd(), "scripts", "run-scheduled-task.ts");
@@ -14,8 +16,8 @@ export type ScheduledDispatchPlan = {
   routeThroughUserSession?: boolean;
 };
 
-export function getTaskRunLogPath(taskId: string) {
-  return path.join(TASK_RUNS_DIR, `${taskId}.log`);
+export function getTaskRunLogPath(runId: string) {
+  return path.join(TASK_RUNS_DIR, `${runId}.log`);
 }
 
 function extractShellSnippet(description: string) {
@@ -107,12 +109,38 @@ export function buildScheduledDispatchPlan(task: { executorType: string; descrip
   throw new Error(`Unsupported scheduled executor type: ${task.executorType}`);
 }
 
-export async function dispatchScheduledTask(task: { id: string; title: string; description: string | null; executorType: string; assignedTo?: { name: string | null; email: string | null } | null; }) {
-  buildScheduledDispatchPlan(task);
+export async function dispatchScheduledTask(task: { id: string; title: string; description: string | null; executorType: string; assignedTo?: { name: string | null; email: string | null } | null; }, options?: {
+  trigger?: TaskRunTrigger;
+  initiatedByUserId?: string | null;
+}) {
+  const plan = buildScheduledDispatchPlan(task);
   await fs.mkdir(TASK_RUNS_DIR, { recursive: true });
-  const logPath = getTaskRunLogPath(task.id);
+  const run = await createTaskRun({
+    taskId: task.id,
+    trigger: options?.trigger || TaskRunTrigger.scheduled,
+    initiatedByUserId: options?.initiatedByUserId || null,
+    dispatchMode: plan.mode,
+    commandOrPrompt: plan.commandOrPrompt,
+    summary: plan.summary,
+    metadata: {
+      preferredAgentId: plan.preferredAgentId || null,
+      allowUserFacingReply: Boolean(plan.allowUserFacingReply),
+      routeThroughUserSession: Boolean(plan.routeThroughUserSession),
+    },
+  });
+  const logPath = getTaskRunLogPath(run.id);
+
+  await markTaskRunStatus(run.id, { logPath, summary: plan.summary, dispatchMode: plan.mode, commandOrPrompt: plan.commandOrPrompt }).catch(() => undefined);
+  await addTaskEvent({
+    taskId: task.id,
+    runId: run.id,
+    eventType: "task.dispatch.queued",
+    message: `Run queued via ${plan.mode}.`,
+    details: { trigger: options?.trigger || TaskRunTrigger.scheduled, summary: plan.summary, logPath },
+  });
+
   const output = await fs.open(logPath, "a");
-  const child = spawn(process.execPath, [path.join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"), RUNNER_ENTRY, task.id], {
+  const child = spawn(process.execPath, [path.join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs"), RUNNER_ENTRY, task.id, run.id], {
     cwd: process.cwd(),
     detached: true,
     stdio: ["ignore", output.fd, output.fd],
@@ -120,9 +148,9 @@ export async function dispatchScheduledTask(task: { id: string; title: string; d
   });
   output.close().catch(() => undefined);
   child.unref();
-  return { queued: true, logPath: getTaskRunLogPath(task.id) };
+  return { queued: true, runId: run.id, logPath };
 }
 
-export async function dispatchTaskNow(task: { id: string; title: string; description: string | null; executorType: string; assignedTo?: { name: string | null; email: string | null } | null; }) {
-  return dispatchScheduledTask(task);
+export async function dispatchTaskNow(task: { id: string; title: string; description: string | null; executorType: string; assignedTo?: { name: string | null; email: string | null } | null; }, options?: { initiatedByUserId?: string | null }) {
+  return dispatchScheduledTask(task, { trigger: TaskRunTrigger.manual, initiatedByUserId: options?.initiatedByUserId || null });
 }

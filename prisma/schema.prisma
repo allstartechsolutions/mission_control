@@ -28,6 +28,25 @@ enum TaskBillingType {
   hourly
 }
 
+enum TaskRunStatus {
+  queued
+  running
+  succeeded
+  failed
+}
+
+enum TaskRunTrigger {
+  manual
+  scheduled
+  lifecycle
+}
+
+enum TaskEventLevel {
+  info
+  warning
+  error
+}
+
 model User {
   id            String       @id @default(cuid())
   name          String?
@@ -45,6 +64,7 @@ model User {
   suggestions   Suggestion[]
   createdTasks  Task[]       @relation("TaskCreator")
   assignedTasks Task[]       @relation("TaskAssignee")
+  taskRuns      TaskRun[]
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
@@ -94,11 +114,11 @@ model ClientLocation {
   phone        String?
   status       String  @default("active")
 
-  client              Client                    @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  primaryEmployees    ClientEmployee[]           @relation("PrimaryLocation")
-  secondaryEmployees  ClientEmployeeLocation[]
-  createdAt           DateTime                  @default(now())
-  updatedAt           DateTime                  @updatedAt
+  client             Client                   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  primaryEmployees   ClientEmployee[]         @relation("PrimaryLocation")
+  secondaryEmployees ClientEmployeeLocation[]
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
 
   @@index([clientId])
   @@index([status])
@@ -115,24 +135,24 @@ model ClientEmployeeLocation {
 }
 
 model ClientEmployee {
-  id                  String    @id @default(cuid())
-  clientId            String
-  name                String
-  title               String?
-  email               String?
-  phone               String?
-  mobile              String?
-  whatsapp            String?
-  profileImagePath    String?
-  status              String    @default("active")
-  primaryLocationId   String?
-  client              Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  primaryLocation     ClientLocation?          @relation("PrimaryLocation", fields: [primaryLocationId], references: [id], onDelete: SetNull)
-  secondaryLocations  ClientEmployeeLocation[]
-  requestedProjects   Project[] @relation("ProjectRequester")
-  requestedTasks      Task[]    @relation("TaskRequester")
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                 String                   @id @default(cuid())
+  clientId           String
+  name               String
+  title              String?
+  email              String?
+  phone              String?
+  mobile             String?
+  whatsapp           String?
+  profileImagePath   String?
+  status             String                   @default("active")
+  primaryLocationId  String?
+  client             Client                   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  primaryLocation    ClientLocation?          @relation("PrimaryLocation", fields: [primaryLocationId], references: [id], onDelete: SetNull)
+  secondaryLocations ClientEmployeeLocation[]
+  requestedProjects  Project[]                @relation("ProjectRequester")
+  requestedTasks     Task[]                   @relation("TaskRequester")
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
 
   @@index([clientId])
   @@index([status])
@@ -294,6 +314,8 @@ model Task {
   project             Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
   milestone           ProjectMilestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
   requesterEmployee   ClientEmployee?   @relation("TaskRequester", fields: [requesterEmployeeId], references: [id], onDelete: SetNull)
+  taskRuns            TaskRun[]
+  taskEvents          TaskRunEvent[]
 
   @@index([status])
   @@index([assignedToId])
@@ -303,4 +325,48 @@ model Task {
   @@index([milestoneId])
   @@index([requesterEmployeeId])
   @@index([dueDate])
+}
+
+model TaskRun {
+  id                String         @id @default(cuid())
+  taskId            String
+  trigger           TaskRunTrigger
+  status            TaskRunStatus  @default(queued)
+  dispatchMode      String?
+  commandOrPrompt   String?
+  summary           String?
+  logPath           String?
+  initiatedByUserId String?
+  startedAt         DateTime?
+  finishedAt        DateTime?
+  exitCode          Int?
+  errorMessage      String?
+  errorStack        String?
+  metadata          Json?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  task              Task           @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  initiatedByUser   User?          @relation(fields: [initiatedByUserId], references: [id], onDelete: SetNull)
+  events            TaskRunEvent[]
+
+  @@index([taskId, createdAt])
+  @@index([status, createdAt])
+  @@index([initiatedByUserId])
+}
+
+model TaskRunEvent {
+  id        String         @id @default(cuid())
+  taskId    String
+  runId     String?
+  level     TaskEventLevel @default(info)
+  eventType String
+  message   String
+  details   Json?
+  createdAt DateTime       @default(now())
+  task      Task           @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  run       TaskRun?       @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([taskId, createdAt])
+  @@index([runId, createdAt])
+  @@index([eventType, createdAt])
 }

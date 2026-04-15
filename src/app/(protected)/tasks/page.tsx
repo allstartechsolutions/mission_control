@@ -1,9 +1,10 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { BriefcaseBusiness, CircleDollarSign, ListChecks, TriangleAlert } from "lucide-react";
+import TaskLiveRefresh from "@/components/TaskLiveRefresh";
 import TasksTable from "@/components/TasksTable";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { buildTaskNextStepLabel, describeCronSchedule, formatCurrency, formatDate, formatTaskLabel } from "@/lib/tasks";
+import { buildTaskNextStepLabel, describeCronSchedule, formatCurrency, formatDate, formatDateTime, formatTaskLabel } from "@/lib/tasks";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,11 @@ export default async function TasksPage() {
       assignedTo: { select: { id: true, name: true, email: true } },
       requesterEmployee: { select: { name: true } },
       createdBy: { select: { id: true } },
+      taskRuns: {
+        select: { status: true, updatedAt: true },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
     },
     orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
   });
@@ -57,9 +63,12 @@ export default async function TasksPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h1 className="text-lg font-semibold text-gray-800">Tasks</h1>
-          <nav className="text-sm text-gray-400"><span className="text-[#405189]">Mission Control</span><span className="mx-2">&rsaquo;</span><span>Tasks</span></nav>
+        <div className="space-y-2">
+          <div>
+            <h1 className="text-lg font-semibold text-gray-800">Tasks</h1>
+            <nav className="text-sm text-gray-400"><span className="text-[#405189]">Mission Control</span><span className="mx-2">&rsaquo;</span><span>Tasks</span></nav>
+          </div>
+          <TaskLiveRefresh />
         </div>
         <div className="grid gap-3 sm:grid-cols-4">
           <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"><p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Open tasks</p><div className="mt-1 flex items-center gap-2 text-gray-800"><ListChecks size={18} className="text-[#405189]" /><p className="text-2xl font-semibold">{openTasks}</p></div></div>
@@ -94,6 +103,8 @@ export default async function TasksPage() {
           nextStepLabel: buildTaskNextStepLabel(task),
           cronEnabled: task.cronEnabled,
           cronExpression: task.cronExpression ? describeCronSchedule(task.cronExpression, task.cronTimezone) : null,
+          lastRunStatus: task.taskRuns[0]?.status || null,
+          lastRunAt: task.taskRuns[0] ? formatDateTime(task.taskRuns[0].updatedAt) : null,
         };
       })} />
     </div>

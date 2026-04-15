@@ -1,7 +1,9 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import { addTaskEvent } from "@/lib/task-runs";
 import { dispatchTaskNow } from "@/lib/task-execution";
 import { prisma } from "@/lib/prisma";
+import { resolveTaskActorId } from "@/lib/tasks";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +25,8 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
       return NextResponse.json({ error: "Task description is required before dispatching." }, { status: 400 });
     }
 
-    const dispatch = await dispatchTaskNow(task);
+    const actorUserId = await resolveTaskActorId();
+    const dispatch = await dispatchTaskNow(task, { initiatedByUserId: actorUserId });
 
     await prisma.task.update({
       where: { id: task.id },
@@ -31,6 +34,14 @@ export async function POST(_request: Request, context: { params: Promise<{ id: s
         status: "in_progress",
         cronLastRunAt: new Date(),
       },
+    });
+
+    await addTaskEvent({
+      taskId: task.id,
+      runId: dispatch.runId,
+      eventType: "task.dispatch.manual",
+      message: "Manual dispatch requested from Mission Control.",
+      details: { actorUserId, runId: dispatch.runId, logPath: dispatch.logPath },
     });
 
     revalidatePath("/tasks");
