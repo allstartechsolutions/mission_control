@@ -141,6 +141,15 @@ const clientSeedData = [
 ];
 
 async function main() {
+  const missionControlEnv = process.env.MISSION_CONTROL_ENV ?? "production";
+  const allowDestructiveSeed = process.env.ALLOW_DESTRUCTIVE_SEED === "true";
+
+  if (missionControlEnv === "production" && !allowDestructiveSeed) {
+    throw new Error(
+      "Refusing to run destructive seed in production mode. Set ALLOW_DESTRUCTIVE_SEED=true only if JR explicitly approved it.",
+    );
+  }
+
   const hashedPassword = await bcrypt.hash("password123", 12);
 
   const adminUser = await prisma.user.upsert({

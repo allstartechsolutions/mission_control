@@ -16,6 +16,7 @@
     "lint": "eslint",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx tsx prisma/seed.ts",
+    "db:seed:force": "ALLOW_DESTRUCTIVE_SEED=true npx tsx prisma/seed.ts",
     "db:push": "npx prisma db push",
     "db:studio": "npx prisma studio"
   },
