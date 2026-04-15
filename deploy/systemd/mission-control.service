@@ -1,0 +1,25 @@
+[Unit]
+Description=Mission Control Next.js server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/jr/MissionControl
+Environment=NODE_ENV=production
+Environment=HOST=0.0.0.0
+Environment=PORT=3001
+EnvironmentFile=-/home/jr/MissionControl/.env
+ExecStartPre=/usr/bin/bash /home/jr/MissionControl/scripts/prepare-runtime.sh
+ExecStart=/usr/bin/npm run start:service
+Restart=always
+RestartSec=5
+TimeoutStartSec=120
+TimeoutStopSec=30
+KillMode=mixed
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mission-control
+
+[Install]
+WantedBy=default.target
