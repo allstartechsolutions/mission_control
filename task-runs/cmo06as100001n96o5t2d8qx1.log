@@ -1,0 +1,17 @@
+
+[2026-04-15T15:00:01.570Z] Starting scheduled execution for hulk task "Test"
+[2026-04-15T15:00:01.572Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-15T15:00:01.575Z] Runner failed: Error: spawn openclaw ENOENT
+    at ChildProcess._handle.onexit (node:internal/child_process:285:19)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+Error: spawn openclaw ENOENT
+    at ChildProcess._handle.onexit (node:internal/child_process:285:19)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'spawn openclaw',
+  path: 'openclaw',
+  spawnargs: [ 'agents', 'list', '--json' ]
+}
