@@ -58,6 +58,24 @@ type OpenClawAgentInfo = {
   identityName?: string;
 };
 
+type OpenClawAgentPayload = {
+  text?: string | null;
+  mediaUrl?: string | null;
+};
+
+type OpenClawAgentResponse = {
+  runId?: string;
+  status?: string;
+  summary?: string;
+  result?: {
+    payloads?: OpenClawAgentPayload[];
+    meta?: {
+      aborted?: boolean;
+      [key: string]: unknown;
+    };
+  };
+};
+
 async function appendLog(runId: string, content: string) {
   const logPath = getTaskRunLogPath(runId);
   await fs.mkdir(path.dirname(logPath), { recursive: true });
@@ -254,6 +272,50 @@ async function runSessionSend(task: { id: string }, plan: ReturnType<typeof buil
   };
 }
 
+function extractOpenClawResponse(result: RunCommandResult) {
+  return parseJsonBlock<OpenClawAgentResponse>(result.stdout);
+}
+
+function getAgentPayloadText(response: OpenClawAgentResponse | null) {
+  return (response?.result?.payloads || [])
+    .map((payload) => payload.text?.trim())
+    .filter((value): value is string => Boolean(value))
+    .join("\n\n");
+}
+
+function inferAgentTaskOutcome(response: OpenClawAgentResponse | null) {
+  const payloadText = getAgentPayloadText(response);
+  const combinedText = payloadText || response?.summary?.trim() || "";
+  const normalized = combinedText.toLowerCase();
+  const failureSignals = [
+    /\bi hit an error\b/,
+    /\bencountered an error\b/,
+    /\bran into an error\b/,
+    /\bfailed to\b/,
+    /\bi can['’]t\b/,
+    /\bi could not\b/,
+    /\bi couldn['’]t\b/,
+    /\bunable to\b/,
+    /\bdoes not exist\b/,
+    /\bnot found\b/,
+    /\bno such file\b/,
+  ];
+  const successSignals = [
+    /\bcompleted\b/,
+    /\bdone\b/,
+    /\bsent\b/,
+    /\bfinished\b/,
+    /\bsuccess(?:fully)?\b/,
+  ];
+
+  const failed = failureSignals.some((pattern) => pattern.test(normalized));
+  const succeeded = successSignals.some((pattern) => pattern.test(normalized));
+
+  if (failed) return { taskStatus: "failed", reason: combinedText || "Agent reply indicated failure." } as const;
+  if (succeeded) return { taskStatus: "completed", reason: combinedText || "Agent reply indicated completion." } as const;
+  return { taskStatus: "completed", reason: combinedText || "Agent reply completed without an explicit failure signal." } as const;
+}
+
 async function main() {
   const taskId = process.argv[2];
   const runId = process.argv[3];
@@ -336,10 +398,21 @@ async function main() {
   }
 
   const finishedAt = new Date();
-  const finalStatus = result.code === 0 ? (task.cronEnabled ? "scheduled" : "completed") : "failed";
   const stdout = truncateText(result.stdout, 6000);
   const stderr = truncateText(result.stderr, 6000);
-  const summary = result.code === 0 ? `Run finished successfully (${finalStatus}).` : `Run failed with exit code ${result.code ?? "null"}.`;
+  const openClawResponse = plan.mode === "shell" ? null : extractOpenClawResponse(result);
+  const inferredAgentOutcome = plan.mode === "shell" ? null : inferAgentTaskOutcome(openClawResponse);
+  const finalStatus = result.code === 0
+    ? plan.mode === "shell"
+      ? (task.cronEnabled ? "scheduled" : "completed")
+      : inferredAgentOutcome?.taskStatus || "completed"
+    : "failed";
+  const runSucceeded = result.code === 0 && finalStatus !== "failed";
+  const summary = result.code === 0
+    ? runSucceeded
+      ? `Run finished successfully (${finalStatus}).`
+      : `Run completed, but the task outcome was ${finalStatus}.`
+    : `Run failed with exit code ${result.code ?? "null"}.`;
 
   await appendLog(
     runId,
@@ -358,25 +431,27 @@ async function main() {
   });
 
   await markTaskRunStatus(runId, {
-    status: result.code === 0 ? TaskRunStatus.succeeded : TaskRunStatus.failed,
+    status: runSucceeded ? TaskRunStatus.succeeded : TaskRunStatus.failed,
     finishedAt,
     exitCode: result.code,
     summary,
-    errorMessage: result.code === 0 ? null : truncateText(result.stderr || result.stdout || `Exit code ${result.code ?? "null"}`, 1000),
-    errorStack: result.code === 0 ? null : stderr,
+    errorMessage: runSucceeded ? null : truncateText(inferredAgentOutcome?.reason || result.stderr || result.stdout || `Exit code ${result.code ?? "null"}`, 1000),
+    errorStack: runSucceeded ? null : stderr,
     metadata: {
       ...(meta || {}),
       stdout,
       stderr,
       finalTaskStatus: finalStatus,
+      agentOutcomeReason: inferredAgentOutcome?.reason || null,
+      openClawResponse: openClawResponse || null,
     },
   });
 
   await addTaskEvent({
     taskId,
     runId,
-    level: result.code === 0 ? TaskEventLevel.info : TaskEventLevel.error,
-    eventType: result.code === 0 ? "task.run.succeeded" : "task.run.failed",
+    level: runSucceeded ? TaskEventLevel.info : TaskEventLevel.error,
+    eventType: runSucceeded ? "task.run.succeeded" : "task.run.failed",
     message: summary,
     details: {
       exitCode: result.code,
@@ -384,6 +459,7 @@ async function main() {
       stderr,
       finalTaskStatus: finalStatus,
       finishedAt: finishedAt.toISOString(),
+      agentOutcomeReason: inferredAgentOutcome?.reason || null,
     },
   });
 
