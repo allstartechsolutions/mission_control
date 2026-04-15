@@ -1,0 +1,13 @@
+
+[2026-04-14T21:47:01.587Z] Starting scheduled execution for hulk task "Send JR main-session test 1776203066370"
+[2026-04-14T21:47:01.588Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:47:21.044Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 740c73f6-edb8-4d85-bfe6-66cff4c2868a | startStatus: started | messageSeq: 5450 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:47:21.044Z] Exit code: 0
+STDOUT:
+{
+  "runId": "740c73f6-edb8-4d85-bfe6-66cff4c2868a",
+  "status": "started",
+  "messageSeq": 5450
+}
+
+[2026-04-14T21:47:21.050Z] Final task status: completed

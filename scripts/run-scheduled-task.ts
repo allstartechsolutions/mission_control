@@ -1,0 +1,311 @@
+import "dotenv/config";
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+import { spawn } from "child_process";
+import { PrismaClient } from "@prisma/client";
+import { buildScheduledDispatchPlan, getTaskRunLogPath } from "../src/lib/task-execution";
+
+const prisma = new PrismaClient();
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.join(scriptDir, "..");
+
+type RunCommandResult = {
+  code: number | null;
+  stdout: string;
+  stderr: string;
+};
+
+type OpenClawSession = {
+  key?: string;
+  sessionId?: string;
+  updatedAt?: number;
+  kind?: string;
+};
+
+type OpenClawSessionsPayload = {
+  sessions?: OpenClawSession[];
+};
+
+type OpenClawAgentInfo = {
+  id?: string;
+  identityName?: string;
+};
+
+async function appendLog(taskId: string, content: string) {
+  const logPath = getTaskRunLogPath(taskId);
+  await fs.mkdir(path.dirname(logPath), { recursive: true });
+  await fs.appendFile(logPath, content);
+}
+
+function runCommand(command: string, args: string[], input?: string): Promise<RunCommandResult> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd: rootDir,
+      env: process.env,
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk.toString();
+    });
+    child.on("error", reject);
+    child.on("close", (code) => resolve({ code, stdout, stderr }));
+
+    if (input) child.stdin.end(input);
+    else child.stdin.end();
+  });
+}
+
+function normalizeAgentSlug(value: string | null | undefined) {
+  return value?.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || null;
+}
+
+function parseJsonBlock<T>(raw: string): T | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+
+  try {
+    return JSON.parse(trimmed) as T;
+  } catch {
+    const arrayStart = trimmed.indexOf("[");
+    if (arrayStart >= 0) {
+      try {
+        return JSON.parse(trimmed.slice(arrayStart)) as T;
+      } catch {}
+    }
+
+    const objectStart = trimmed.indexOf("{");
+    if (objectStart >= 0) {
+      try {
+        return JSON.parse(trimmed.slice(objectStart)) as T;
+      } catch {}
+    }
+  }
+
+  return null;
+}
+
+async function listOpenClawAgents() {
+  const result = await runCommand("openclaw", ["agents", "list", "--json"]);
+  if (result.code !== 0) return [] as OpenClawAgentInfo[];
+  const parsed = parseJsonBlock<OpenClawAgentInfo[]>(result.stdout);
+  return Array.isArray(parsed) ? parsed : [];
+}
+
+async function resolveAgentId(preferredAgentId?: string) {
+  const agents = await listOpenClawAgents();
+  const bySlug = new Map<string, string>();
+  for (const agent of agents) {
+    if (!agent.id) continue;
+    bySlug.set(normalizeAgentSlug(agent.id) || "", agent.id);
+    bySlug.set(normalizeAgentSlug(agent.identityName) || "", agent.id);
+  }
+
+  const preferredSlug = normalizeAgentSlug(preferredAgentId);
+  if (preferredSlug && bySlug.has(preferredSlug)) {
+    return bySlug.get(preferredSlug)!;
+  }
+
+  return agents.find((agent) => agent.id === "main")?.id || agents[0]?.id || "main";
+}
+
+function isUserFacingSession(session: OpenClawSession, agentId?: string) {
+  const key = session.key || "";
+  if (session.kind !== "direct" || !session.sessionId || !key.startsWith("agent:")) {
+    return false;
+  }
+
+  if (agentId && !key.startsWith(`agent:${agentId}:`)) {
+    return false;
+  }
+
+  return !key.includes(":subagent:")
+    && !key.includes(":cron:")
+    && !key.endsWith(":main");
+}
+
+function scoreUserFacingSession(session: OpenClawSession) {
+  const key = session.key || "";
+  if (key.includes(":telegram:direct:")) return 3;
+  if (key.includes(":direct:")) return 2;
+  return 1;
+}
+
+async function resolveLatestUserFacingSession(agentId?: string) {
+  const result = await runCommand("openclaw", ["sessions", "--json"]);
+  if (result.code !== 0) return null;
+
+  const payload = parseJsonBlock<OpenClawSessionsPayload>(result.stdout);
+  const sessions = Array.isArray(payload?.sessions) ? payload.sessions : [];
+  const latest = sessions
+    .filter((session) => isUserFacingSession(session, agentId))
+    .sort((a, b) => {
+      const scoreDiff = scoreUserFacingSession(b) - scoreUserFacingSession(a);
+      if (scoreDiff !== 0) return scoreDiff;
+      return (b.updatedAt || 0) - (a.updatedAt || 0);
+    })[0];
+
+  return latest || null;
+}
+
+async function runOpenClawAgent(task: {
+  id: string;
+  executorType: string;
+}, plan: ReturnType<typeof buildScheduledDispatchPlan>) {
+  const agentId = await resolveAgentId(plan.preferredAgentId);
+  const args = ["agent", "--agent", agentId, "--message", plan.commandOrPrompt, "--timeout", "600", "--json"];
+  const routedSession = plan.routeThroughUserSession ? await resolveLatestUserFacingSession(agentId) : null;
+  const targetSessionId = routedSession?.sessionId || null;
+
+  if (targetSessionId) {
+    args.push("--session-id", targetSessionId, "--deliver");
+  } else {
+    args.push("--session-id", `mission-control-scheduled-${task.id}`);
+  }
+
+  return {
+    meta: {
+      agentId,
+      targetSessionId: targetSessionId || `mission-control-scheduled-${task.id}`,
+      delivery: Boolean(targetSessionId),
+      routedSessionKey: routedSession?.key || null,
+      allowUserFacingReply: Boolean(plan.allowUserFacingReply),
+      routeThroughUserSession: Boolean(plan.routeThroughUserSession),
+    },
+    result: await runCommand("openclaw", args),
+  };
+}
+
+async function runSessionSend(task: {
+  id: string;
+}, plan: ReturnType<typeof buildScheduledDispatchPlan>) {
+  const agentId = await resolveAgentId(plan.preferredAgentId);
+  const routedSession = plan.routeThroughUserSession ? await resolveLatestUserFacingSession(agentId) : null;
+
+  if (!routedSession?.sessionId) {
+    throw new Error(`No routed user-facing session found for agent ${agentId}.`);
+  }
+
+  const args = [
+    "agent",
+    "--agent",
+    agentId,
+    "--session-id",
+    routedSession.sessionId,
+    "--message",
+    plan.commandOrPrompt,
+    "--deliver",
+    "--channel",
+    "telegram",
+    "--reply-channel",
+    "telegram",
+    "--reply-to",
+    "8531650863",
+    "--reply-account",
+    "default",
+    "--timeout",
+    "600",
+    "--json",
+  ];
+
+  const result = await runCommand("openclaw", args);
+
+  return {
+    meta: {
+      agentId,
+      routedSessionKey: routedSession.key || null,
+      routedSessionId: routedSession.sessionId || null,
+      queued: result.code === 0,
+      allowUserFacingReply: Boolean(plan.allowUserFacingReply),
+      routeThroughUserSession: Boolean(plan.routeThroughUserSession),
+      explicitDeliveryChannel: "telegram",
+      explicitDeliveryTo: "8531650863",
+      explicitDeliveryAccount: "default",
+    },
+    result,
+  };
+}
+
+async function main() {
+  const taskId = process.argv[2];
+  if (!taskId) throw new Error("Task id argument is required.");
+
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      executorType: true,
+      cronEnabled: true,
+      assignedTo: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  if (!task) throw new Error(`Task ${taskId} was not found.`);
+
+  await appendLog(task.id, `\n[${new Date().toISOString()}] Starting scheduled execution for ${task.executorType} task \"${task.title}\"\n`);
+
+  const plan = buildScheduledDispatchPlan(task);
+  await appendLog(task.id, `[${new Date().toISOString()}] Dispatch plan: ${plan.summary}\n`);
+
+  let result: RunCommandResult;
+  if (plan.mode === "shell") {
+    result = await runCommand("bash", ["-lc", plan.commandOrPrompt]);
+  } else if (plan.mode === "session-send") {
+    const sessionSendRun = await runSessionSend(task, plan);
+    await appendLog(task.id, `[${new Date().toISOString()}] Session send agent: ${sessionSendRun.meta.agentId} | session key: ${sessionSendRun.meta.routedSessionKey} | session id: ${sessionSendRun.meta.routedSessionId || "none"} | queued: ${sessionSendRun.meta.queued} | routeThroughUserSession: ${sessionSendRun.meta.routeThroughUserSession} | allowUserFacingReply: ${sessionSendRun.meta.allowUserFacingReply} | delivery channel: ${sessionSendRun.meta.explicitDeliveryChannel} | delivery to: ${sessionSendRun.meta.explicitDeliveryTo} | delivery account: ${sessionSendRun.meta.explicitDeliveryAccount}\n`);
+    result = sessionSendRun.result;
+  } else {
+    const openclawRun = await runOpenClawAgent(task, plan);
+    await appendLog(task.id, `[${new Date().toISOString()}] OpenClaw agent: ${openclawRun.meta.agentId} | session: ${openclawRun.meta.targetSessionId} | deliver: ${openclawRun.meta.delivery} | routed session key: ${openclawRun.meta.routedSessionKey || "none"} | routeThroughUserSession: ${openclawRun.meta.routeThroughUserSession} | allowUserFacingReply: ${openclawRun.meta.allowUserFacingReply}\n`);
+    result = openclawRun.result;
+  }
+
+  await appendLog(
+    task.id,
+    [
+      `[${new Date().toISOString()}] Exit code: ${result.code ?? "null"}`,
+      result.stdout ? `STDOUT:\n${result.stdout.trim()}\n` : "",
+      result.stderr ? `STDERR:\n${result.stderr.trim()}\n` : "",
+    ].filter(Boolean).join("\n") + "\n",
+  );
+
+  const succeeded = result.code === 0;
+  await prisma.task.update({
+    where: { id: task.id },
+    data: {
+      status: succeeded ? (task.cronEnabled ? "scheduled" : "completed") : "waiting",
+    },
+  });
+
+  await appendLog(task.id, `[${new Date().toISOString()}] Final task status: ${succeeded ? (task.cronEnabled ? "scheduled" : "completed") : "waiting"}\n`);
+}
+
+main()
+  .catch(async (error) => {
+    const taskId = process.argv[2];
+    if (taskId) {
+      await appendLog(taskId, `[${new Date().toISOString()}] Runner failed: ${error instanceof Error ? error.stack || error.message : String(error)}\n`);
+      try {
+        await prisma.task.update({ where: { id: taskId }, data: { status: "waiting" } });
+      } catch {}
+    }
+    console.error(error);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

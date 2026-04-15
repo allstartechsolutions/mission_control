@@ -1,0 +1,2317 @@
+
+[2026-04-14T21:26:04.291Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:26:04.292Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:26:23.545Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: ff209a34-c620-474e-bf7a-ffdeae5b62bb | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:26:23.545Z] Exit code: 0
+STDOUT:
+{
+  "runId": "ff209a34-c620-474e-bf7a-ffdeae5b62bb",
+  "status": "ok",
+  "endedAt": 1776201981970
+}
+
+[2026-04-14T21:26:23.548Z] Final task status: scheduled
+
+[2026-04-14T21:28:02.121Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:28:02.122Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:28:20.986Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 98183580-e1cd-4884-bba0-009f150f960b | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:28:20.986Z] Exit code: 0
+STDOUT:
+{
+  "runId": "98183580-e1cd-4884-bba0-009f150f960b",
+  "status": "ok",
+  "endedAt": 1776202099634
+}
+
+[2026-04-14T21:28:20.989Z] Final task status: scheduled
+
+[2026-04-14T21:30:02.229Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:30:02.231Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:30:19.530Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 50ca40be-6310-4497-940f-dbfaa6a1b2f2 | startStatus: started | messageSeq: 5280 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:30:19.530Z] Exit code: 0
+STDOUT:
+{
+  "runId": "50ca40be-6310-4497-940f-dbfaa6a1b2f2",
+  "status": "started",
+  "messageSeq": 5280
+}
+
+[2026-04-14T21:30:19.537Z] Final task status: scheduled
+
+[2026-04-14T21:32:01.361Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:32:01.362Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:32:18.346Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 52f7b921-ae06-4b95-96b1-bb1f1b1ae059 | startStatus: started | messageSeq: 5300 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:32:18.346Z] Exit code: 0
+STDOUT:
+{
+  "runId": "52f7b921-ae06-4b95-96b1-bb1f1b1ae059",
+  "status": "started",
+  "messageSeq": 5300
+}
+
+[2026-04-14T21:32:18.349Z] Final task status: scheduled
+
+[2026-04-14T21:34:01.473Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:34:01.474Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:34:18.306Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 87c87286-689e-41ed-9389-211fe2458819 | startStatus: started | messageSeq: 5320 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:34:18.307Z] Exit code: 0
+STDOUT:
+{
+  "runId": "87c87286-689e-41ed-9389-211fe2458819",
+  "status": "started",
+  "messageSeq": 5320
+}
+
+[2026-04-14T21:34:18.310Z] Final task status: scheduled
+
+[2026-04-14T21:36:01.655Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:36:01.656Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:36:18.762Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: cd76c35c-43a8-4e22-adc0-3c84f877f5c6 | startStatus: started | messageSeq: 5340 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:36:18.763Z] Exit code: 0
+STDOUT:
+{
+  "runId": "cd76c35c-43a8-4e22-adc0-3c84f877f5c6",
+  "status": "started",
+  "messageSeq": 5340
+}
+
+[2026-04-14T21:36:18.769Z] Final task status: scheduled
+
+[2026-04-14T21:38:01.817Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:38:01.818Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:38:18.750Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: c8c50e8e-cda8-4fb0-851d-054741b9a0ae | startStatus: started | messageSeq: 5360 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:38:18.751Z] Exit code: 0
+STDOUT:
+{
+  "runId": "c8c50e8e-cda8-4fb0-851d-054741b9a0ae",
+  "status": "started",
+  "messageSeq": 5360
+}
+
+[2026-04-14T21:38:18.754Z] Final task status: scheduled
+
+[2026-04-14T21:40:02.004Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:40:02.005Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:40:18.927Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: f63179f2-eb21-44a2-b667-8dc56f0cb8b4 | startStatus: started | messageSeq: 5380 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:40:18.927Z] Exit code: 0
+STDOUT:
+{
+  "runId": "f63179f2-eb21-44a2-b667-8dc56f0cb8b4",
+  "status": "started",
+  "messageSeq": 5380
+}
+
+[2026-04-14T21:40:18.930Z] Final task status: scheduled
+
+[2026-04-14T21:42:02.178Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:42:02.179Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:42:19.410Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: f52e3495-0628-444a-8045-df40090065e9 | startStatus: started | messageSeq: 5400 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:42:19.410Z] Exit code: 0
+STDOUT:
+{
+  "runId": "f52e3495-0628-444a-8045-df40090065e9",
+  "status": "started",
+  "messageSeq": 5400
+}
+
+[2026-04-14T21:42:19.413Z] Final task status: scheduled
+
+[2026-04-14T21:44:01.333Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:44:01.334Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:44:18.226Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: c6afb20e-6d8b-4a4b-a509-2771347e14bb | startStatus: started | messageSeq: 5421 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:44:18.226Z] Exit code: 0
+STDOUT:
+{
+  "runId": "c6afb20e-6d8b-4a4b-a509-2771347e14bb",
+  "status": "started",
+  "messageSeq": 5421
+}
+
+[2026-04-14T21:44:18.229Z] Final task status: scheduled
+
+[2026-04-14T21:46:01.502Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:46:01.503Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:46:18.361Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 664ff34c-1f8a-4b94-9f60-cb842d49dcea | startStatus: started | messageSeq: 5444 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:46:18.361Z] Exit code: 0
+STDOUT:
+{
+  "runId": "664ff34c-1f8a-4b94-9f60-cb842d49dcea",
+  "status": "started",
+  "messageSeq": 5444
+}
+
+[2026-04-14T21:46:18.364Z] Final task status: scheduled
+
+[2026-04-14T21:48:01.643Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:48:01.644Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:48:18.735Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: c68351de-e92f-41df-891d-5b8d5bb679da | startStatus: started | messageSeq: 5466 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:48:18.735Z] Exit code: 0
+STDOUT:
+{
+  "runId": "c68351de-e92f-41df-891d-5b8d5bb679da",
+  "status": "started",
+  "messageSeq": 5466
+}
+
+[2026-04-14T21:48:18.742Z] Final task status: scheduled
+
+[2026-04-14T21:50:01.824Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:50:01.825Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:50:18.738Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 9ef9f63b-c174-476d-b90d-f1c4bd8cfa3e | startStatus: started | messageSeq: 5486 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:50:18.738Z] Exit code: 0
+STDOUT:
+{
+  "runId": "9ef9f63b-c174-476d-b90d-f1c4bd8cfa3e",
+  "status": "started",
+  "messageSeq": 5486
+}
+
+[2026-04-14T21:50:18.742Z] Final task status: scheduled
+
+[2026-04-14T21:52:01.984Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:52:01.984Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:52:19.104Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 88075eb0-6182-4c10-a932-21d28027b61c | startStatus: started | messageSeq: 5506 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:52:19.104Z] Exit code: 0
+STDOUT:
+{
+  "runId": "88075eb0-6182-4c10-a932-21d28027b61c",
+  "status": "started",
+  "messageSeq": 5506
+}
+
+[2026-04-14T21:52:19.107Z] Final task status: scheduled
+
+[2026-04-14T21:54:02.141Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:54:02.142Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:54:19.030Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 76471f27-508a-468b-a85e-402527b13039 | startStatus: started | messageSeq: 5528 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:54:19.030Z] Exit code: 0
+STDOUT:
+{
+  "runId": "76471f27-508a-468b-a85e-402527b13039",
+  "status": "started",
+  "messageSeq": 5528
+}
+
+[2026-04-14T21:54:19.032Z] Final task status: scheduled
+
+[2026-04-14T21:56:02.310Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:56:02.312Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:56:19.421Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 6afbfc1d-7d84-4c9a-817d-f8a345a4939a | startStatus: started | messageSeq: 5548 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:56:19.421Z] Exit code: 0
+STDOUT:
+{
+  "runId": "6afbfc1d-7d84-4c9a-817d-f8a345a4939a",
+  "status": "started",
+  "messageSeq": 5548
+}
+
+[2026-04-14T21:56:19.428Z] Final task status: scheduled
+
+[2026-04-14T21:58:01.438Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T21:58:01.439Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T21:58:18.354Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 72db0168-9e49-4eaf-b6f2-a29fcea53f85 | startStatus: started | messageSeq: 5568 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T21:58:18.355Z] Exit code: 0
+STDOUT:
+{
+  "runId": "72db0168-9e49-4eaf-b6f2-a29fcea53f85",
+  "status": "started",
+  "messageSeq": 5568
+}
+
+[2026-04-14T21:58:18.358Z] Final task status: scheduled
+
+[2026-04-14T22:00:01.570Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:00:01.571Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:00:18.518Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: b4e0147b-9783-4226-bf7d-2a84f320904f | startStatus: started | messageSeq: 5597 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T22:00:18.518Z] Exit code: 0
+STDOUT:
+{
+  "runId": "b4e0147b-9783-4226-bf7d-2a84f320904f",
+  "status": "started",
+  "messageSeq": 5597
+}
+
+[2026-04-14T22:00:18.522Z] Final task status: scheduled
+
+[2026-04-14T22:02:01.727Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:02:01.728Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:02:19.005Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: fe0889b3-d3c5-4d8c-bad1-ba06581866eb | startStatus: started | messageSeq: 5614 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T22:02:19.006Z] Exit code: 0
+STDOUT:
+{
+  "runId": "fe0889b3-d3c5-4d8c-bad1-ba06581866eb",
+  "status": "started",
+  "messageSeq": 5614
+}
+
+[2026-04-14T22:02:19.009Z] Final task status: scheduled
+
+[2026-04-14T22:04:01.856Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:04:01.857Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:04:18.775Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 3bb828cd-4ce3-4cb2-93f4-83cfa537ae84 | startStatus: started | messageSeq: 5648 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T22:04:18.776Z] Exit code: 0
+STDOUT:
+{
+  "runId": "3bb828cd-4ce3-4cb2-93f4-83cfa537ae84",
+  "status": "started",
+  "messageSeq": 5648
+}
+
+[2026-04-14T22:04:18.779Z] Final task status: scheduled
+
+[2026-04-14T22:06:01.996Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:06:01.997Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:06:18.908Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 9cc1d530-c9c5-446a-8abc-490bb04b6bd9 | startStatus: started | messageSeq: 5668 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T22:06:18.908Z] Exit code: 0
+STDOUT:
+{
+  "runId": "9cc1d530-c9c5-446a-8abc-490bb04b6bd9",
+  "status": "started",
+  "messageSeq": 5668
+}
+
+[2026-04-14T22:06:18.911Z] Final task status: scheduled
+
+[2026-04-14T22:08:02.213Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:08:02.215Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:08:19.108Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: fe1d96a4-5449-4495-bf5a-a0ee83e5fc77 | startStatus: started | messageSeq: 5688 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T22:08:19.109Z] Exit code: 0
+STDOUT:
+{
+  "runId": "fe1d96a4-5449-4495-bf5a-a0ee83e5fc77",
+  "status": "started",
+  "messageSeq": 5688
+}
+
+[2026-04-14T22:08:19.111Z] Final task status: scheduled
+
+[2026-04-14T22:10:01.356Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:10:01.357Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:10:18.353Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 0b6665a8-c640-40f0-adbd-68ddbbb88862 | startStatus: started | messageSeq: 5708 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T22:10:18.353Z] Exit code: 0
+STDOUT:
+{
+  "runId": "0b6665a8-c640-40f0-adbd-68ddbbb88862",
+  "status": "started",
+  "messageSeq": 5708
+}
+
+[2026-04-14T22:10:18.356Z] Final task status: scheduled
+
+[2026-04-14T22:12:01.474Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:12:01.476Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:12:18.439Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: e6c76ad5-bd53-4670-a6bc-429af9b55299 | startStatus: started | messageSeq: 5728 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T22:12:18.441Z] Exit code: 0
+STDOUT:
+{
+  "runId": "e6c76ad5-bd53-4670-a6bc-429af9b55299",
+  "status": "started",
+  "messageSeq": 5728
+}
+
+[2026-04-14T22:12:18.444Z] Final task status: scheduled
+
+[2026-04-14T22:14:01.649Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:14:01.650Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:14:18.809Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | runId: 0d5e4325-8096-481b-833b-fe92b3274e4d | startStatus: started | messageSeq: 5753 | routeThroughUserSession: true | allowUserFacingReply: true
+[2026-04-14T22:14:18.809Z] Exit code: 0
+STDOUT:
+{
+  "runId": "0d5e4325-8096-481b-833b-fe92b3274e4d",
+  "status": "started",
+  "messageSeq": 5753
+}
+
+[2026-04-14T22:14:18.812Z] Final task status: scheduled
+
+[2026-04-14T22:16:01.948Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:16:01.949Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:17:13.280Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | routeThroughUserSession: true | allowUserFacingReply: true | delivery channel: telegram | delivery to: 8531650863 | delivery account: default
+[2026-04-14T22:17:13.280Z] Exit code: 0
+STDOUT:
+{
+  "runId": "5fc9a1a2-8b96-453c-bc76-ebf8bac9d3c5",
+  "status": "ok",
+  "summary": "completed",
+  "result": {
+    "payloads": [
+      {
+        "text": "scheduled-hulk-chat-e2e-1776201964036",
+        "mediaUrl": null
+      }
+    ],
+    "meta": {
+      "durationMs": 22767,
+      "agentMeta": {
+        "sessionId": "a4996ab4-4b52-405f-9c67-47641279d2d8",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "usage": {
+          "input": 440,
+          "output": 17,
+          "cacheRead": 201984,
+          "total": 202441
+        },
+        "lastCallUsage": {
+          "input": 440,
+          "output": 17,
+          "cacheRead": 201984,
+          "cacheWrite": 0,
+          "total": 202441
+        },
+        "promptTokens": 202424
+      },
+      "aborted": false,
+      "systemPromptReport": {
+        "source": "run",
+        "generatedAt": 1776205014990,
+        "sessionId": "mission-control-scheduled-cmnz0sz270001n9d7lx4ks4da",
+        "sessionKey": "agent:main:main",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "workspaceDir": "/home/jr/.openclaw/workspace",
+        "bootstrapMaxChars": 20000,
+        "bootstrapTotalMaxChars": 150000,
+        "bootstrapTruncation": {
+          "warningMode": "once",
+          "warningShown": false,
+          "truncatedFiles": 0,
+          "nearLimitFiles": 0,
+          "totalNearLimit": false
+        },
+        "sandbox": {
+          "mode": "off",
+          "sandboxed": false
+        },
+        "systemPrompt": {
+          "chars": 40705,
+          "projectContextChars": 14546,
+          "nonProjectContextChars": 26159
+        },
+        "injectedWorkspaceFiles": [
+          {
+            "name": "AGENTS.md",
+            "path": "/home/jr/.openclaw/workspace/AGENTS.md",
+            "missing": false,
+            "rawChars": 7923,
+            "injectedChars": 7923,
+            "truncated": false
+          },
+          {
+            "name": "SOUL.md",
+            "path": "/home/jr/.openclaw/workspace/SOUL.md",
+            "missing": false,
+            "rawChars": 1832,
+            "injectedChars": 1832,
+            "truncated": false
+          },
+          {
+            "name": "TOOLS.md",
+            "path": "/home/jr/.openclaw/workspace/TOOLS.md",
+            "missing": false,
+            "rawChars": 1305,
+            "injectedChars": 1305,
+            "truncated": false
+          },
+          {
+            "name": "IDENTITY.md",
+            "path": "/home/jr/.openclaw/workspace/IDENTITY.md",
+            "missing": false,
+            "rawChars": 417,
+            "injectedChars": 417,
+            "truncated": false
+          },
+          {
+            "name": "USER.md",
+            "path": "/home/jr/.openclaw/workspace/USER.md",
+            "missing": false,
+            "rawChars": 711,
+            "injectedChars": 711,
+            "truncated": false
+          },
+          {
+            "name": "HEARTBEAT.md",
+            "path": "/home/jr/.openclaw/workspace/HEARTBEAT.md",
+            "missing": false,
+            "rawChars": 296,
+            "injectedChars": 296,
+            "truncated": false
+          },
+          {
+            "name": "BOOTSTRAP.md",
+            "path": "/home/jr/.openclaw/workspace/BOOTSTRAP.md",
+            "missing": false,
+            "rawChars": 1450,
+            "injectedChars": 1450,
+            "truncated": false
+          },
+          {
+            "name": "MEMORY.md",
+            "path": "/home/jr/.openclaw/workspace/MEMORY.md",
+            "missing": false,
+            "rawChars": 584,
+            "injectedChars": 584,
+            "truncated": false
+          }
+        ],
+        "skills": {
+          "promptChars": 9473,
+          "entries": [
+            {
+              "name": "clawhub",
+              "blockChars": 432
+            },
+            {
+              "name": "coding-agent",
+              "blockChars": 832
+            },
+            {
+              "name": "healthcheck",
+              "blockChars": 491
+            },
+            {
+              "name": "node-connect",
+              "blockChars": 541
+            },
+            {
+              "name": "skill-creator",
+              "blockChars": 759
+            },
+            {
+              "name": "video-frames",
+              "blockChars": 229
+            },
+            {
+              "name": "weather",
+              "blockChars": 416
+            },
+            {
+              "name": "firecrawl",
+              "blockChars": 902
+            },
+            {
+              "name": "firecrawl-agent",
+              "blockChars": 689
+            },
+            {
+              "name": "firecrawl-browser",
+              "blockChars": 742
+            },
+            {
+              "name": "firecrawl-crawl",
+              "blockChars": 589
+            },
+            {
+              "name": "firecrawl-download",
+              "blockChars": 614
+            },
+            {
+              "name": "firecrawl-map",
+              "blockChars": 563
+            },
+            {
+              "name": "firecrawl-scrape",
+              "blockChars": 624
+            },
+            {
+              "name": "firecrawl-search",
+              "blockChars": 639
+            }
+          ]
+        },
+        "tools": {
+          "listChars": 0,
+          "schemaChars": 14701,
+          "entries": [
+            {
+              "name": "read",
+              "summaryChars": 298,
+              "schemaChars": 304,
+              "propertiesCount": 3
+            },
+            {
+              "name": "edit",
+              "summaryChars": 326,
+              "schemaChars": 834,
+              "propertiesCount": 2
+            },
+            {
+              "name": "write",
+              "summaryChars": 127,
+              "schemaChars": 225,
+              "propertiesCount": 2
+            },
+            {
+              "name": "apply_patch",
+              "summaryChars": 132,
+              "schemaChars": 153,
+              "propertiesCount": 1
+            },
+            {
+              "name": "exec",
+              "summaryChars": 539,
+              "schemaChars": 1157,
+              "propertiesCount": 12
+            },
+            {
+              "name": "process",
+              "summaryChars": 416,
+              "schemaChars": 961,
+              "propertiesCount": 12
+            },
+            {
+              "name": "cron",
+              "summaryChars": 3726,
+              "schemaChars": 6700,
+              "propertiesCount": 13
+            },
+            {
+              "name": "update_plan",
+              "summaryChars": 251,
+              "schemaChars": 574,
+              "propertiesCount": 2
+            },
+            {
+              "name": "sessions_list",
+              "summaryChars": 177,
+              "schemaChars": 212,
+              "propertiesCount": 4
+            },
+            {
+              "name": "sessions_history",
+              "summaryChars": 180,
+              "schemaChars": 161,
+              "propertiesCount": 3
+            },
+            {
+              "name": "sessions_send",
+              "summaryChars": 208,
+              "schemaChars": 274,
+              "propertiesCount": 5
+            },
+            {
+              "name": "sessions_yield",
+              "summaryChars": 97,
+              "schemaChars": 60,
+              "propertiesCount": 1
+            },
+            {
+              "name": "sessions_spawn",
+              "summaryChars": 302,
+              "schemaChars": 1333,
+              "propertiesCount": 18
+            },
+            {
+              "name": "subagents",
+              "summaryChars": 105,
+              "schemaChars": 191,
+              "propertiesCount": 4
+            },
+            {
+              "name": "session_status",
+              "summaryChars": 336,
+              "schemaChars": 89,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_search",
+              "summaryChars": 126,
+              "schemaChars": 248,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_fetch",
+              "summaryChars": 129,
+              "schemaChars": 374,
+              "propertiesCount": 3
+            },
+            {
+              "name": "image",
+              "summaryChars": 260,
+              "schemaChars": 342,
+              "propertiesCount": 6
+            },
+            {
+              "name": "memory_search",
+              "summaryChars": 385,
+              "schemaChars": 260,
+              "propertiesCount": 4
+            },
+            {
+              "name": "memory_get",
+              "summaryChars": 207,
+              "schemaChars": 249,
+              "propertiesCount": 4
+            }
+          ]
+        }
+      },
+      "finalAssistantVisibleText": "scheduled-hulk-chat-e2e-1776201964036",
+      "replayInvalid": false,
+      "livenessState": "working",
+      "stopReason": "stop"
+    }
+  }
+}
+
+[2026-04-14T22:17:13.286Z] Final task status: scheduled
+
+[2026-04-14T22:18:02.018Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:18:02.019Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:19:48.010Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | routeThroughUserSession: true | allowUserFacingReply: true | delivery channel: telegram | delivery to: 8531650863 | delivery account: default
+[2026-04-14T22:19:48.011Z] Exit code: 0
+STDOUT:
+{
+  "runId": "a2c95112-58a7-45e3-8238-137bb21871f6",
+  "status": "ok",
+  "summary": "completed",
+  "result": {
+    "payloads": [
+      {
+        "text": "scheduled-hulk-chat-e2e-1776201964036",
+        "mediaUrl": null
+      }
+    ],
+    "meta": {
+      "durationMs": 16189,
+      "agentMeta": {
+        "sessionId": "a4996ab4-4b52-405f-9c67-47641279d2d8",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "usage": {
+          "input": 411,
+          "output": 17,
+          "cacheRead": 204160,
+          "total": 204588
+        },
+        "lastCallUsage": {
+          "input": 411,
+          "output": 17,
+          "cacheRead": 204160,
+          "cacheWrite": 0,
+          "total": 204588
+        },
+        "promptTokens": 204571
+      },
+      "aborted": false,
+      "systemPromptReport": {
+        "source": "run",
+        "generatedAt": 1776205176042,
+        "sessionId": "mission-control-scheduled-cmnz0sz270001n9d7lx4ks4da",
+        "sessionKey": "agent:main:main",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "workspaceDir": "/home/jr/.openclaw/workspace",
+        "bootstrapMaxChars": 20000,
+        "bootstrapTotalMaxChars": 150000,
+        "bootstrapTruncation": {
+          "warningMode": "once",
+          "warningShown": false,
+          "truncatedFiles": 0,
+          "nearLimitFiles": 0,
+          "totalNearLimit": false
+        },
+        "sandbox": {
+          "mode": "off",
+          "sandboxed": false
+        },
+        "systemPrompt": {
+          "chars": 40705,
+          "projectContextChars": 14546,
+          "nonProjectContextChars": 26159
+        },
+        "injectedWorkspaceFiles": [
+          {
+            "name": "AGENTS.md",
+            "path": "/home/jr/.openclaw/workspace/AGENTS.md",
+            "missing": false,
+            "rawChars": 7923,
+            "injectedChars": 7923,
+            "truncated": false
+          },
+          {
+            "name": "SOUL.md",
+            "path": "/home/jr/.openclaw/workspace/SOUL.md",
+            "missing": false,
+            "rawChars": 1832,
+            "injectedChars": 1832,
+            "truncated": false
+          },
+          {
+            "name": "TOOLS.md",
+            "path": "/home/jr/.openclaw/workspace/TOOLS.md",
+            "missing": false,
+            "rawChars": 1305,
+            "injectedChars": 1305,
+            "truncated": false
+          },
+          {
+            "name": "IDENTITY.md",
+            "path": "/home/jr/.openclaw/workspace/IDENTITY.md",
+            "missing": false,
+            "rawChars": 417,
+            "injectedChars": 417,
+            "truncated": false
+          },
+          {
+            "name": "USER.md",
+            "path": "/home/jr/.openclaw/workspace/USER.md",
+            "missing": false,
+            "rawChars": 711,
+            "injectedChars": 711,
+            "truncated": false
+          },
+          {
+            "name": "HEARTBEAT.md",
+            "path": "/home/jr/.openclaw/workspace/HEARTBEAT.md",
+            "missing": false,
+            "rawChars": 296,
+            "injectedChars": 296,
+            "truncated": false
+          },
+          {
+            "name": "BOOTSTRAP.md",
+            "path": "/home/jr/.openclaw/workspace/BOOTSTRAP.md",
+            "missing": false,
+            "rawChars": 1450,
+            "injectedChars": 1450,
+            "truncated": false
+          },
+          {
+            "name": "MEMORY.md",
+            "path": "/home/jr/.openclaw/workspace/MEMORY.md",
+            "missing": false,
+            "rawChars": 584,
+            "injectedChars": 584,
+            "truncated": false
+          }
+        ],
+        "skills": {
+          "promptChars": 9473,
+          "entries": [
+            {
+              "name": "clawhub",
+              "blockChars": 432
+            },
+            {
+              "name": "coding-agent",
+              "blockChars": 832
+            },
+            {
+              "name": "healthcheck",
+              "blockChars": 491
+            },
+            {
+              "name": "node-connect",
+              "blockChars": 541
+            },
+            {
+              "name": "skill-creator",
+              "blockChars": 759
+            },
+            {
+              "name": "video-frames",
+              "blockChars": 229
+            },
+            {
+              "name": "weather",
+              "blockChars": 416
+            },
+            {
+              "name": "firecrawl",
+              "blockChars": 902
+            },
+            {
+              "name": "firecrawl-agent",
+              "blockChars": 689
+            },
+            {
+              "name": "firecrawl-browser",
+              "blockChars": 742
+            },
+            {
+              "name": "firecrawl-crawl",
+              "blockChars": 589
+            },
+            {
+              "name": "firecrawl-download",
+              "blockChars": 614
+            },
+            {
+              "name": "firecrawl-map",
+              "blockChars": 563
+            },
+            {
+              "name": "firecrawl-scrape",
+              "blockChars": 624
+            },
+            {
+              "name": "firecrawl-search",
+              "blockChars": 639
+            }
+          ]
+        },
+        "tools": {
+          "listChars": 0,
+          "schemaChars": 14701,
+          "entries": [
+            {
+              "name": "read",
+              "summaryChars": 298,
+              "schemaChars": 304,
+              "propertiesCount": 3
+            },
+            {
+              "name": "edit",
+              "summaryChars": 326,
+              "schemaChars": 834,
+              "propertiesCount": 2
+            },
+            {
+              "name": "write",
+              "summaryChars": 127,
+              "schemaChars": 225,
+              "propertiesCount": 2
+            },
+            {
+              "name": "apply_patch",
+              "summaryChars": 132,
+              "schemaChars": 153,
+              "propertiesCount": 1
+            },
+            {
+              "name": "exec",
+              "summaryChars": 539,
+              "schemaChars": 1157,
+              "propertiesCount": 12
+            },
+            {
+              "name": "process",
+              "summaryChars": 416,
+              "schemaChars": 961,
+              "propertiesCount": 12
+            },
+            {
+              "name": "cron",
+              "summaryChars": 3726,
+              "schemaChars": 6700,
+              "propertiesCount": 13
+            },
+            {
+              "name": "update_plan",
+              "summaryChars": 251,
+              "schemaChars": 574,
+              "propertiesCount": 2
+            },
+            {
+              "name": "sessions_list",
+              "summaryChars": 177,
+              "schemaChars": 212,
+              "propertiesCount": 4
+            },
+            {
+              "name": "sessions_history",
+              "summaryChars": 180,
+              "schemaChars": 161,
+              "propertiesCount": 3
+            },
+            {
+              "name": "sessions_send",
+              "summaryChars": 208,
+              "schemaChars": 274,
+              "propertiesCount": 5
+            },
+            {
+              "name": "sessions_yield",
+              "summaryChars": 97,
+              "schemaChars": 60,
+              "propertiesCount": 1
+            },
+            {
+              "name": "sessions_spawn",
+              "summaryChars": 302,
+              "schemaChars": 1333,
+              "propertiesCount": 18
+            },
+            {
+              "name": "subagents",
+              "summaryChars": 105,
+              "schemaChars": 191,
+              "propertiesCount": 4
+            },
+            {
+              "name": "session_status",
+              "summaryChars": 336,
+              "schemaChars": 89,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_search",
+              "summaryChars": 126,
+              "schemaChars": 248,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_fetch",
+              "summaryChars": 129,
+              "schemaChars": 374,
+              "propertiesCount": 3
+            },
+            {
+              "name": "image",
+              "summaryChars": 260,
+              "schemaChars": 342,
+              "propertiesCount": 6
+            },
+            {
+              "name": "memory_search",
+              "summaryChars": 385,
+              "schemaChars": 260,
+              "propertiesCount": 4
+            },
+            {
+              "name": "memory_get",
+              "summaryChars": 207,
+              "schemaChars": 249,
+              "propertiesCount": 4
+            }
+          ]
+        }
+      },
+      "finalAssistantVisibleText": "scheduled-hulk-chat-e2e-1776201964036",
+      "replayInvalid": false,
+      "livenessState": "working",
+      "stopReason": "stop"
+    }
+  }
+}
+
+[2026-04-14T22:19:48.014Z] Final task status: scheduled
+
+[2026-04-14T22:20:02.138Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:20:02.140Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:21:46.123Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | routeThroughUserSession: true | allowUserFacingReply: true | delivery channel: telegram | delivery to: 8531650863 | delivery account: default
+[2026-04-14T22:21:46.123Z] Exit code: 0
+STDOUT:
+{
+  "runId": "03ac6f5d-d333-47de-8f93-3d311e3da75d",
+  "status": "ok",
+  "summary": "completed",
+  "result": {
+    "payloads": [
+      {
+        "text": "scheduled-hulk-chat-e2e-1776201964036",
+        "mediaUrl": null
+      }
+    ],
+    "meta": {
+      "durationMs": 11901,
+      "agentMeta": {
+        "sessionId": "a4996ab4-4b52-405f-9c67-47641279d2d8",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "usage": {
+          "input": 382,
+          "output": 17,
+          "cacheRead": 206336,
+          "total": 206735
+        },
+        "lastCallUsage": {
+          "input": 382,
+          "output": 17,
+          "cacheRead": 206336,
+          "cacheWrite": 0,
+          "total": 206735
+        },
+        "promptTokens": 206718
+      },
+      "aborted": false,
+      "systemPromptReport": {
+        "source": "run",
+        "generatedAt": 1776205298488,
+        "sessionId": "mission-control-scheduled-cmnz0sz270001n9d7lx4ks4da",
+        "sessionKey": "agent:main:main",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "workspaceDir": "/home/jr/.openclaw/workspace",
+        "bootstrapMaxChars": 20000,
+        "bootstrapTotalMaxChars": 150000,
+        "bootstrapTruncation": {
+          "warningMode": "once",
+          "warningShown": false,
+          "truncatedFiles": 0,
+          "nearLimitFiles": 0,
+          "totalNearLimit": false
+        },
+        "sandbox": {
+          "mode": "off",
+          "sandboxed": false
+        },
+        "systemPrompt": {
+          "chars": 40705,
+          "projectContextChars": 14546,
+          "nonProjectContextChars": 26159
+        },
+        "injectedWorkspaceFiles": [
+          {
+            "name": "AGENTS.md",
+            "path": "/home/jr/.openclaw/workspace/AGENTS.md",
+            "missing": false,
+            "rawChars": 7923,
+            "injectedChars": 7923,
+            "truncated": false
+          },
+          {
+            "name": "SOUL.md",
+            "path": "/home/jr/.openclaw/workspace/SOUL.md",
+            "missing": false,
+            "rawChars": 1832,
+            "injectedChars": 1832,
+            "truncated": false
+          },
+          {
+            "name": "TOOLS.md",
+            "path": "/home/jr/.openclaw/workspace/TOOLS.md",
+            "missing": false,
+            "rawChars": 1305,
+            "injectedChars": 1305,
+            "truncated": false
+          },
+          {
+            "name": "IDENTITY.md",
+            "path": "/home/jr/.openclaw/workspace/IDENTITY.md",
+            "missing": false,
+            "rawChars": 417,
+            "injectedChars": 417,
+            "truncated": false
+          },
+          {
+            "name": "USER.md",
+            "path": "/home/jr/.openclaw/workspace/USER.md",
+            "missing": false,
+            "rawChars": 711,
+            "injectedChars": 711,
+            "truncated": false
+          },
+          {
+            "name": "HEARTBEAT.md",
+            "path": "/home/jr/.openclaw/workspace/HEARTBEAT.md",
+            "missing": false,
+            "rawChars": 296,
+            "injectedChars": 296,
+            "truncated": false
+          },
+          {
+            "name": "BOOTSTRAP.md",
+            "path": "/home/jr/.openclaw/workspace/BOOTSTRAP.md",
+            "missing": false,
+            "rawChars": 1450,
+            "injectedChars": 1450,
+            "truncated": false
+          },
+          {
+            "name": "MEMORY.md",
+            "path": "/home/jr/.openclaw/workspace/MEMORY.md",
+            "missing": false,
+            "rawChars": 584,
+            "injectedChars": 584,
+            "truncated": false
+          }
+        ],
+        "skills": {
+          "promptChars": 9473,
+          "entries": [
+            {
+              "name": "clawhub",
+              "blockChars": 432
+            },
+            {
+              "name": "coding-agent",
+              "blockChars": 832
+            },
+            {
+              "name": "healthcheck",
+              "blockChars": 491
+            },
+            {
+              "name": "node-connect",
+              "blockChars": 541
+            },
+            {
+              "name": "skill-creator",
+              "blockChars": 759
+            },
+            {
+              "name": "video-frames",
+              "blockChars": 229
+            },
+            {
+              "name": "weather",
+              "blockChars": 416
+            },
+            {
+              "name": "firecrawl",
+              "blockChars": 902
+            },
+            {
+              "name": "firecrawl-agent",
+              "blockChars": 689
+            },
+            {
+              "name": "firecrawl-browser",
+              "blockChars": 742
+            },
+            {
+              "name": "firecrawl-crawl",
+              "blockChars": 589
+            },
+            {
+              "name": "firecrawl-download",
+              "blockChars": 614
+            },
+            {
+              "name": "firecrawl-map",
+              "blockChars": 563
+            },
+            {
+              "name": "firecrawl-scrape",
+              "blockChars": 624
+            },
+            {
+              "name": "firecrawl-search",
+              "blockChars": 639
+            }
+          ]
+        },
+        "tools": {
+          "listChars": 0,
+          "schemaChars": 14701,
+          "entries": [
+            {
+              "name": "read",
+              "summaryChars": 298,
+              "schemaChars": 304,
+              "propertiesCount": 3
+            },
+            {
+              "name": "edit",
+              "summaryChars": 326,
+              "schemaChars": 834,
+              "propertiesCount": 2
+            },
+            {
+              "name": "write",
+              "summaryChars": 127,
+              "schemaChars": 225,
+              "propertiesCount": 2
+            },
+            {
+              "name": "apply_patch",
+              "summaryChars": 132,
+              "schemaChars": 153,
+              "propertiesCount": 1
+            },
+            {
+              "name": "exec",
+              "summaryChars": 539,
+              "schemaChars": 1157,
+              "propertiesCount": 12
+            },
+            {
+              "name": "process",
+              "summaryChars": 416,
+              "schemaChars": 961,
+              "propertiesCount": 12
+            },
+            {
+              "name": "cron",
+              "summaryChars": 3726,
+              "schemaChars": 6700,
+              "propertiesCount": 13
+            },
+            {
+              "name": "update_plan",
+              "summaryChars": 251,
+              "schemaChars": 574,
+              "propertiesCount": 2
+            },
+            {
+              "name": "sessions_list",
+              "summaryChars": 177,
+              "schemaChars": 212,
+              "propertiesCount": 4
+            },
+            {
+              "name": "sessions_history",
+              "summaryChars": 180,
+              "schemaChars": 161,
+              "propertiesCount": 3
+            },
+            {
+              "name": "sessions_send",
+              "summaryChars": 208,
+              "schemaChars": 274,
+              "propertiesCount": 5
+            },
+            {
+              "name": "sessions_yield",
+              "summaryChars": 97,
+              "schemaChars": 60,
+              "propertiesCount": 1
+            },
+            {
+              "name": "sessions_spawn",
+              "summaryChars": 302,
+              "schemaChars": 1333,
+              "propertiesCount": 18
+            },
+            {
+              "name": "subagents",
+              "summaryChars": 105,
+              "schemaChars": 191,
+              "propertiesCount": 4
+            },
+            {
+              "name": "session_status",
+              "summaryChars": 336,
+              "schemaChars": 89,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_search",
+              "summaryChars": 126,
+              "schemaChars": 248,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_fetch",
+              "summaryChars": 129,
+              "schemaChars": 374,
+              "propertiesCount": 3
+            },
+            {
+              "name": "image",
+              "summaryChars": 260,
+              "schemaChars": 342,
+              "propertiesCount": 6
+            },
+            {
+              "name": "memory_search",
+              "summaryChars": 385,
+              "schemaChars": 260,
+              "propertiesCount": 4
+            },
+            {
+              "name": "memory_get",
+              "summaryChars": 207,
+              "schemaChars": 249,
+              "propertiesCount": 4
+            }
+          ]
+        }
+      },
+      "finalAssistantVisibleText": "scheduled-hulk-chat-e2e-1776201964036",
+      "replayInvalid": false,
+      "livenessState": "working",
+      "stopReason": "stop"
+    }
+  }
+}
+
+[2026-04-14T22:21:46.126Z] Final task status: scheduled
+
+[2026-04-14T22:22:01.310Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:22:01.311Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:23:11.969Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | routeThroughUserSession: true | allowUserFacingReply: true | delivery channel: telegram | delivery to: 8531650863 | delivery account: default
+[2026-04-14T22:23:11.970Z] Exit code: 0
+STDOUT:
+{
+  "runId": "d0eb217d-29a1-4c84-b7d9-62edc0db0a6b",
+  "status": "ok",
+  "summary": "completed",
+  "result": {
+    "payloads": [
+      {
+        "text": "scheduled-hulk-chat-e2e-1776201964036",
+        "mediaUrl": null
+      }
+    ],
+    "meta": {
+      "durationMs": 10814,
+      "agentMeta": {
+        "sessionId": "a4996ab4-4b52-405f-9c67-47641279d2d8",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "usage": {
+          "input": 695,
+          "output": 17,
+          "cacheRead": 207616,
+          "total": 208328
+        },
+        "lastCallUsage": {
+          "input": 695,
+          "output": 17,
+          "cacheRead": 207616,
+          "cacheWrite": 0,
+          "total": 208328
+        },
+        "promptTokens": 208311
+      },
+      "aborted": false,
+      "systemPromptReport": {
+        "source": "run",
+        "generatedAt": 1776205383460,
+        "sessionId": "mission-control-scheduled-cmnz0sz270001n9d7lx4ks4da",
+        "sessionKey": "agent:main:main",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "workspaceDir": "/home/jr/.openclaw/workspace",
+        "bootstrapMaxChars": 20000,
+        "bootstrapTotalMaxChars": 150000,
+        "bootstrapTruncation": {
+          "warningMode": "once",
+          "warningShown": false,
+          "truncatedFiles": 0,
+          "nearLimitFiles": 0,
+          "totalNearLimit": false
+        },
+        "sandbox": {
+          "mode": "off",
+          "sandboxed": false
+        },
+        "systemPrompt": {
+          "chars": 40705,
+          "projectContextChars": 14546,
+          "nonProjectContextChars": 26159
+        },
+        "injectedWorkspaceFiles": [
+          {
+            "name": "AGENTS.md",
+            "path": "/home/jr/.openclaw/workspace/AGENTS.md",
+            "missing": false,
+            "rawChars": 7923,
+            "injectedChars": 7923,
+            "truncated": false
+          },
+          {
+            "name": "SOUL.md",
+            "path": "/home/jr/.openclaw/workspace/SOUL.md",
+            "missing": false,
+            "rawChars": 1832,
+            "injectedChars": 1832,
+            "truncated": false
+          },
+          {
+            "name": "TOOLS.md",
+            "path": "/home/jr/.openclaw/workspace/TOOLS.md",
+            "missing": false,
+            "rawChars": 1305,
+            "injectedChars": 1305,
+            "truncated": false
+          },
+          {
+            "name": "IDENTITY.md",
+            "path": "/home/jr/.openclaw/workspace/IDENTITY.md",
+            "missing": false,
+            "rawChars": 417,
+            "injectedChars": 417,
+            "truncated": false
+          },
+          {
+            "name": "USER.md",
+            "path": "/home/jr/.openclaw/workspace/USER.md",
+            "missing": false,
+            "rawChars": 711,
+            "injectedChars": 711,
+            "truncated": false
+          },
+          {
+            "name": "HEARTBEAT.md",
+            "path": "/home/jr/.openclaw/workspace/HEARTBEAT.md",
+            "missing": false,
+            "rawChars": 296,
+            "injectedChars": 296,
+            "truncated": false
+          },
+          {
+            "name": "BOOTSTRAP.md",
+            "path": "/home/jr/.openclaw/workspace/BOOTSTRAP.md",
+            "missing": false,
+            "rawChars": 1450,
+            "injectedChars": 1450,
+            "truncated": false
+          },
+          {
+            "name": "MEMORY.md",
+            "path": "/home/jr/.openclaw/workspace/MEMORY.md",
+            "missing": false,
+            "rawChars": 584,
+            "injectedChars": 584,
+            "truncated": false
+          }
+        ],
+        "skills": {
+          "promptChars": 9473,
+          "entries": [
+            {
+              "name": "clawhub",
+              "blockChars": 432
+            },
+            {
+              "name": "coding-agent",
+              "blockChars": 832
+            },
+            {
+              "name": "healthcheck",
+              "blockChars": 491
+            },
+            {
+              "name": "node-connect",
+              "blockChars": 541
+            },
+            {
+              "name": "skill-creator",
+              "blockChars": 759
+            },
+            {
+              "name": "video-frames",
+              "blockChars": 229
+            },
+            {
+              "name": "weather",
+              "blockChars": 416
+            },
+            {
+              "name": "firecrawl",
+              "blockChars": 902
+            },
+            {
+              "name": "firecrawl-agent",
+              "blockChars": 689
+            },
+            {
+              "name": "firecrawl-browser",
+              "blockChars": 742
+            },
+            {
+              "name": "firecrawl-crawl",
+              "blockChars": 589
+            },
+            {
+              "name": "firecrawl-download",
+              "blockChars": 614
+            },
+            {
+              "name": "firecrawl-map",
+              "blockChars": 563
+            },
+            {
+              "name": "firecrawl-scrape",
+              "blockChars": 624
+            },
+            {
+              "name": "firecrawl-search",
+              "blockChars": 639
+            }
+          ]
+        },
+        "tools": {
+          "listChars": 0,
+          "schemaChars": 14701,
+          "entries": [
+            {
+              "name": "read",
+              "summaryChars": 298,
+              "schemaChars": 304,
+              "propertiesCount": 3
+            },
+            {
+              "name": "edit",
+              "summaryChars": 326,
+              "schemaChars": 834,
+              "propertiesCount": 2
+            },
+            {
+              "name": "write",
+              "summaryChars": 127,
+              "schemaChars": 225,
+              "propertiesCount": 2
+            },
+            {
+              "name": "apply_patch",
+              "summaryChars": 132,
+              "schemaChars": 153,
+              "propertiesCount": 1
+            },
+            {
+              "name": "exec",
+              "summaryChars": 539,
+              "schemaChars": 1157,
+              "propertiesCount": 12
+            },
+            {
+              "name": "process",
+              "summaryChars": 416,
+              "schemaChars": 961,
+              "propertiesCount": 12
+            },
+            {
+              "name": "cron",
+              "summaryChars": 3726,
+              "schemaChars": 6700,
+              "propertiesCount": 13
+            },
+            {
+              "name": "update_plan",
+              "summaryChars": 251,
+              "schemaChars": 574,
+              "propertiesCount": 2
+            },
+            {
+              "name": "sessions_list",
+              "summaryChars": 177,
+              "schemaChars": 212,
+              "propertiesCount": 4
+            },
+            {
+              "name": "sessions_history",
+              "summaryChars": 180,
+              "schemaChars": 161,
+              "propertiesCount": 3
+            },
+            {
+              "name": "sessions_send",
+              "summaryChars": 208,
+              "schemaChars": 274,
+              "propertiesCount": 5
+            },
+            {
+              "name": "sessions_yield",
+              "summaryChars": 97,
+              "schemaChars": 60,
+              "propertiesCount": 1
+            },
+            {
+              "name": "sessions_spawn",
+              "summaryChars": 302,
+              "schemaChars": 1333,
+              "propertiesCount": 18
+            },
+            {
+              "name": "subagents",
+              "summaryChars": 105,
+              "schemaChars": 191,
+              "propertiesCount": 4
+            },
+            {
+              "name": "session_status",
+              "summaryChars": 336,
+              "schemaChars": 89,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_search",
+              "summaryChars": 126,
+              "schemaChars": 248,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_fetch",
+              "summaryChars": 129,
+              "schemaChars": 374,
+              "propertiesCount": 3
+            },
+            {
+              "name": "image",
+              "summaryChars": 260,
+              "schemaChars": 342,
+              "propertiesCount": 6
+            },
+            {
+              "name": "memory_search",
+              "summaryChars": 385,
+              "schemaChars": 260,
+              "propertiesCount": 4
+            },
+            {
+              "name": "memory_get",
+              "summaryChars": 207,
+              "schemaChars": 249,
+              "propertiesCount": 4
+            }
+          ]
+        }
+      },
+      "finalAssistantVisibleText": "scheduled-hulk-chat-e2e-1776201964036",
+      "replayInvalid": false,
+      "livenessState": "working",
+      "stopReason": "stop"
+    }
+  }
+}
+
+[2026-04-14T22:23:11.973Z] Final task status: scheduled
+
+[2026-04-14T22:24:01.456Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:24:01.457Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:25:28.797Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | routeThroughUserSession: true | allowUserFacingReply: true | delivery channel: telegram | delivery to: 8531650863 | delivery account: default
+[2026-04-14T22:25:28.797Z] Exit code: 0
+STDOUT:
+{
+  "runId": "d959d727-13a7-42c5-882b-f953f099e696",
+  "status": "ok",
+  "summary": "completed",
+  "result": {
+    "payloads": [
+      {
+        "text": "scheduled-hulk-chat-e2e-1776201964036",
+        "mediaUrl": null
+      }
+    ],
+    "meta": {
+      "durationMs": 9692,
+      "agentMeta": {
+        "sessionId": "a4996ab4-4b52-405f-9c67-47641279d2d8",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "usage": {
+          "input": 369,
+          "output": 17,
+          "cacheRead": 210560,
+          "total": 210946
+        },
+        "lastCallUsage": {
+          "input": 369,
+          "output": 17,
+          "cacheRead": 210560,
+          "cacheWrite": 0,
+          "total": 210946
+        },
+        "promptTokens": 210929
+      },
+      "aborted": false,
+      "systemPromptReport": {
+        "source": "run",
+        "generatedAt": 1776205521284,
+        "sessionId": "mission-control-scheduled-cmnz0sz270001n9d7lx4ks4da",
+        "sessionKey": "agent:main:main",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "workspaceDir": "/home/jr/.openclaw/workspace",
+        "bootstrapMaxChars": 20000,
+        "bootstrapTotalMaxChars": 150000,
+        "bootstrapTruncation": {
+          "warningMode": "once",
+          "warningShown": false,
+          "truncatedFiles": 0,
+          "nearLimitFiles": 0,
+          "totalNearLimit": false
+        },
+        "sandbox": {
+          "mode": "off",
+          "sandboxed": false
+        },
+        "systemPrompt": {
+          "chars": 40705,
+          "projectContextChars": 14546,
+          "nonProjectContextChars": 26159
+        },
+        "injectedWorkspaceFiles": [
+          {
+            "name": "AGENTS.md",
+            "path": "/home/jr/.openclaw/workspace/AGENTS.md",
+            "missing": false,
+            "rawChars": 7923,
+            "injectedChars": 7923,
+            "truncated": false
+          },
+          {
+            "name": "SOUL.md",
+            "path": "/home/jr/.openclaw/workspace/SOUL.md",
+            "missing": false,
+            "rawChars": 1832,
+            "injectedChars": 1832,
+            "truncated": false
+          },
+          {
+            "name": "TOOLS.md",
+            "path": "/home/jr/.openclaw/workspace/TOOLS.md",
+            "missing": false,
+            "rawChars": 1305,
+            "injectedChars": 1305,
+            "truncated": false
+          },
+          {
+            "name": "IDENTITY.md",
+            "path": "/home/jr/.openclaw/workspace/IDENTITY.md",
+            "missing": false,
+            "rawChars": 417,
+            "injectedChars": 417,
+            "truncated": false
+          },
+          {
+            "name": "USER.md",
+            "path": "/home/jr/.openclaw/workspace/USER.md",
+            "missing": false,
+            "rawChars": 711,
+            "injectedChars": 711,
+            "truncated": false
+          },
+          {
+            "name": "HEARTBEAT.md",
+            "path": "/home/jr/.openclaw/workspace/HEARTBEAT.md",
+            "missing": false,
+            "rawChars": 296,
+            "injectedChars": 296,
+            "truncated": false
+          },
+          {
+            "name": "BOOTSTRAP.md",
+            "path": "/home/jr/.openclaw/workspace/BOOTSTRAP.md",
+            "missing": false,
+            "rawChars": 1450,
+            "injectedChars": 1450,
+            "truncated": false
+          },
+          {
+            "name": "MEMORY.md",
+            "path": "/home/jr/.openclaw/workspace/MEMORY.md",
+            "missing": false,
+            "rawChars": 584,
+            "injectedChars": 584,
+            "truncated": false
+          }
+        ],
+        "skills": {
+          "promptChars": 9473,
+          "entries": [
+            {
+              "name": "clawhub",
+              "blockChars": 432
+            },
+            {
+              "name": "coding-agent",
+              "blockChars": 832
+            },
+            {
+              "name": "healthcheck",
+              "blockChars": 491
+            },
+            {
+              "name": "node-connect",
+              "blockChars": 541
+            },
+            {
+              "name": "skill-creator",
+              "blockChars": 759
+            },
+            {
+              "name": "video-frames",
+              "blockChars": 229
+            },
+            {
+              "name": "weather",
+              "blockChars": 416
+            },
+            {
+              "name": "firecrawl",
+              "blockChars": 902
+            },
+            {
+              "name": "firecrawl-agent",
+              "blockChars": 689
+            },
+            {
+              "name": "firecrawl-browser",
+              "blockChars": 742
+            },
+            {
+              "name": "firecrawl-crawl",
+              "blockChars": 589
+            },
+            {
+              "name": "firecrawl-download",
+              "blockChars": 614
+            },
+            {
+              "name": "firecrawl-map",
+              "blockChars": 563
+            },
+            {
+              "name": "firecrawl-scrape",
+              "blockChars": 624
+            },
+            {
+              "name": "firecrawl-search",
+              "blockChars": 639
+            }
+          ]
+        },
+        "tools": {
+          "listChars": 0,
+          "schemaChars": 14701,
+          "entries": [
+            {
+              "name": "read",
+              "summaryChars": 298,
+              "schemaChars": 304,
+              "propertiesCount": 3
+            },
+            {
+              "name": "edit",
+              "summaryChars": 326,
+              "schemaChars": 834,
+              "propertiesCount": 2
+            },
+            {
+              "name": "write",
+              "summaryChars": 127,
+              "schemaChars": 225,
+              "propertiesCount": 2
+            },
+            {
+              "name": "apply_patch",
+              "summaryChars": 132,
+              "schemaChars": 153,
+              "propertiesCount": 1
+            },
+            {
+              "name": "exec",
+              "summaryChars": 539,
+              "schemaChars": 1157,
+              "propertiesCount": 12
+            },
+            {
+              "name": "process",
+              "summaryChars": 416,
+              "schemaChars": 961,
+              "propertiesCount": 12
+            },
+            {
+              "name": "cron",
+              "summaryChars": 3726,
+              "schemaChars": 6700,
+              "propertiesCount": 13
+            },
+            {
+              "name": "update_plan",
+              "summaryChars": 251,
+              "schemaChars": 574,
+              "propertiesCount": 2
+            },
+            {
+              "name": "sessions_list",
+              "summaryChars": 177,
+              "schemaChars": 212,
+              "propertiesCount": 4
+            },
+            {
+              "name": "sessions_history",
+              "summaryChars": 180,
+              "schemaChars": 161,
+              "propertiesCount": 3
+            },
+            {
+              "name": "sessions_send",
+              "summaryChars": 208,
+              "schemaChars": 274,
+              "propertiesCount": 5
+            },
+            {
+              "name": "sessions_yield",
+              "summaryChars": 97,
+              "schemaChars": 60,
+              "propertiesCount": 1
+            },
+            {
+              "name": "sessions_spawn",
+              "summaryChars": 302,
+              "schemaChars": 1333,
+              "propertiesCount": 18
+            },
+            {
+              "name": "subagents",
+              "summaryChars": 105,
+              "schemaChars": 191,
+              "propertiesCount": 4
+            },
+            {
+              "name": "session_status",
+              "summaryChars": 336,
+              "schemaChars": 89,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_search",
+              "summaryChars": 126,
+              "schemaChars": 248,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_fetch",
+              "summaryChars": 129,
+              "schemaChars": 374,
+              "propertiesCount": 3
+            },
+            {
+              "name": "image",
+              "summaryChars": 260,
+              "schemaChars": 342,
+              "propertiesCount": 6
+            },
+            {
+              "name": "memory_search",
+              "summaryChars": 385,
+              "schemaChars": 260,
+              "propertiesCount": 4
+            },
+            {
+              "name": "memory_get",
+              "summaryChars": 207,
+              "schemaChars": 249,
+              "propertiesCount": 4
+            }
+          ]
+        }
+      },
+      "finalAssistantVisibleText": "scheduled-hulk-chat-e2e-1776201964036",
+      "replayInvalid": false,
+      "livenessState": "working",
+      "stopReason": "stop"
+    }
+  }
+}
+
+[2026-04-14T22:25:28.800Z] Final task status: scheduled
+
+[2026-04-14T22:26:01.624Z] Starting scheduled execution for hulk task "E2E scheduled Hulk 1776201964036"
+[2026-04-14T22:26:01.626Z] Dispatch plan: Hulk main-session wake queued
+[2026-04-14T22:28:02.797Z] Session send agent: main | session key: agent:main:telegram:direct:8531650863 | session id: 66cdc4d1-4788-49d1-a849-6c052d23921c | queued: true | routeThroughUserSession: true | allowUserFacingReply: true | delivery channel: telegram | delivery to: 8531650863 | delivery account: default
+[2026-04-14T22:28:02.797Z] Exit code: 0
+STDOUT:
+{
+  "runId": "960fc331-490d-4cf1-a7f1-624638779370",
+  "status": "ok",
+  "summary": "completed",
+  "result": {
+    "payloads": [
+      {
+        "text": "scheduled-hulk-chat-e2e-1776201964036",
+        "mediaUrl": null
+      }
+    ],
+    "meta": {
+      "durationMs": 15306,
+      "agentMeta": {
+        "sessionId": "a4996ab4-4b52-405f-9c67-47641279d2d8",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "usage": {
+          "input": 353,
+          "output": 17,
+          "cacheRead": 213120,
+          "total": 213490
+        },
+        "lastCallUsage": {
+          "input": 353,
+          "output": 17,
+          "cacheRead": 213120,
+          "cacheWrite": 0,
+          "total": 213490
+        },
+        "promptTokens": 213473
+      },
+      "aborted": false,
+      "systemPromptReport": {
+        "source": "run",
+        "generatedAt": 1776205671794,
+        "sessionId": "mission-control-scheduled-cmnz0sz270001n9d7lx4ks4da",
+        "sessionKey": "agent:main:main",
+        "provider": "openai-codex",
+        "model": "gpt-5.4",
+        "workspaceDir": "/home/jr/.openclaw/workspace",
+        "bootstrapMaxChars": 20000,
+        "bootstrapTotalMaxChars": 150000,
+        "bootstrapTruncation": {
+          "warningMode": "once",
+          "warningShown": false,
+          "truncatedFiles": 0,
+          "nearLimitFiles": 0,
+          "totalNearLimit": false
+        },
+        "sandbox": {
+          "mode": "off",
+          "sandboxed": false
+        },
+        "systemPrompt": {
+          "chars": 40705,
+          "projectContextChars": 14546,
+          "nonProjectContextChars": 26159
+        },
+        "injectedWorkspaceFiles": [
+          {
+            "name": "AGENTS.md",
+            "path": "/home/jr/.openclaw/workspace/AGENTS.md",
+            "missing": false,
+            "rawChars": 7923,
+            "injectedChars": 7923,
+            "truncated": false
+          },
+          {
+            "name": "SOUL.md",
+            "path": "/home/jr/.openclaw/workspace/SOUL.md",
+            "missing": false,
+            "rawChars": 1832,
+            "injectedChars": 1832,
+            "truncated": false
+          },
+          {
+            "name": "TOOLS.md",
+            "path": "/home/jr/.openclaw/workspace/TOOLS.md",
+            "missing": false,
+            "rawChars": 1305,
+            "injectedChars": 1305,
+            "truncated": false
+          },
+          {
+            "name": "IDENTITY.md",
+            "path": "/home/jr/.openclaw/workspace/IDENTITY.md",
+            "missing": false,
+            "rawChars": 417,
+            "injectedChars": 417,
+            "truncated": false
+          },
+          {
+            "name": "USER.md",
+            "path": "/home/jr/.openclaw/workspace/USER.md",
+            "missing": false,
+            "rawChars": 711,
+            "injectedChars": 711,
+            "truncated": false
+          },
+          {
+            "name": "HEARTBEAT.md",
+            "path": "/home/jr/.openclaw/workspace/HEARTBEAT.md",
+            "missing": false,
+            "rawChars": 296,
+            "injectedChars": 296,
+            "truncated": false
+          },
+          {
+            "name": "BOOTSTRAP.md",
+            "path": "/home/jr/.openclaw/workspace/BOOTSTRAP.md",
+            "missing": false,
+            "rawChars": 1450,
+            "injectedChars": 1450,
+            "truncated": false
+          },
+          {
+            "name": "MEMORY.md",
+            "path": "/home/jr/.openclaw/workspace/MEMORY.md",
+            "missing": false,
+            "rawChars": 584,
+            "injectedChars": 584,
+            "truncated": false
+          }
+        ],
+        "skills": {
+          "promptChars": 9473,
+          "entries": [
+            {
+              "name": "clawhub",
+              "blockChars": 432
+            },
+            {
+              "name": "coding-agent",
+              "blockChars": 832
+            },
+            {
+              "name": "healthcheck",
+              "blockChars": 491
+            },
+            {
+              "name": "node-connect",
+              "blockChars": 541
+            },
+            {
+              "name": "skill-creator",
+              "blockChars": 759
+            },
+            {
+              "name": "video-frames",
+              "blockChars": 229
+            },
+            {
+              "name": "weather",
+              "blockChars": 416
+            },
+            {
+              "name": "firecrawl",
+              "blockChars": 902
+            },
+            {
+              "name": "firecrawl-agent",
+              "blockChars": 689
+            },
+            {
+              "name": "firecrawl-browser",
+              "blockChars": 742
+            },
+            {
+              "name": "firecrawl-crawl",
+              "blockChars": 589
+            },
+            {
+              "name": "firecrawl-download",
+              "blockChars": 614
+            },
+            {
+              "name": "firecrawl-map",
+              "blockChars": 563
+            },
+            {
+              "name": "firecrawl-scrape",
+              "blockChars": 624
+            },
+            {
+              "name": "firecrawl-search",
+              "blockChars": 639
+            }
+          ]
+        },
+        "tools": {
+          "listChars": 0,
+          "schemaChars": 14701,
+          "entries": [
+            {
+              "name": "read",
+              "summaryChars": 298,
+              "schemaChars": 304,
+              "propertiesCount": 3
+            },
+            {
+              "name": "edit",
+              "summaryChars": 326,
+              "schemaChars": 834,
+              "propertiesCount": 2
+            },
+            {
+              "name": "write",
+              "summaryChars": 127,
+              "schemaChars": 225,
+              "propertiesCount": 2
+            },
+            {
+              "name": "apply_patch",
+              "summaryChars": 132,
+              "schemaChars": 153,
+              "propertiesCount": 1
+            },
+            {
+              "name": "exec",
+              "summaryChars": 539,
+              "schemaChars": 1157,
+              "propertiesCount": 12
+            },
+            {
+              "name": "process",
+              "summaryChars": 416,
+              "schemaChars": 961,
+              "propertiesCount": 12
+            },
+            {
+              "name": "cron",
+              "summaryChars": 3726,
+              "schemaChars": 6700,
+              "propertiesCount": 13
+            },
+            {
+              "name": "update_plan",
+              "summaryChars": 251,
+              "schemaChars": 574,
+              "propertiesCount": 2
+            },
+            {
+              "name": "sessions_list",
+              "summaryChars": 177,
+              "schemaChars": 212,
+              "propertiesCount": 4
+            },
+            {
+              "name": "sessions_history",
+              "summaryChars": 180,
+              "schemaChars": 161,
+              "propertiesCount": 3
+            },
+            {
+              "name": "sessions_send",
+              "summaryChars": 208,
+              "schemaChars": 274,
+              "propertiesCount": 5
+            },
+            {
+              "name": "sessions_yield",
+              "summaryChars": 97,
+              "schemaChars": 60,
+              "propertiesCount": 1
+            },
+            {
+              "name": "sessions_spawn",
+              "summaryChars": 302,
+              "schemaChars": 1333,
+              "propertiesCount": 18
+            },
+            {
+              "name": "subagents",
+              "summaryChars": 105,
+              "schemaChars": 191,
+              "propertiesCount": 4
+            },
+            {
+              "name": "session_status",
+              "summaryChars": 336,
+              "schemaChars": 89,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_search",
+              "summaryChars": 126,
+              "schemaChars": 248,
+              "propertiesCount": 2
+            },
+            {
+              "name": "web_fetch",
+              "summaryChars": 129,
+              "schemaChars": 374,
+              "propertiesCount": 3
+            },
+            {
+              "name": "image",
+              "summaryChars": 260,
+              "schemaChars": 342,
+              "propertiesCount": 6
+            },
+            {
+              "name": "memory_search",
+              "summaryChars": 385,
+              "schemaChars": 260,
+              "propertiesCount": 4
+            },
+            {
+              "name": "memory_get",
+              "summaryChars": 207,
+              "schemaChars": 249,
+              "propertiesCount": 4
+            }
+          ]
+        }
+      },
+      "finalAssistantVisibleText": "scheduled-hulk-chat-e2e-1776201964036",
+      "replayInvalid": false,
+      "livenessState": "working",
+      "stopReason": "stop"
+    }
+  }
+}
+
+[2026-04-14T22:28:02.801Z] Final task status: scheduled

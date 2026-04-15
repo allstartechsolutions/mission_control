@@ -1,0 +1,108 @@
+
+> mission-control@0.1.0 build
+> next build
+
+▲ Next.js 16.2.3 (Turbopack)
+- Environments: .env
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Turbopack build encountered 1 warnings:
+./next.config.ts
+Encountered unexpected file in NFT list
+A file was traced that indicates that the whole project was traced unintentionally. Somewhere in the import trace below, there are:
+- filesystem operations (like path.join, path.resolve or fs.readFile), or
+- very dynamic requires (like require('./' + foo)).
+To resolve this, you can
+- remove them if possible, or
+- only use them in development, or
+- make sure they are statically scoped to some subfolder: path.join(process.cwd(), 'data', bar), or
+- add ignore comments: path.join(/*turbopackIgnore: true*/ process.cwd(), bar)
+
+Import trace:
+  App Route:
+    ./next.config.ts
+    ./src/lib/suggestion-attachment-storage.ts
+    ./src/app/api/suggestions/[id]/attachments/[attachmentId]/route.ts
+
+
+✓ Compiled successfully in 2.3s
+  Running TypeScript ...
+  Finished TypeScript in 3.1s ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/15) ...
+  Generating static pages using 15 workers (3/15) 
+  Generating static pages using 15 workers (7/15) 
+  Generating static pages using 15 workers (11/15) 
+✓ Generating static pages using 15 workers (15/15) in 226ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/auth/[...nextauth]
+├ ƒ /api/clients
+├ ƒ /api/clients/[id]
+├ ƒ /api/clients/[id]/employees
+├ ƒ /api/clients/[id]/employees/[employeeId]
+├ ƒ /api/clients/[id]/employees/[employeeId]/status
+├ ƒ /api/clients/[id]/locations
+├ ƒ /api/clients/[id]/locations/[locationId]
+├ ƒ /api/cron/wake
+├ ƒ /api/projects
+├ ƒ /api/projects/[id]
+├ ƒ /api/projects/[id]/milestones
+├ ƒ /api/projects/[id]/milestones/[milestoneId]
+├ ƒ /api/register
+├ ƒ /api/suggestions
+├ ƒ /api/suggestions/[id]
+├ ƒ /api/suggestions/[id]/attachments/[attachmentId]
+├ ƒ /api/tasks
+├ ƒ /api/tasks/[id]
+├ ƒ /api/tasks/[id]/dispatch
+├ ƒ /api/tasks/[id]/status
+├ ƒ /api/team
+├ ƒ /api/team/[id]
+├ ƒ /api/team/[id]/status
+├ ○ /assets/buttons
+├ ƒ /clients
+├ ƒ /clients/[id]
+├ ƒ /clients/[id]/edit
+├ ƒ /clients/[id]/employees
+├ ƒ /clients/[id]/employees/[employeeId]/edit
+├ ƒ /clients/[id]/employees/new
+├ ƒ /clients/[id]/locations
+├ ƒ /clients/[id]/locations/[locationId]/edit
+├ ƒ /clients/[id]/locations/new
+├ ƒ /clients/[id]/projects
+├ ○ /clients/new
+├ ○ /dashboard
+├ ƒ /login
+├ ƒ /projects
+├ ƒ /projects/[id]
+├ ƒ /projects/[id]/edit
+├ ƒ /projects/[id]/milestones
+├ ƒ /projects/[id]/milestones/[milestoneId]
+├ ƒ /projects/[id]/milestones/[milestoneId]/edit
+├ ƒ /projects/[id]/milestones/new
+├ ƒ /projects/new
+├ ○ /register
+├ ƒ /suggestions
+├ ƒ /suggestions/[id]
+├ ƒ /suggestions/[id]/edit
+├ ○ /suggestions/new
+├ ƒ /tasks
+├ ƒ /tasks/[id]
+├ ƒ /tasks/[id]/edit
+├ ƒ /tasks/new
+├ ƒ /team
+├ ƒ /team/[id]/edit
+├ ○ /team/new
+└ ƒ /uploads/[...path]
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

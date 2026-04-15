@@ -1,0 +1,2 @@
+[2026-04-14T20:17:43.235Z] Runner failed: Error: Task --help was not found.
+    at main (/home/jr/MissionControl/scripts/run-scheduled-task.ts:65:20)
