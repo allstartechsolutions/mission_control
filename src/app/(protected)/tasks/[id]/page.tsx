@@ -90,6 +90,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
               { label: "Start action", value: executorBehavior.scheduledAction },
               { label: "Active state", value: executorBehavior.inProgressAction },
               { label: "Waiting state", value: executorBehavior.waitingAction },
+              { label: "Failure state", value: executorBehavior.failedAction },
               { label: "Completion state", value: executorBehavior.completedAction },
             ]} />
             {showSchedule ? (

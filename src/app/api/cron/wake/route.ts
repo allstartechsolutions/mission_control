@@ -44,7 +44,7 @@ export async function POST(request: Request) {
 
   // Find all tasks that are due for execution.
   // Exclude tasks whose last run was < 90 seconds ago to prevent rapid
-  // re-dispatch loops when a task fails quickly and lands back in "waiting".
+  // re-dispatch loops when a task is intentionally set back to "waiting".
   const cooldownCutoff = new Date(now.getTime() - 90_000);
   const dueTasks = await prisma.task.findMany({
     where: {
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
         logPath: dispatch.logPath,
       });
     } catch (error) {
-      await prisma.task.update({ where: { id: task.id }, data: { status: "waiting" } });
+      await prisma.task.update({ where: { id: task.id }, data: { status: "failed" } });
       await addTaskEvent({
         taskId: task.id,
         level: "error" as never,

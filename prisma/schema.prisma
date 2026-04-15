@@ -11,6 +11,7 @@ enum TaskStatus {
   scheduled
   in_progress
   waiting
+  failed
   completed
   canceled
 }

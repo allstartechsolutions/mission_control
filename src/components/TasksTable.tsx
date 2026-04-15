@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Circle, Eye, Pencil, Play, Plus, Search } from "lucide-react";
+import { AlertTriangle, Check, Circle, Eye, Pencil, Play, Plus, Search } from "lucide-react";
 import DeleteTaskButton from "@/components/DeleteTaskButton";
 import TaskStatusBadge from "@/components/TaskStatusBadge";
 import { formatTaskLabel, getExecutorBehavior } from "@/lib/tasks";
@@ -33,12 +33,13 @@ type TaskRow = {
   lastRunAt: string | null;
 };
 
-type TaskViewKey = "today" | "scheduled" | "waiting" | "completed" | "overdue" | "assigned" | "created" | "all";
+type TaskViewKey = "today" | "scheduled" | "waiting" | "failed" | "completed" | "overdue" | "assigned" | "created" | "all";
 
 const viewDefinitions: Array<{ key: TaskViewKey; label: string; description: string }> = [
   { key: "today", label: "Today", description: "Everything due today plus active items already in motion." },
   { key: "scheduled", label: "Scheduled", description: "Planned work that still needs to start." },
   { key: "waiting", label: "Waiting", description: "Blocked items that need a follow-up or response." },
+  { key: "failed", label: "Failed", description: "Execution attempts that ended in failure and need review or a rerun." },
   { key: "completed", label: "Completed", description: "Done items for quick review and cleanup." },
   { key: "overdue", label: "Overdue", description: "Past-due tasks that still need attention." },
   { key: "assigned", label: "Assigned to me", description: "Your working queue across statuses." },
@@ -54,6 +55,8 @@ function matchesView(task: TaskRow, view: TaskViewKey) {
       return task.status === "scheduled";
     case "waiting":
       return task.status === "waiting";
+    case "failed":
+      return task.status === "failed";
     case "completed":
       return task.status === "completed";
     case "overdue":
@@ -78,6 +81,7 @@ function getQuickActions(task: TaskRow) {
   if (task.status === "in_progress") {
     return [
       { status: "waiting", label: "Waiting", icon: Circle },
+      { status: "failed", label: "Mark failed", icon: AlertTriangle },
       { status: "completed", label: behavior.completedAction, icon: Check },
     ];
   }
@@ -85,8 +89,13 @@ function getQuickActions(task: TaskRow) {
   if (task.status === "waiting") {
     return [
       { status: "in_progress", label: task.executorType === "human" ? "Resume" : behavior.scheduledAction, icon: Play },
+      { status: "failed", label: "Mark failed", icon: AlertTriangle },
       { status: "completed", label: behavior.completedAction, icon: Check },
     ];
+  }
+
+  if (task.status === "failed") {
+    return [{ status: "in_progress", label: task.executorType === "human" ? "Retry" : behavior.scheduledAction, icon: Play }];
   }
 
   if (task.status === "completed") {

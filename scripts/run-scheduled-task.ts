@@ -336,7 +336,7 @@ async function main() {
   }
 
   const finishedAt = new Date();
-  const finalStatus = result.code === 0 ? (task.cronEnabled ? "scheduled" : "completed") : "waiting";
+  const finalStatus = result.code === 0 ? (task.cronEnabled ? "scheduled" : "completed") : "failed";
   const stdout = truncateText(result.stdout, 6000);
   const stderr = truncateText(result.stderr, 6000);
   const summary = result.code === 0 ? `Run finished successfully (${finalStatus}).` : `Run failed with exit code ${result.code ?? "null"}.`;
@@ -399,7 +399,7 @@ main()
       const stack = error instanceof Error ? error.stack || error.message : String(error);
       await appendLog(runId, `[${new Date().toISOString()}] Runner failed: ${stack}\n`);
       try {
-        await prisma.task.update({ where: { id: taskId }, data: { status: "waiting" } });
+        await prisma.task.update({ where: { id: taskId }, data: { status: "failed" } });
       } catch {}
       try {
         await markTaskRunStatus(runId, {

@@ -52,6 +52,13 @@ async function exists(targetPath: string) {
   }
 }
 
+async function waitForTaskStatus(taskId: string, expectedStatus: string, timeoutMs = 45_000) {
+  await waitFor(async () => {
+    const task = await prisma.task.findUnique({ where: { id: taskId }, select: { status: true } });
+    return task?.status === expectedStatus;
+  }, timeoutMs, 500);
+}
+
 type RunCommandResult = {
   code: number | null;
   stdout: string;
@@ -169,6 +176,29 @@ async function main() {
   const payload = await response.json();
   if (!response.ok) throw new Error(`Wake failed (${response.status}): ${JSON.stringify(payload)}`);
 
+  const failedMarkerPath = path.join(rootDir, "task-runs", `e2e-failed-${runToken}.txt`);
+  const failedTask = await prisma.task.create({
+    data: {
+      title: `E2E failed automation ${runToken}`,
+      description: `shell: printf 'failed ${runToken}\n' > ${JSON.stringify(failedMarkerPath)} && exit 17`,
+      status: "scheduled",
+      executorType: "automation",
+      billingType: "none",
+      billable: false,
+      dueDate,
+      createdById: owner.id,
+      assignedToId: owner.id,
+      cronEnabled: false,
+    },
+  });
+
+  const failedDispatch = await fetch(`${appUrl.replace(/\/$/, "")}/api/tasks/${failedTask.id}/dispatch`, {
+    method: "POST",
+  });
+  const failedDispatchPayload = await failedDispatch.json().catch(() => ({}));
+  if (!failedDispatch.ok) throw new Error(`Failed-task dispatch failed (${failedDispatch.status}): ${JSON.stringify(failedDispatchPayload)}`);
+  await waitForTaskStatus(failedTask.id, "failed");
+
   await waitFor(async () => {
     if (!(await exists(automationMarkerPath))) return false;
     const [currentHulk, currentAutomation, history] = await Promise.all([
@@ -183,6 +213,7 @@ async function main() {
 
   const refreshedHulk = await prisma.task.findUniqueOrThrow({ where: { id: hulkTask.id } });
   const refreshedAutomation = await prisma.task.findUniqueOrThrow({ where: { id: automationTask.id } });
+  const refreshedFailed = await prisma.task.findUniqueOrThrow({ where: { id: failedTask.id }, include: { taskRuns: { orderBy: { createdAt: "desc" }, take: 1 } } });
   const hulkLogPath = path.join(rootDir, "task-runs", `${hulkTask.id}.log`);
   const automationLogPath = path.join(rootDir, "task-runs", `${automationTask.id}.log`);
 
@@ -193,6 +224,8 @@ async function main() {
   if (refreshedAutomation.cronEnabled !== false) throw new Error("One-time automation task was not disabled after running.");
   if (!refreshedAutomation.cronLastRunAt) throw new Error("One-time automation task did not record cronLastRunAt.");
   if (refreshedAutomation.cronNextRunAt !== null) throw new Error("One-time automation task should not have a next run after execution.");
+  if (refreshedFailed.status !== "failed") throw new Error(`Failed automation task finished with unexpected status ${refreshedFailed.status}.`);
+  if (refreshedFailed.taskRuns[0]?.status !== "failed") throw new Error(`Failed automation task run finished with unexpected run status ${refreshedFailed.taskRuns[0]?.status}.`);
   if (!(await exists(hulkLogPath))) throw new Error("Hulk task log file was not created.");
   if (!(await exists(automationLogPath))) throw new Error("Automation task log file was not created.");
 
@@ -221,6 +254,12 @@ async function main() {
       cronNextRunAt: refreshedAutomation.cronNextRunAt,
       markerPath: automationMarkerPath,
       logPath: automationLogPath,
+    },
+    failedAutomation: {
+      id: refreshedFailed.id,
+      status: refreshedFailed.status,
+      runStatus: refreshedFailed.taskRuns[0]?.status || null,
+      markerPath: failedMarkerPath,
     },
   }, null, 2));
 }

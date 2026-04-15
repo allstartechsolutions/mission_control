@@ -43,6 +43,7 @@ const taskLabelMap: Record<string, string> = {
   scheduled: "Scheduled",
   in_progress: "In Progress",
   waiting: "Waiting",
+  failed: "Failed",
   completed: "Completed",
   canceled: "Canceled",
   overdue: "Overdue",
@@ -376,6 +377,7 @@ export function getExecutorBehavior(executorType: string) {
         scheduledAction: "Dispatch Hulk",
         inProgressAction: "Hulk running now",
         waitingAction: "Waiting on Hulk follow-up",
+        failedAction: "Hulk run failed",
         completedAction: "Hulk run complete",
       };
     case "agent":
@@ -385,6 +387,7 @@ export function getExecutorBehavior(executorType: string) {
         scheduledAction: "Launch agent",
         inProgressAction: "Agent is executing",
         waitingAction: "Waiting on agent input",
+        failedAction: "Agent run failed",
         completedAction: "Agent run complete",
       };
     case "automation":
@@ -394,6 +397,7 @@ export function getExecutorBehavior(executorType: string) {
         scheduledAction: "Queue automation",
         inProgressAction: "Automation is running",
         waitingAction: "Waiting on automation condition",
+        failedAction: "Automation failed",
         completedAction: "Automation run complete",
       };
     case "human":
@@ -404,6 +408,7 @@ export function getExecutorBehavior(executorType: string) {
         scheduledAction: "Start",
         inProgressAction: "In progress",
         waitingAction: "Waiting",
+        failedAction: "Failed",
         completedAction: "Done",
       };
   }
@@ -437,6 +442,7 @@ export function buildTaskNextStepLabel(task: {
     : "";
 
   if (task.status === "waiting") return `${executor.waitingAction}.${scheduleSuffix}`.trim();
+  if (task.status === "failed") return `${executor.failedAction}. Review the latest run output before retrying.${scheduleSuffix}`.trim();
   if (task.status === "completed") return `${executor.completedAction}. Review outputs, follow-up, and billing cleanup.`;
   if (dueDate < todayStart) return `${executor.label} is past due. Follow up with ${ownerName} now.${scheduleSuffix}`.trim();
   if (dueDate >= todayStart && dueDate <= todayEnd) return `${executor.inProgressAction} is due today. Keep ${ownerName} moving.${scheduleSuffix}`.trim();

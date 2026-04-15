@@ -100,7 +100,7 @@ export async function recordTaskLifecycleEvent(input: {
       taskId: input.taskId,
       trigger: TaskRunTrigger.lifecycle,
       initiatedByUserId: input.actorUserId || null,
-      status: input.status === "completed" ? TaskRunStatus.succeeded : TaskRunStatus.running,
+      status: input.status === "completed" ? TaskRunStatus.succeeded : input.status === "failed" ? TaskRunStatus.failed : TaskRunStatus.running,
       summary: input.message,
       startedAt: new Date(),
       finishedAt: new Date(),

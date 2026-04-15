@@ -56,6 +56,7 @@ export default async function TasksPage() {
   });
 
   const openTasks = tasks.filter((task) => task.status !== "completed" && task.status !== "canceled").length;
+  const failedTasks = tasks.filter((task) => task.status === "failed").length;
   const billableValue = tasks.reduce((sum, task) => sum + Number(task.amount || 0), 0);
   const overdueTasks = tasks.filter((task) => task.status !== "completed" && task.status !== "canceled" && new Date(task.dueDate) < todayStart).length;
   const dueToday = tasks.filter((task) => task.status !== "completed" && task.status !== "canceled" && new Date(task.dueDate) >= todayStart && new Date(task.dueDate) <= todayEnd).length;
@@ -70,10 +71,11 @@ export default async function TasksPage() {
           </div>
           <TaskLiveRefresh />
         </div>
-        <div className="grid gap-3 sm:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"><p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Open tasks</p><div className="mt-1 flex items-center gap-2 text-gray-800"><ListChecks size={18} className="text-[#405189]" /><p className="text-2xl font-semibold">{openTasks}</p></div></div>
           <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"><p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Due today</p><div className="mt-1 flex items-center gap-2 text-gray-800"><TriangleAlert size={18} className="text-amber-500" /><p className="text-2xl font-semibold">{dueToday}</p></div></div>
-          <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"><p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Overdue</p><div className="mt-1 flex items-center gap-2 text-gray-800"><BriefcaseBusiness size={18} className="text-rose-500" /><p className="text-2xl font-semibold">{overdueTasks}</p></div></div>
+          <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"><p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Failed</p><div className="mt-1 flex items-center gap-2 text-gray-800"><BriefcaseBusiness size={18} className="text-rose-500" /><p className="text-2xl font-semibold">{failedTasks}</p></div></div>
+          <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"><p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Overdue</p><div className="mt-1 flex items-center gap-2 text-gray-800"><TriangleAlert size={18} className="text-amber-700" /><p className="text-2xl font-semibold">{overdueTasks}</p></div></div>
           <div className="rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"><p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Billable tracked</p><div className="mt-1 flex items-center gap-2 text-gray-800"><CircleDollarSign size={18} className="text-emerald-600" /><p className="text-sm font-semibold">{formatCurrency(billableValue)}</p></div></div>
         </div>
       </div>
