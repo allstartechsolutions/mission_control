@@ -97,6 +97,7 @@ model Client {
   locations           ClientLocation[]
   employees           ClientEmployee[]
   projects            Project[]
+  accounts            ClientAccount[]
   suggestions         Suggestion[]
   tasks               Task[]
   createdAt           DateTime         @default(now())
@@ -162,6 +163,23 @@ model ClientEmployee {
   @@index([clientId])
   @@index([status])
   @@index([primaryLocationId])
+}
+
+
+model ClientAccount {
+  id                String   @id @default(cuid())
+  clientId          String
+  name              String
+  description       String?
+  usernameEncrypted String
+  passwordEncrypted String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([name])
 }
 
 model Project {

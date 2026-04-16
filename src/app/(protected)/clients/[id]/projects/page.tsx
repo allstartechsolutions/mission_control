@@ -26,7 +26,7 @@ export default async function ClientProjectsPage({ params }: { params: Promise<{
       primaryContactTitle: true,
       primaryContactEmail: true,
       primaryContactPhone: true,
-      _count: { select: { locations: true, employees: true, projects: true } },
+      _count: { select: { locations: true, employees: true, projects: true, accounts: true } },
       projects: {
         include: {
           requester: { select: { name: true } },
@@ -60,6 +60,7 @@ export default async function ClientProjectsPage({ params }: { params: Promise<{
         employeeCount: client._count.employees,
         projectCount: client._count.projects,
         locationCount: client._count.locations,
+        accountCount: client._count.accounts,
       }}
     >
       {client.projects.length === 0 ? (

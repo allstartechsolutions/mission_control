@@ -50,6 +50,7 @@ export default async function ClientLocationsPage({ params }: { params: Promise<
         select: {
           employees: true,
           projects: true,
+          accounts: true,
         },
       },
     },
@@ -75,6 +76,7 @@ export default async function ClientLocationsPage({ params }: { params: Promise<
         employeeCount: client._count.employees,
         projectCount: client._count.projects,
         locationCount: client.locations.length,
+        accountCount: client._count.accounts,
       }}
     >
       {client.locations.length === 0 ? (

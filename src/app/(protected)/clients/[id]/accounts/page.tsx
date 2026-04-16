@@ -1,14 +1,15 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { notFound } from "next/navigation";
-import { UserPlus, Users } from "lucide-react";
+import { LockKeyhole, Plus } from "lucide-react";
 import Link from "next/link";
-import EmployeesTable from "@/components/EmployeesTable";
+import ClientAccountsTable from "@/components/ClientAccountsTable";
 import { ClientWorkspaceShell, EmptyState } from "@/components/ClientWorkspaceShell";
+import { decryptAccountSecret } from "@/lib/account-crypto";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function ClientEmployeesPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ClientAccountsPage({ params }: { params: Promise<{ id: string }> }) {
   noStore();
   const { id } = await params;
 
@@ -26,26 +27,21 @@ export default async function ClientEmployeesPage({ params }: { params: Promise<
       primaryContactTitle: true,
       primaryContactEmail: true,
       primaryContactPhone: true,
-      employees: {
-        orderBy: [{ status: "asc" }, { name: "asc" }],
+      accounts: {
+        orderBy: [{ name: "asc" }, { updatedAt: "desc" }],
         select: {
           id: true,
           name: true,
-          title: true,
-          email: true,
-          phone: true,
-          mobile: true,
-          whatsapp: true,
-          status: true,
-          profileImagePath: true,
-          primaryLocation: {
-            select: { id: true, name: true },
-          },
+          description: true,
+          usernameEncrypted: true,
+          passwordEncrypted: true,
+          updatedAt: true,
         },
       },
       _count: {
         select: {
           locations: true,
+          employees: true,
           projects: true,
           accounts: true,
         },
@@ -57,7 +53,7 @@ export default async function ClientEmployeesPage({ params }: { params: Promise<
 
   return (
     <ClientWorkspaceShell
-      activeTab="employees"
+      activeTab="accounts"
       client={{
         id: client.id,
         companyName: client.companyName,
@@ -70,31 +66,35 @@ export default async function ClientEmployeesPage({ params }: { params: Promise<
         phone: client.phone,
         city: client.city,
         state: client.state,
-        employeeCount: client.employees.length,
+        employeeCount: client._count.employees,
         projectCount: client._count.projects,
         locationCount: client._count.locations,
         accountCount: client._count.accounts,
       }}
     >
-      {client.employees.length === 0 ? (
+      {client.accounts.length === 0 ? (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <Link
-              href={`/clients/${client.id}/employees/new`}
-              className="inline-flex items-center gap-2 rounded-md bg-[#405189] px-3 py-2 text-sm font-medium text-white hover:bg-[#364474]"
-            >
-              <UserPlus size={16} />
-              Add employee
+            <Link href={`/clients/${client.id}/accounts/new`} className="inline-flex items-center gap-2 rounded-md bg-[#405189] px-3 py-2 text-sm font-medium text-white hover:bg-[#364474]">
+              <Plus size={16} />
+              Add account
             </Link>
           </div>
-          <EmptyState
-            icon={Users}
-            title="No employee records yet"
-            description="This workspace is ready for employee management. Add the first employee to create contact records, profile images, and active status controls right inside the client flow."
-          />
+          <EmptyState icon={LockKeyhole} title="No accounts yet" description="Store client credentials here when Mission Control needs them. Usernames and passwords are encrypted before they are written to the database." />
         </div>
       ) : (
-        <EmployeesTable clientId={client.id} clientName={client.companyName} employees={client.employees} />
+        <ClientAccountsTable
+          clientId={client.id}
+          clientName={client.companyName}
+          accounts={client.accounts.map((account) => ({
+            id: account.id,
+            name: account.name,
+            description: account.description,
+            username: decryptAccountSecret(account.usernameEncrypted),
+            password: decryptAccountSecret(account.passwordEncrypted),
+            updatedAtLabel: account.updatedAt.toLocaleString(),
+          }))}
+        />
       )}
     </ClientWorkspaceShell>
   );

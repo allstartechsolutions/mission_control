@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Building2, Mail, MapPin, Pencil, Phone, Plus, Users, type LucideIcon } from "lucide-react";
+import { Mail, Pencil, Plus, type LucideIcon } from "lucide-react";
 import { formatEnumLabel } from "@/lib/format";
 
 const statusStyles: Record<string, string> = {
@@ -24,6 +24,7 @@ export type ClientWorkspaceSummary = {
   employeeCount?: number;
   projectCount?: number;
   locationCount?: number;
+  accountCount?: number;
 };
 
 const tabs = [
@@ -31,6 +32,7 @@ const tabs = [
   { label: "Locations", href: (id: string) => `/clients/${id}/locations` },
   { label: "Employees", href: (id: string) => `/clients/${id}/employees` },
   { label: "Projects", href: (id: string) => `/clients/${id}/projects` },
+  { label: "Accounts", href: (id: string) => `/clients/${id}/accounts` },
 ];
 
 function isImagePath(value: string | null) {
@@ -52,7 +54,7 @@ export function ClientWorkspaceShell({
   children,
 }: {
   client: ClientWorkspaceSummary;
-  activeTab: "overview" | "locations" | "employees" | "projects";
+  activeTab: "overview" | "locations" | "employees" | "projects" | "accounts";
   children: React.ReactNode;
 }) {
   const location = [client.city, client.state].filter(Boolean).join(", ") || "Location pending";
@@ -144,7 +146,8 @@ export function ClientWorkspaceShell({
                 (activeTab === "overview" && tab.label === "Overview") ||
                 (activeTab === "locations" && tab.label === "Locations") ||
                 (activeTab === "employees" && tab.label === "Employees") ||
-                (activeTab === "projects" && tab.label === "Projects");
+                (activeTab === "projects" && tab.label === "Projects") ||
+                (activeTab === "accounts" && tab.label === "Accounts");
 
               return (
                 <Link
@@ -170,6 +173,11 @@ export function ClientWorkspaceShell({
                   {tab.label === "Projects" && typeof client.projectCount === "number" ? (
                     <span className={`ml-2 rounded-full px-2 py-0.5 text-xs ${isActive ? "bg-white/15 text-white" : "bg-gray-100 text-gray-500"}`}>
                       {client.projectCount}
+                    </span>
+                  ) : null}
+                  {tab.label === "Accounts" && typeof client.accountCount === "number" ? (
+                    <span className={`ml-2 rounded-full px-2 py-0.5 text-xs ${isActive ? "bg-white/15 text-white" : "bg-gray-100 text-gray-500"}`}>
+                      {client.accountCount}
                     </span>
                   ) : null}
                 </Link>

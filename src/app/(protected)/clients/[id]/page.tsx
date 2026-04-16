@@ -36,6 +36,7 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
           locations: true,
           employees: true,
           projects: true,
+          accounts: true,
         },
       },
     },
@@ -61,6 +62,7 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
         employeeCount: client._count.employees,
         projectCount: client._count.projects,
         locationCount: client._count.locations,
+        accountCount: client._count.accounts,
       }}
     >
       <div className="grid gap-6 xl:grid-cols-2">
