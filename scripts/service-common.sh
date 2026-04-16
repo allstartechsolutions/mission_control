@@ -23,10 +23,11 @@ ensure_systemd_user() {
 }
 
 load_env() {
-  if [[ -f "$ROOT_DIR/.env" ]]; then
+  local env_file="${ENV_FILE:-.env}"
+  if [[ -f "$ROOT_DIR/$env_file" ]]; then
     set -a
     # shellcheck disable=SC1091
-    source "$ROOT_DIR/.env"
+    source "$ROOT_DIR/$env_file"
     set +a
   fi
 }

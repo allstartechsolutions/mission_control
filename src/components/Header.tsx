@@ -2,8 +2,23 @@
 
 import { signOut, useSession } from "next-auth/react";
 import { Menu, Search, LogOut } from "lucide-react";
+import type { AppEnvironmentTone } from "@/lib/app-env";
 
-export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
+const badgeToneClasses: Record<AppEnvironmentTone, string> = {
+  slate: "border-slate-200 bg-slate-100 text-slate-700",
+  amber: "border-amber-200 bg-amber-100 text-amber-800",
+  red: "border-red-200 bg-red-100 text-red-700",
+};
+
+export default function Header({
+  onMenuClick,
+  environmentLabel,
+  environmentTone = "slate",
+}: {
+  onMenuClick: () => void;
+  environmentLabel?: string;
+  environmentTone?: AppEnvironmentTone;
+}) {
   const { data: session } = useSession();
 
   return (
@@ -30,6 +45,12 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
       </div>
 
       <div className="flex-1" />
+
+      {environmentLabel ? (
+        <span className={`hidden rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] sm:inline-flex ${badgeToneClasses[environmentTone]}`}>
+          {environmentLabel}
+        </span>
+      ) : null}
 
       {/* User */}
       <div className="flex items-center gap-3">

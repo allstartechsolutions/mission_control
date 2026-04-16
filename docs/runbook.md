@@ -1,5 +1,21 @@
 # Runbook
 
+## Environment split
+
+Production stays on `/home/jr/MissionControl` and port `3001`.
+
+Use `docs/dev-production-split.md` for the recommended same-machine dev/prod split, including a dedicated dev worktree at `/home/jr/MissionControl-dev`, port `3002`, and a separate `mission_control_dev` database.
+
+New helper commands:
+
+```bash
+npm run dev:worktree
+npm run dev:service:install
+npm run dev:start
+npm run dev:status
+npm run dev:stop
+```
+
 ## Install
 
 ```bash

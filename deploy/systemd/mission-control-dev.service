@@ -1,0 +1,28 @@
+[Unit]
+Description=Mission Control Next.js development server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/jr/MissionControl-dev
+Environment=NODE_ENV=development
+Environment=HOST=0.0.0.0
+Environment=PORT=3002
+Environment=ENV_FILE=.env.development.local
+Environment=PATH=/home/jr/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=OPENCLAW_BIN=/home/jr/.npm-global/bin/openclaw
+EnvironmentFile=-/home/jr/MissionControl-dev/.env.development.local
+ExecStartPre=/usr/bin/bash /home/jr/MissionControl-dev/scripts/prepare-runtime.sh
+ExecStart=/usr/bin/npm run dev -- --hostname 0.0.0.0 --port 3002
+Restart=always
+RestartSec=5
+TimeoutStartSec=120
+TimeoutStopSec=30
+KillMode=mixed
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mission-control-dev
+
+[Install]
+WantedBy=default.target

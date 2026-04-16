@@ -19,6 +19,7 @@ Production handoff and operator docs for the current Mission Control rebuild.
 - `ai-data-operations.md` - how Hulk or any assistant should safely add or update data in production.
 - `nextjs-caching-rules.md` - live-data caching rules for mutable operational routes.
 - `runbook.md` - deploy/start/build notes for this app.
+- `dev-production-split.md` - recommended same-machine split between stable production and safe development.
 
 ## Ground rule
 
