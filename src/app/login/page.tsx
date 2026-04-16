@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { signIn } from "@/lib/auth";
@@ -50,10 +49,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             </div>
           )}
 
-          <div className="mb-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-            Demo admin login: <span className="font-semibold">admin@allstartech.com</span> / <span className="font-semibold">password123</span>
-          </div>
-
           <form action={authenticate} className="space-y-4">
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
@@ -84,10 +79,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-500">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-medium text-[#405189] hover:underline">
-              Register
-            </Link>
+            Need access? Contact an administrator to get your account set up.
           </p>
         </div>
       </div>

@@ -20,7 +20,7 @@ export default function FullPageModal({
         <div className="border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
           <div className="mx-auto flex w-full max-w-6xl items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#405189]">Board overlay</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#405189]">Mission Control</p>
               <h1 className="mt-1 text-2xl font-semibold text-gray-900">{title}</h1>
               {description ? <p className="mt-1 text-sm text-gray-500">{description}</p> : null}
             </div>

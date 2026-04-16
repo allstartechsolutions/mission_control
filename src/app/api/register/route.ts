@@ -1,54 +1,8 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
 
-export async function POST(req: Request) {
-  try {
-    const { name, email, password, phone, mobile, whatsapp } = await req.json();
-
-    if (!email || !password || !name) {
-      return NextResponse.json(
-        { error: "Name, email, and password are required" },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: "Password must be at least 8 characters" },
-        { status: 400 }
-      );
-    }
-
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) {
-      return NextResponse.json(
-        { error: "Email already registered" },
-        { status: 409 }
-      );
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    const user = await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        phone: phone?.trim() || null,
-        mobile: mobile?.trim() || null,
-        whatsapp: whatsapp?.trim() || null,
-      },
-    });
-
-    return NextResponse.json(
-      { user: { id: user.id, name: user.name, email: user.email } },
-      { status: 201 }
-    );
-  } catch {
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
+export async function POST() {
+  return NextResponse.json(
+    { error: "Self-service registration is disabled. Contact an administrator." },
+    { status: 403 }
+  );
 }
