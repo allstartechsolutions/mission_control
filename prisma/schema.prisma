@@ -48,6 +48,10 @@ enum TaskEventLevel {
   error
 }
 
+enum BoardScope {
+  project
+}
+
 model User {
   id            String       @id @default(cuid())
   name          String?
@@ -176,6 +180,7 @@ model Project {
   requester      ClientEmployee?    @relation("ProjectRequester", fields: [requesterId], references: [id], onDelete: SetNull)
   milestones     ProjectMilestone[]
   tasks          Task[]
+  board          Board?
   createdAt      DateTime           @default(now())
   updatedAt      DateTime           @updatedAt
 
@@ -317,6 +322,7 @@ model Task {
   requesterEmployee   ClientEmployee?   @relation("TaskRequester", fields: [requesterEmployeeId], references: [id], onDelete: SetNull)
   taskRuns            TaskRun[]
   taskEvents          TaskRunEvent[]
+  boardPlacement      TaskBoardPlacement?
 
   @@index([status])
   @@index([assignedToId])
@@ -326,6 +332,54 @@ model Task {
   @@index([milestoneId])
   @@index([requesterEmployeeId])
   @@index([dueDate])
+}
+
+model Board {
+  id         String               @id @default(cuid())
+  scope      BoardScope           @default(project)
+  name       String
+  projectId  String               @unique
+  project    Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  columns    BoardColumn[]
+  placements TaskBoardPlacement[]
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@index([scope])
+}
+
+model BoardColumn {
+  id         String               @id @default(cuid())
+  boardId    String
+  key        String
+  name       String
+  color      String?
+  sortOrder  Int
+  board      Board                @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  placements TaskBoardPlacement[]
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@unique([boardId, key])
+  @@unique([boardId, sortOrder])
+  @@index([boardId])
+}
+
+model TaskBoardPlacement {
+  id        String      @id @default(cuid())
+  taskId     String      @unique
+  boardId    String
+  columnId   String
+  sortOrder  Int         @default(0)
+  board      Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  column     BoardColumn @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  task       Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@unique([boardId, columnId, sortOrder])
+  @@index([boardId, columnId])
+  @@index([columnId, sortOrder])
 }
 
 model TaskRun {

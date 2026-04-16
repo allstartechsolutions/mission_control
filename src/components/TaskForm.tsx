@@ -25,6 +25,7 @@ type TaskFormValues = {
   cronEnabled: boolean;
   cronExpression: string;
   cronTimezone: string;
+  boardColumnId: string;
 };
 
 type ClientOption = {
@@ -60,6 +61,7 @@ const defaultValues: TaskFormValues = {
   cronEnabled: false,
   cronExpression: "",
   cronTimezone: defaultCronTimezone,
+  boardColumnId: "",
 };
 
 function Field({ label, hint, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string }) {
@@ -159,6 +161,7 @@ export default function TaskForm({ mode, taskId, initialValues, teamMembers, cli
     formData.set("cronEnabled", String(isNonHuman && derivedCronEnabled));
     formData.set("cronExpression", isNonHuman ? derivedCronExpression : "");
     formData.set("cronTimezone", isNonHuman ? derivedCronTimezone : "");
+    formData.set("boardColumnId", values.boardColumnId);
 
     const response = await fetch(endpoint, { method, body: formData });
     const data = await response.json().catch(() => ({}));

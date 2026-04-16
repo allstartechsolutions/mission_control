@@ -1,71 +1,13 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { notFound } from "next/navigation";
-import ProjectBoardMockup from "@/components/ProjectBoardMockup";
+import BoardLiveRefresh from "@/components/BoardLiveRefresh";
+import ProjectBoard from "@/components/ProjectBoard";
 import ProjectWorkspaceShell from "@/components/ProjectWorkspaceShell";
+import { ensureProjectBoard, ensureProjectTaskPlacements } from "@/lib/boards";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate } from "@/lib/projects";
-import { formatTaskLabel } from "@/lib/tasks";
 
 export const dynamic = "force-dynamic";
-
-const previewTaskBlueprints = [
-  {
-    title: "Finalize kickoff checklist",
-    description: "Confirm client access, briefing packet, and owner assignments before work starts.",
-    status: "scheduled",
-    milestoneIndex: 0,
-    priority: "High",
-    executorLabel: "Hulk",
-    billableLabel: "Non-billable",
-    dueOffsetDays: 2,
-  },
-  {
-    title: "Wire up intake automation",
-    description: "Connect the project intake form to the internal routing flow and validate handoff rules.",
-    status: "in_progress",
-    milestoneIndex: 0,
-    priority: "High",
-    executorLabel: "Agent",
-    billableLabel: "Billable · Fixed",
-    dueOffsetDays: 4,
-  },
-  {
-    title: "Review hardware ordering blockers",
-    description: "Waiting on final site measurements and vendor ETA before moving this card forward.",
-    status: "waiting",
-    milestoneIndex: 1,
-    priority: "Medium",
-    executorLabel: "Human",
-    billableLabel: "Billable · Hourly",
-    dueOffsetDays: 6,
-  },
-  {
-    title: "Document client handoff notes",
-    description: "Capture punch list items and operator notes that are not tied to a milestone.",
-    status: "scheduled",
-    milestoneIndex: null,
-    priority: "Low",
-    executorLabel: "Hulk",
-    billableLabel: "Non-billable",
-    dueOffsetDays: 8,
-  },
-  {
-    title: "Launch remote monitoring baseline",
-    description: "Baseline checks are green and the recurring monitoring profile has been enabled.",
-    status: "completed",
-    milestoneIndex: 1,
-    priority: "Medium",
-    executorLabel: "Automation",
-    billableLabel: "Billable · Fixed",
-    dueOffsetDays: -1,
-  },
-];
-
-function dueLabelFromOffset(offsetDays: number) {
-  const date = new Date();
-  date.setDate(date.getDate() + offsetDays);
-  return formatDate(date);
-}
 
 export default async function ProjectBoardPage({ params }: { params: Promise<{ id: string }> }) {
   noStore();
@@ -78,65 +20,53 @@ export default async function ProjectBoardPage({ params }: { params: Promise<{ i
       requester: { select: { name: true } },
       milestones: {
         where: { status: { not: "archived" } },
-        include: {
-          tasks: {
-            select: { id: true },
-          },
-        },
+        include: { tasks: { select: { id: true } } },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-      },
-      tasks: {
-        include: {
-          assignedTo: { select: { name: true, email: true } },
-          milestone: { select: { id: true, title: true } },
-        },
-        orderBy: [{ dueDate: "asc" }, { createdAt: "asc" }],
       },
     },
   });
 
   if (!project) notFound();
 
-  const boardTasks = project.tasks.map((task) => ({
-    id: task.id,
-    title: task.title,
-    description: task.description || "No additional notes yet.",
-    status: task.status,
-    milestoneId: task.milestone?.id || null,
-    milestoneTitle: task.milestone?.title || null,
-    owner: task.assignedTo.name || task.assignedTo.email,
-    dueLabel: formatDate(task.dueDate),
-    executorLabel: formatTaskLabel(task.executorType),
-    priority: project.priority,
-    billableLabel: task.billable ? `Billable${task.billingType !== "none" ? ` · ${formatTaskLabel(task.billingType)}` : ""}` : "Non-billable",
-  }));
+  const board = await ensureProjectBoard(project.id);
+  await ensureProjectTaskPlacements(project.id, board.id);
 
-  const milestones = project.milestones.map((milestone) => ({
-    id: milestone.id,
-    title: milestone.title,
-    status: milestone.status,
-    dueLabel: formatDate(milestone.dueDate),
-    taskCount: milestone.tasks.length,
-  }));
-
-  const previewTasks = previewTaskBlueprints.map((task, index) => {
-    const linkedMilestone = typeof task.milestoneIndex === "number" ? milestones[task.milestoneIndex] : null;
-    return {
-      id: `preview-${index}`,
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      milestoneId: linkedMilestone?.id || null,
-      milestoneTitle: linkedMilestone?.title || null,
-      owner: project.requester?.name || project.client.companyName,
-      dueLabel: dueLabelFromOffset(task.dueOffsetDays),
-      executorLabel: task.executorLabel,
-      priority: task.priority,
-      billableLabel: task.billableLabel,
-    };
+  const hydratedBoard = await prisma.board.findUnique({
+    where: { id: board.id },
+    include: {
+      columns: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          placements: {
+            orderBy: [{ sortOrder: "asc" }, { updatedAt: "asc" }],
+            include: {
+              task: {
+                include: {
+                  assignedTo: { select: { name: true, email: true } },
+                  milestone: { select: { id: true, title: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 
-  const combinedTasks = boardTasks.length >= 4 ? boardTasks : [...boardTasks, ...previewTasks].slice(0, Math.max(4, previewTasks.length));
+  if (!hydratedBoard) notFound();
+
+  const tasks = hydratedBoard.columns.flatMap((column) => column.placements.map((placement) => ({
+    id: placement.task.id,
+    title: placement.task.title,
+    description: placement.task.description,
+    status: placement.task.status,
+    dueLabel: formatDate(placement.task.dueDate),
+    assignee: placement.task.assignedTo.name || placement.task.assignedTo.email,
+    milestoneId: placement.task.milestone?.id || null,
+    milestoneTitle: placement.task.milestone?.title || null,
+    columnId: column.id,
+    columnName: column.name,
+  })));
 
   return (
     <ProjectWorkspaceShell
@@ -155,14 +85,26 @@ export default async function ProjectBoardPage({ params }: { params: Promise<{ i
         milestoneCount: project.milestones.length,
       }}
     >
-      <ProjectBoardMockup
-        projectId={project.id}
-        projectName={project.name}
-        projectStatus={project.status}
-        tasks={combinedTasks}
-        milestones={milestones}
-        usingPreviewData={boardTasks.length < 4}
-      />
+      <div className="space-y-4">
+        <BoardLiveRefresh projectId={project.id} />
+        <ProjectBoard
+          projectId={project.id}
+          columns={hydratedBoard.columns.map((column) => ({
+            id: column.id,
+            key: column.key,
+            name: column.name,
+            color: column.color,
+            taskCount: column.placements.length,
+          }))}
+          tasks={tasks}
+          milestones={project.milestones.map((milestone) => ({
+            id: milestone.id,
+            title: milestone.title,
+            status: milestone.status,
+            taskCount: tasks.filter((task) => task.milestoneId === milestone.id).length,
+          }))}
+        />
+      </div>
     </ProjectWorkspaceShell>
   );
 }

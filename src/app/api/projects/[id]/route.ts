@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { ensureProjectBoard } from "@/lib/boards";
 import { parseCurrency, parseDate, projectPriorityOptions, projectStatusOptions, toNullableString } from "@/lib/projects";
 
 export const dynamic = "force-dynamic";
@@ -42,6 +43,9 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         dueDate: parseDate(toNullableString(formData.get("dueDate"))),
       },
     });
+
+    await ensureProjectBoard(project.id);
+    await prisma.board.updateMany({ where: { projectId: project.id }, data: { name: `${project.name} Board` } });
 
     revalidatePath("/projects");
     revalidatePath(`/projects/${project.id}`);

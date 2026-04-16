@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { ensureProjectBoard } from "@/lib/boards";
 import { parseCurrency, parseDate, projectPriorityOptions, projectStatusOptions, toNullableString } from "@/lib/projects";
 
 export const dynamic = "force-dynamic";
@@ -40,6 +41,8 @@ export async function POST(request: Request) {
         dueDate: parseDate(toNullableString(formData.get("dueDate"))),
       },
     });
+
+    await ensureProjectBoard(project.id);
 
     revalidatePath("/projects");
     revalidatePath(`/projects/${project.id}`);

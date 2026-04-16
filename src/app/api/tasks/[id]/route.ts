@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import { syncTaskBoardPlacement } from "@/lib/boards";
 import { prisma } from "@/lib/prisma";
 import { parseCurrency, parseDate, sanitizeCronFields, taskBillingTypeOptions, taskExecutorTypeOptions, taskStatusOptions, toNullableString } from "@/lib/tasks";
 
@@ -116,13 +117,21 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       },
     });
 
+    await syncTaskBoardPlacement(task.id, projectId, status);
+
     revalidatePath("/tasks");
     revalidatePath(`/tasks/${task.id}`);
     revalidatePath(`/tasks/${task.id}/edit`);
     if (existing.clientId) revalidatePath(`/clients/${existing.clientId}`);
-    if (existing.projectId) revalidatePath(`/projects/${existing.projectId}`);
+    if (existing.projectId) {
+      revalidatePath(`/projects/${existing.projectId}`);
+      revalidatePath(`/projects/${existing.projectId}/board`);
+    }
     if (resolvedClientId) revalidatePath(`/clients/${resolvedClientId}`);
-    if (projectId) revalidatePath(`/projects/${projectId}`);
+    if (projectId) {
+      revalidatePath(`/projects/${projectId}`);
+      revalidatePath(`/projects/${projectId}/board`);
+    }
 
     return NextResponse.json({ task });
   } catch (error) {
@@ -142,7 +151,10 @@ export async function DELETE(_request: Request, context: { params: Promise<{ id:
     revalidatePath(`/tasks/${id}`);
     revalidatePath(`/tasks/${id}/edit`);
     if (existing.clientId) revalidatePath(`/clients/${existing.clientId}`);
-    if (existing.projectId) revalidatePath(`/projects/${existing.projectId}`);
+    if (existing.projectId) {
+      revalidatePath(`/projects/${existing.projectId}`);
+      revalidatePath(`/projects/${existing.projectId}/board`);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

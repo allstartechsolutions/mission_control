@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import { ensureProjectBoard, syncTaskBoardPlacement } from "@/lib/boards";
 import { prisma } from "@/lib/prisma";
 import { parseCurrency, parseDate, resolveTaskActorId, sanitizeCronFields, taskBillingTypeOptions, taskExecutorTypeOptions, taskStatusOptions, toNullableString } from "@/lib/tasks";
 
@@ -70,6 +71,7 @@ export async function POST(request: Request) {
     const requesterEmployeeId = toNullableString(formData.get("requesterEmployeeId"));
     const clientId = toNullableString(formData.get("clientId"));
     const cronEnabled = formData.get("cronEnabled") === "true";
+    const boardColumnId = toNullableString(formData.get("boardColumnId"));
 
     if (!title) return NextResponse.json({ error: "Task title is required." }, { status: 400 });
     if (!assignedToId) return NextResponse.json({ error: "Assigned to is required." }, { status: 400 });
@@ -88,6 +90,10 @@ export async function POST(request: Request) {
       cronExpression: toNullableString(formData.get("cronExpression")),
       cronTimezone: toNullableString(formData.get("cronTimezone")),
     });
+
+    if (projectId) {
+      await ensureProjectBoard(projectId);
+    }
 
     const task = await prisma.task.create({
       data: {
@@ -110,11 +116,28 @@ export async function POST(request: Request) {
       },
     });
 
+    if (projectId) {
+      if (boardColumnId) {
+        const boardColumn = await prisma.boardColumn.findFirst({ where: { id: boardColumnId, board: { projectId } }, select: { id: true, boardId: true } });
+        if (boardColumn) {
+          const sortOrder = await prisma.taskBoardPlacement.count({ where: { boardId: boardColumn.boardId, columnId: boardColumn.id } });
+          await prisma.taskBoardPlacement.create({ data: { taskId: task.id, boardId: boardColumn.boardId, columnId: boardColumn.id, sortOrder } });
+        } else {
+          await syncTaskBoardPlacement(task.id, projectId, status);
+        }
+      } else {
+        await syncTaskBoardPlacement(task.id, projectId, status);
+      }
+    }
+
     revalidatePath("/tasks");
     revalidatePath(`/tasks/${task.id}`);
     revalidatePath(`/tasks/${task.id}/edit`);
     if (resolvedClientId) revalidatePath(`/clients/${resolvedClientId}`);
-    if (projectId) revalidatePath(`/projects/${projectId}`);
+    if (projectId) {
+      revalidatePath(`/projects/${projectId}`);
+      revalidatePath(`/projects/${projectId}/board`);
+    }
 
     return NextResponse.json({ task }, { status: 201 });
   } catch (error) {

@@ -2,8 +2,8 @@ import Link from "next/link";
 import TaskForm from "@/components/TaskForm";
 import { prisma } from "@/lib/prisma";
 
-export default async function NewTaskPage({ searchParams }: { searchParams: Promise<{ clientId?: string; projectId?: string; milestoneId?: string }> }) {
-  const { clientId: rawClientId, projectId: rawProjectId, milestoneId: rawMilestoneId } = await searchParams;
+export default async function NewTaskPage({ searchParams }: { searchParams: Promise<{ clientId?: string; projectId?: string; milestoneId?: string; boardColumnId?: string }> }) {
+  const { clientId: rawClientId, projectId: rawProjectId, milestoneId: rawMilestoneId, boardColumnId = "" } = await searchParams;
   const [teamMembers, clients, projectContext, milestoneContext] = await Promise.all([
     prisma.user.findMany({ orderBy: [{ name: "asc" }, { email: "asc" }], select: { id: true, name: true, email: true, role: true, status: true } }),
     prisma.client.findMany({
@@ -50,7 +50,7 @@ export default async function NewTaskPage({ searchParams }: { searchParams: Prom
         </div>
         <Link href="/tasks" className="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50">Back to tasks</Link>
       </div>
-      <TaskForm mode="create" teamMembers={teamMembers} clients={clients} context={context} initialValues={{ clientId, projectId, milestoneId }} />
+      <TaskForm mode="create" teamMembers={teamMembers} clients={clients} context={context} initialValues={{ clientId, projectId, milestoneId, boardColumnId }} />
     </div>
   );
 }

@@ -46,7 +46,10 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     revalidatePath(`/tasks/${id}`);
     revalidatePath(`/tasks/${id}/edit`);
     if (existing.clientId) revalidatePath(`/clients/${existing.clientId}`);
-    if (existing.projectId) revalidatePath(`/projects/${existing.projectId}`);
+    if (existing.projectId) {
+      revalidatePath(`/projects/${existing.projectId}`);
+      revalidatePath(`/projects/${existing.projectId}/board`);
+    }
 
     return NextResponse.json({ task });
   } catch (error) {
