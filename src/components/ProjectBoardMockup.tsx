@@ -25,9 +25,10 @@ type MilestoneOption = {
 };
 
 const boardColumns = [
-  { key: "scheduled", label: "Planned", tone: "border-slate-200 bg-slate-50/80", accent: "bg-slate-500" },
+  { key: "backlog", label: "Backlog", tone: "border-slate-200 bg-slate-50/80", accent: "bg-slate-500" },
+  { key: "scheduled", label: "Scheduled", tone: "border-sky-200 bg-sky-50/80", accent: "bg-sky-500" },
   { key: "in_progress", label: "In Progress", tone: "border-indigo-200 bg-indigo-50/70", accent: "bg-indigo-500" },
-  { key: "waiting", label: "Waiting", tone: "border-amber-200 bg-amber-50/80", accent: "bg-amber-500" },
+  { key: "waiting", label: "Blocked", tone: "border-rose-200 bg-rose-50/80", accent: "bg-rose-500" },
   { key: "completed", label: "Done", tone: "border-emerald-200 bg-emerald-50/80", accent: "bg-emerald-500" },
 ] as const;
 
