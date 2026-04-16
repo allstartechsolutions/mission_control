@@ -25,11 +25,12 @@ export type ProjectWorkspaceSummary = {
 
 const tabs = [
   { label: "Overview", href: (id: string) => `/projects/${id}` },
+  { label: "Board", href: (id: string) => `/projects/${id}/board` },
   { label: "Milestones", href: (id: string) => `/projects/${id}/milestones` },
   { label: "Edit", href: (id: string) => `/projects/${id}/edit` },
 ];
 
-export default function ProjectWorkspaceShell({ project, activeTab, children }: { project: ProjectWorkspaceSummary; activeTab: "overview" | "milestones" | "edit"; children: React.ReactNode }) {
+export default function ProjectWorkspaceShell({ project, activeTab, children }: { project: ProjectWorkspaceSummary; activeTab: "overview" | "board" | "milestones" | "edit"; children: React.ReactNode }) {
   return (
     <div className="space-y-6">
       <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -62,7 +63,7 @@ export default function ProjectWorkspaceShell({ project, activeTab, children }: 
             </div>
           </div>
         </div>
-        <div className="border-b border-gray-200 bg-gray-50 px-3 sm:px-4"><div className="flex flex-wrap gap-2 py-3">{tabs.map((tab) => { const isActive = (activeTab === "overview" && tab.label === "Overview") || (activeTab === "milestones" && tab.label === "Milestones") || (activeTab === "edit" && tab.label === "Edit"); return <Link key={tab.label} href={tab.href(project.id)} className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition ${isActive ? "bg-[#405189] text-white shadow-sm" : "bg-white text-gray-600 ring-1 ring-inset ring-gray-200 hover:text-[#405189]"}`}>{tab.label}{tab.label === "Milestones" ? <span className={`ml-2 rounded-full px-2 py-0.5 text-xs ${isActive ? "bg-white/15 text-white" : "bg-gray-100 text-gray-500"}`}>{project.milestoneCount}</span> : null}</Link>; })}</div></div>
+        <div className="border-b border-gray-200 bg-gray-50 px-3 sm:px-4"><div className="flex flex-wrap gap-2 py-3">{tabs.map((tab) => { const isActive = (activeTab === "overview" && tab.label === "Overview") || (activeTab === "board" && tab.label === "Board") || (activeTab === "milestones" && tab.label === "Milestones") || (activeTab === "edit" && tab.label === "Edit"); return <Link key={tab.label} href={tab.href(project.id)} className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition ${isActive ? "bg-[#405189] text-white shadow-sm" : "bg-white text-gray-600 ring-1 ring-inset ring-gray-200 hover:text-[#405189]"}`}>{tab.label}{tab.label === "Milestones" ? <span className={`ml-2 rounded-full px-2 py-0.5 text-xs ${isActive ? "bg-white/15 text-white" : "bg-gray-100 text-gray-500"}`}>{project.milestoneCount}</span> : null}</Link>; })}</div></div>
       </section>
       {children}
     </div>
