@@ -1,72 +1,88 @@
 # Clients module
 
-## User-facing scope today
+## Purpose
 
-The current Clients module supports:
+`Client` is the top-level business account record. Everything customer-facing hangs off it: locations, client-side employees, projects, accounts, tasks, and suggestions.
 
-- client directory/index
-- create client flow
-- edit client flow
-- logo upload with immediate preview in the browser
-- persisted logo storage on local disk
-- client employee counts on the index
+## Core data model
 
-## Main files
+Primary table: `Client`
 
-- Index page: `src/app/(protected)/clients/page.tsx`
-- New page: `src/app/(protected)/clients/new/page.tsx`
-- Edit page: `src/app/(protected)/clients/[id]/edit/page.tsx`
-- Form UI: `src/components/ClientForm.tsx`
-- Index table UI: `src/components/ClientsTable.tsx`
-- Create API: `src/app/api/clients/route.ts`
-- Update API: `src/app/api/clients/[id]/route.ts`
-- Logo storage helper: `src/lib/client-logo-storage.ts`
+Key fields:
 
-## How the flow works
+- `companyName` (required)
+- `status` (`active`, `onboarding`, `inactive` in current API)
+- address fields
+- contact channels
+- primary contact fields
+- `logoPath`
 
-### Index
+Key relationships:
 
-`/clients` is a server-rendered operational page. It queries Prisma directly for the client list and employee counts, then passes normalized rows into the client table UI.
+- one-to-many with `ClientLocation`
+- one-to-many with `ClientEmployee`
+- one-to-many with `Project`
+- one-to-many with `ClientAccount`
+- optional linkage from `Suggestion`
+- optional linkage from `Task`
 
-### Create
+## Main pages
 
-1. User opens `/clients/new`
-2. `ClientForm` builds a `FormData` payload
-3. `POST /api/clients` creates the client record
-4. If a logo file was attached, the API stores it on disk and updates `logoPath`
-5. The API revalidates `/clients`
-6. The client app navigates back to `/clients` and refreshes the router
+- `/clients`
+- `/clients/new`
+- `/clients/[id]`
+- `/clients/[id]/edit`
+- `/clients/[id]/projects`
 
-### Edit
+The client overview page is the workspace entry point and shows counts for locations, employees, projects, and accounts.
 
-1. User opens `/clients/[id]/edit`
-2. The edit page loads the current client from Prisma
-3. `ClientForm` submits a multipart `PATCH` request to `/api/clients/[id]`
-4. The API updates the database and optionally replaces the logo file
-5. The API revalidates both `/clients` and `/clients/[id]/edit`
-6. The client app navigates back to `/clients` and refreshes the router
+## APIs
 
-## Why this route is special
+- `POST /api/clients`
+- `PATCH /api/clients/[id]`
 
-Clients is an operational CRUD area. Users expect new records and edits to appear immediately. Do not treat it like a cache-friendly brochure page.
+Both are multipart form endpoints because logo upload is supported.
 
-## UI rule for index tables
+## Important behaviors
 
-For operational index data tables, use compact icon-only action buttons inside table rows instead of labeled text buttons. This keeps row actions clear without consuming too much horizontal space.
+- Company name is required.
+- Logo upload is optional and stored on local disk.
+- Create/update revalidates the client list plus key dependent client routes.
+- Client list is a live operational screen and should not be treated like a static marketing page.
 
-Apply this pattern to future index tables:
+## Production and security notes
 
-- keep page or header level primary actions, like create, as normal labeled buttons when that improves clarity
-- use recognizable icons for row actions, with `title`, `aria-label`, and/or screen-reader text so the action stays obvious and accessible
-- preserve semantic styling where it already communicates meaning, like primary actions staying primary-colored
-- keep row actions visually compact and aligned to the right edge of the table
+- Client deletion is not exposed here. That is good, because deleting a client would cascade into multiple linked records.
+- Treat `primaryContactEmail`, phone data, and address data as business-sensitive PII.
+- Uploaded logos live on local storage. Backup strategy must include uploaded assets, not just PostgreSQL.
 
-## Extension guidance
+## Operational gotchas
 
-When adding client detail pages, employee CRUD, or related workflows:
+- Client status validation exists in the API, not as a shared enum in Prisma, so keep docs/UI/API aligned manually.
+- Any future bulk import or assistant automation must avoid duplicate clients created from small naming variations.
+- If you move a project or task to a different client, validate linked requester and milestone relationships too.
 
-- keep reads on server routes/components
-- mark mutable business routes as dynamic
-- revalidate affected paths after every write
-- do not rely on build-time prerendering for live operational data
-- follow the index-table icon-action rule above for row-level actions
+## AI instructions
+
+### When JR asks to add a client
+
+Capture or confirm:
+
+- company name
+- status if explicitly known, otherwise default to `active`
+- primary contact name/email/phone if available
+- business address if available
+- whether a logo file is being attached
+
+### Validation rules
+
+- Never create a client without a company name.
+- Before creating, search the app or DB for likely duplicates by company name spelling.
+- Normalize blank strings to null, not placeholder text.
+- Do not invent address or contact data to fill gaps.
+
+### Safe assistant behavior
+
+- If JR gives incomplete info, create the client only when the missing fields are optional and clearly safe to leave blank.
+- If there is any risk of duplicate identity, stop and confirm before writing.
+- Never merge or reassign client-linked records automatically without explicit approval.
