@@ -5,8 +5,9 @@ import TaskWorkspaceShell from "@/components/TaskWorkspaceShell";
 import { prisma } from "@/lib/prisma";
 import { formatDate, serializeCurrency } from "@/lib/tasks";
 
-export default async function EditTaskPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditTaskPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ returnTo?: string }> }) {
   const { id } = await params;
+  const { returnTo } = await searchParams;
   const [task, teamMembers, clients] = await Promise.all([
     prisma.task.findUnique({
       where: { id },
@@ -46,7 +47,7 @@ export default async function EditTaskPage({ params }: { params: Promise<{ id: s
       }}
     >
       <div className="rounded-xl border border-gray-200 bg-white px-5 py-4 shadow-sm">
-        <nav className="text-sm text-gray-400"><Link href="/tasks" className="hover:text-[#405189]">Tasks</Link><span className="mx-2">&rsaquo;</span><Link href={`/tasks/${task.id}`} className="hover:text-[#405189]">{task.title}</Link><span className="mx-2">&rsaquo;</span><span>Edit</span></nav>
+        <nav className="text-sm text-gray-400"><Link href={returnTo || "/tasks"} scroll={false} className="hover:text-[#405189]">{returnTo ? "Board" : "Tasks"}</Link><span className="mx-2">&rsaquo;</span><Link href={`/tasks/${task.id}`} className="hover:text-[#405189]">{task.title}</Link><span className="mx-2">&rsaquo;</span><span>Edit</span></nav>
         <h2 className="mt-2 text-xl font-semibold text-gray-800">Edit task</h2>
         <p className="mt-1 text-sm text-gray-500">Update ownership, billing, and linked delivery context without leaving the task workspace.</p>
       </div>
@@ -55,6 +56,7 @@ export default async function EditTaskPage({ params }: { params: Promise<{ id: s
         taskId={task.id}
         teamMembers={teamMembers}
         clients={clients}
+        context={returnTo ? { backHref: returnTo, submitHref: returnTo } : undefined}
         initialValues={{
           title: task.title,
           description: task.description || "",

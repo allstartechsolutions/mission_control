@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Flag, GripVertical, ListFilter, Milestone, Plus } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Flag, GripVertical, ListFilter, Milestone, Pencil, Plus } from "lucide-react";
 import TaskStatusBadge from "@/components/TaskStatusBadge";
 import { formatTaskLabel } from "@/lib/tasks";
 
@@ -55,7 +55,14 @@ export default function ProjectBoard({
   milestones: MilestoneLens[];
 }) {
   const router = useRouter();
-  const [selectedMilestone, setSelectedMilestone] = useState<string>("all");
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const selectedMilestoneParam = searchParams.get("milestone") || "all";
+  const selectedMilestone = selectedMilestoneParam === "none" || selectedMilestoneParam === "all" || milestones.some((item) => item.id === selectedMilestoneParam)
+    ? selectedMilestoneParam
+    : "all";
+  const boardHref = `${pathname}${selectedMilestone === "all" ? "" : `?milestone=${encodeURIComponent(selectedMilestone)}`}`;
+  const createTaskHref = `${pathname}?modal=new${selectedMilestone === "all" ? "" : `&milestone=${encodeURIComponent(selectedMilestone)}`}${selectedMilestone !== "all" && selectedMilestone !== "none" ? `&milestoneId=${encodeURIComponent(selectedMilestone)}` : ""}${columns[0] ? `&boardColumnId=${encodeURIComponent(columns[0].id)}` : ""}`;
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
   const [droppingColumnId, setDroppingColumnId] = useState<string | null>(null);
   const [moving, setMoving] = useState<string | null>(null);
@@ -72,6 +79,14 @@ export default function ProjectBoard({
     : selectedMilestone === "none"
       ? "No milestone only"
       : milestones.find((item) => item.id === selectedMilestone)?.title || "Milestone";
+
+  function updateMilestoneFilter(nextMilestone: string) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (nextMilestone === "all") params.delete("milestone");
+    else params.set("milestone", nextMilestone);
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }
 
   async function moveTask(taskId: string, columnId: string) {
     setMoving(taskId);
@@ -112,7 +127,7 @@ export default function ProjectBoard({
               </div>
             </div>
           </div>
-          <Link href={`/tasks/new?projectId=${projectId}${columns[0] ? `&boardColumnId=${columns[0].id}` : ""}`} className="inline-flex items-center justify-center gap-2 rounded-md bg-[#405189] px-3 py-2 text-sm font-medium text-white hover:bg-[#364474]">
+          <Link href={createTaskHref} scroll={false} className="inline-flex items-center justify-center gap-2 rounded-md bg-[#405189] px-3 py-2 text-sm font-medium text-white hover:bg-[#364474]">
             <Plus size={15} /> Add task
           </Link>
         </div>
@@ -123,18 +138,18 @@ export default function ProjectBoard({
             Milestone filter
           </div>
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => setSelectedMilestone("all")} className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm ${selectedMilestone === "all" ? "border-[#405189]/25 bg-[#405189]/10 text-[#405189]" : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"}`}>
+            <button onClick={() => updateMilestoneFilter("all")} className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm ${selectedMilestone === "all" ? "border-[#405189]/25 bg-[#405189]/10 text-[#405189]" : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"}`}>
               <span className="font-medium">All project tasks</span>
               <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-gray-700 ring-1 ring-inset ring-gray-200">{tasks.length}</span>
             </button>
             {milestones.map((milestone) => (
-              <button key={milestone.id} onClick={() => setSelectedMilestone(milestone.id)} className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm ${selectedMilestone === milestone.id ? "border-[#405189]/25 bg-[#405189]/10 text-[#405189]" : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"}`}>
+              <button key={milestone.id} onClick={() => updateMilestoneFilter(milestone.id)} className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm ${selectedMilestone === milestone.id ? "border-[#405189]/25 bg-[#405189]/10 text-[#405189]" : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"}`}>
                 <span className="font-medium">{milestone.title}</span>
                 <span className="text-xs text-gray-500">{formatTaskLabel(milestone.status)}</span>
                 <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-gray-700 ring-1 ring-inset ring-gray-200">{milestone.taskCount}</span>
               </button>
             ))}
-            <button onClick={() => setSelectedMilestone("none")} className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm ${selectedMilestone === "none" ? "border-[#405189]/25 bg-[#405189]/10 text-[#405189]" : "border-dashed border-gray-300 bg-white text-gray-700 hover:border-gray-400"}`}>
+            <button onClick={() => updateMilestoneFilter("none")} className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm ${selectedMilestone === "none" ? "border-[#405189]/25 bg-[#405189]/10 text-[#405189]" : "border-dashed border-gray-300 bg-white text-gray-700 hover:border-gray-400"}`}>
               <span className="font-medium">No Milestone</span>
               <span className="text-xs text-gray-500">Loose project tasks</span>
               <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700 ring-1 ring-inset ring-slate-200">{noMilestoneCount}</span>
@@ -184,16 +199,17 @@ export default function ProjectBoard({
                       <div className="flex items-start gap-2">
                         <GripVertical size={16} className="mt-0.5 text-gray-300" />
                         <div>
-                          <Link href={`/tasks/${task.id}`} className="text-sm font-semibold text-gray-900 hover:text-[#405189] hover:underline">{task.title}</Link>
+                          <Link href={`${pathname}?modal=edit&taskId=${encodeURIComponent(task.id)}${selectedMilestone === "all" ? "" : `&milestone=${encodeURIComponent(selectedMilestone)}`}`} scroll={false} className="text-sm font-semibold text-gray-900 hover:text-[#405189] hover:underline">{task.title}</Link>
                           <p className="mt-1 text-xs leading-5 text-gray-500">{task.description || "No additional notes yet."}</p>
                         </div>
                       </div>
                       <TaskStatusBadge status={task.status} />
                     </div>
-                    <div className="flex flex-wrap gap-2 text-[11px] text-gray-600">
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-600">
                       <span className="rounded-full bg-slate-100 px-2 py-1 ring-1 ring-inset ring-slate-200">{task.milestoneTitle || "No Milestone"}</span>
                       <span className="rounded-full bg-slate-100 px-2 py-1 ring-1 ring-inset ring-slate-200">{task.assignee}</span>
                       <span className="rounded-full bg-slate-100 px-2 py-1 ring-1 ring-inset ring-slate-200">Due {task.dueLabel}</span>
+                      <Link href={`${pathname}?modal=edit&taskId=${encodeURIComponent(task.id)}${selectedMilestone === "all" ? "" : `&milestone=${encodeURIComponent(selectedMilestone)}`}`} scroll={false} className="inline-flex items-center gap-1 rounded-full border border-[#405189]/15 bg-[#405189]/5 px-2.5 py-1 font-semibold text-[#405189] hover:border-[#405189]/30 hover:bg-[#405189]/10"><Pencil size={12} /> Edit</Link>
                     </div>
                   </article>
                 ))}

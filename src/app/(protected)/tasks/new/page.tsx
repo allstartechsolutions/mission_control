@@ -2,8 +2,8 @@ import Link from "next/link";
 import TaskForm from "@/components/TaskForm";
 import { prisma } from "@/lib/prisma";
 
-export default async function NewTaskPage({ searchParams }: { searchParams: Promise<{ clientId?: string; projectId?: string; milestoneId?: string; boardColumnId?: string }> }) {
-  const { clientId: rawClientId, projectId: rawProjectId, milestoneId: rawMilestoneId, boardColumnId = "" } = await searchParams;
+export default async function NewTaskPage({ searchParams }: { searchParams: Promise<{ clientId?: string; projectId?: string; milestoneId?: string; boardColumnId?: string; returnTo?: string }> }) {
+  const { clientId: rawClientId, projectId: rawProjectId, milestoneId: rawMilestoneId, boardColumnId = "", returnTo } = await searchParams;
   const [teamMembers, clients, projectContext, milestoneContext] = await Promise.all([
     prisma.user.findMany({ orderBy: [{ name: "asc" }, { email: "asc" }], select: { id: true, name: true, email: true, role: true, status: true } }),
     prisma.client.findMany({
@@ -28,16 +28,22 @@ export default async function NewTaskPage({ searchParams }: { searchParams: Prom
     projectLocked: true,
     milestoneLocked: true,
     contextLabel: `${milestoneContext.project.client.companyName} / ${milestoneContext.project.name} / ${milestoneContext.title}`,
-    backHref: `/projects/${milestoneContext.project.id}`,
+    backHref: returnTo || `/projects/${milestoneContext.project.id}`,
+    submitHref: returnTo,
   } : projectContext ? {
     clientLocked: true,
     projectLocked: true,
     contextLabel: `${projectContext.client.companyName} / ${projectContext.name}`,
-    backHref: `/projects/${projectContext.id}`,
+    backHref: returnTo || `/projects/${projectContext.id}`,
+    submitHref: returnTo,
   } : clientId ? {
     clientLocked: !!rawClientId,
     contextLabel: clients.find((client) => client.id === clientId)?.companyName,
-    backHref: rawClientId ? `/clients/${clientId}` : "/tasks",
+    backHref: returnTo || (rawClientId ? `/clients/${clientId}` : "/tasks"),
+    submitHref: returnTo,
+  } : returnTo ? {
+    backHref: returnTo,
+    submitHref: returnTo,
   } : undefined;
 
   return (
@@ -48,7 +54,7 @@ export default async function NewTaskPage({ searchParams }: { searchParams: Prom
           <h1 className="mt-2 text-xl font-semibold text-gray-800">Create task</h1>
           <p className="mt-1 text-sm text-gray-500">Create standalone or linked tasks with assignment, billing, and delivery context.</p>
         </div>
-        <Link href="/tasks" className="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50">Back to tasks</Link>
+        <Link href={returnTo || "/tasks"} scroll={false} className="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50">{returnTo ? "Back to board" : "Back to tasks"}</Link>
       </div>
       <TaskForm mode="create" teamMembers={teamMembers} clients={clients} context={context} initialValues={{ clientId, projectId, milestoneId, boardColumnId }} />
     </div>
