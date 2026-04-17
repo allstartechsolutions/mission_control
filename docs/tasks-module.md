@@ -37,7 +37,7 @@ Key fields:
 - `GET|POST /api/tasks`
 - `GET|PATCH|DELETE /api/tasks/[id]`
 - `POST /api/tasks/[id]/time-entries`
-- `DELETE /api/tasks/[id]/time-entries/[entryId]`
+- `PATCH|DELETE /api/tasks/[id]/time-entries/[entryId]`
 - `POST /api/tasks/[id]/timer`
 - `PATCH /api/tasks/[id]/status`
 - `PATCH /api/tasks/[id]/tags`
@@ -89,7 +89,9 @@ Key fields:
 - Task detail shows total tracked time, current timer state, and who started the active timer.
 - Operators can start, pause, resume, or stop the task timer directly from the task page.
 - Running timers show the active session duration on the task page.
-- Existing time entries can now be deleted from the task page when cleanup is needed.
+- Existing time entries can now be edited inline from the task page, including start, end, minutes, and note.
+- Existing time entries can also be deleted from the task page when cleanup is needed.
+- Running tasks show a live `HH:MM:SS` session counter that updates in the browser every second.
 - Manual entries still sit alongside timer-generated history in one timeline.
 
 ## Phase 1 UI now available
@@ -104,7 +106,7 @@ Key fields:
 ## Operational gotchas
 
 - Scheduled tasks can re-enter from `waiting`, not just `scheduled`, after cooldown.
-- Timer pause and stop currently stamp a simple system note (`Timer paused` or `Timer stopped`) onto the generated entry instead of prompting for a custom note.
+- Timer pause and stop still stamp a simple system note (`Timer paused` or `Timer stopped`) onto the generated entry, but operators can now edit that saved entry afterward.
 - Board placement sync uses task status mapping, but board drag does not sync status back.
 - Deleting tasks is allowed via API, so be cautious around tasks with useful run history.
 - `GET /api/tasks/stream` exists for live refresh behavior and should be considered part of UI runtime, not public API.

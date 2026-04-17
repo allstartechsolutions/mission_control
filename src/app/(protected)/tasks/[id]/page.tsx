@@ -148,7 +148,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
           </div>
         </TaskMetaCard>
         <TaskMetaCard title="Time tracking" icon={CalendarDays}>
-          <TaskTimePanel taskId={task.id} entries={task.timeEntries} totalMinutes={totalTrackedMinutes} timerState={task.timerState} timerStartedAt={task.timerStartedAt} timerStartedBy={task.timerStartedBy} />
+          <TaskTimePanel taskId={task.id} entries={task.timeEntries} timerState={task.timerState} timerStartedAt={task.timerStartedAt} timerStartedBy={task.timerStartedBy} />
         </TaskMetaCard>
         <TaskMetaCard title="Execution runs" icon={AlertTriangle}>
           <div className="space-y-4">
