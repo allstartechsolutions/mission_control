@@ -2,6 +2,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, CalendarDays, CircleDollarSign, FileText, Link2, Workflow } from "lucide-react";
+import InlineTaskTags from "@/components/InlineTaskTags";
 import TaskLiveRefresh from "@/components/TaskLiveRefresh";
 import TaskStatusBadge from "@/components/TaskStatusBadge";
 import TaskTimePanel from "@/components/TaskTimePanel";
@@ -47,6 +48,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
 
   if (!task) notFound();
 
+  const availableTags = await prisma.taskTag.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } });
   const executorBehavior = getExecutorBehavior(task.executorType);
   const showSchedule = isNonHumanExecutor(task.executorType);
   const latestRun = task.taskRuns[0] || null;
@@ -122,8 +124,11 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
         </TaskMetaCard>
         <TaskMetaCard title="Tags and linked records" icon={Link2}>
           <div className="space-y-4">
+            <div className="rounded-lg bg-gray-50 px-4 py-3">
+              <div className="mb-2 text-sm font-medium text-gray-700">Tags</div>
+              <InlineTaskTags taskId={task.id} tags={task.tagAssignments.map((a) => a.tag)} availableTags={availableTags} />
+            </div>
             <TaskStats items={[
-              { label: "Tags", value: task.tagAssignments.length ? task.tagAssignments.map((assignment) => assignment.tag.name).join(", ") : "No tags yet" },
               { label: "Client", value: task.client?.companyName || "Standalone" },
               { label: "Project", value: task.project?.name || "Not linked" },
               { label: "Milestone", value: task.milestone?.title || "Not linked" },

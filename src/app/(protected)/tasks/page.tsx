@@ -99,6 +99,7 @@ export default async function TasksPage() {
           dueDateLabel: isOverdue ? `${formatDate(task.dueDate)} · overdue` : isDueToday ? `${formatDate(task.dueDate)} · today` : formatDate(task.dueDate),
           amount: task.billable ? `${formatTaskLabel(task.billingType)}${task.amount ? ` • ${formatCurrency(task.amount)}` : ""}` : "Not billable",
           tagLabel: task.tagAssignments.map((assignment) => assignment.tag.name).join(", "),
+          tagNames: task.tagAssignments.map((assignment) => assignment.tag.name),
           totalTrackedMinutes: task.timeEntries.reduce((sum, entry) => sum + entry.minutes, 0),
           billableLabel: task.billable ? "Yes" : "No",
           isOverdue,

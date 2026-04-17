@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle, Check, Circle, Eye, Pencil, Play, Plus, Search } from "lucide-react";
 import DeleteTaskButton from "@/components/DeleteTaskButton";
 import TaskStatusBadge from "@/components/TaskStatusBadge";
+import TaskTagChip from "@/components/TaskTagChip";
 import { formatMinutes, formatTaskLabel, getExecutorBehavior } from "@/lib/tasks";
 
 type TaskRow = {
@@ -22,6 +23,7 @@ type TaskRow = {
   amount: string;
   billableLabel: string;
   tagLabel: string;
+  tagNames: string[];
   totalTrackedMinutes: number;
   isOverdue: boolean;
   isDueToday: boolean;
@@ -232,7 +234,7 @@ export default function TasksTable({ tasks }: { tasks: TaskRow[] }) {
                           <span>{task.billableLabel === "Yes" ? task.amount : "Internal / non-billable"}</span>
                           <span>•</span>
                           <span>{formatMinutes(task.totalTrackedMinutes)} tracked</span>
-                          {task.tagLabel ? <><span>•</span><span>{task.tagLabel}</span></> : null}
+                          {task.tagNames.length ? <><span>•</span>{task.tagNames.map((name) => <TaskTagChip key={name} name={name} />)}</> : null}
                           {task.isAssignedToMe ? <><span>•</span><span className="font-medium text-[#405189]">Assigned to me</span></> : null}
                           {task.isCreatedByMe ? <><span>•</span><span>Created by me</span></> : null}
                           {task.lastRunStatus ? <><span>•</span><span className={task.lastRunStatus === "failed" ? "font-medium text-rose-600" : "font-medium text-emerald-700"}>Last run {formatTaskLabel(task.lastRunStatus)}</span></> : null}

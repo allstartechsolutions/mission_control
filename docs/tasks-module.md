@@ -37,6 +37,7 @@ Key fields:
 - `GET|PATCH|DELETE /api/tasks/[id]`
 - `POST /api/tasks/[id]/time-entries`
 - `PATCH /api/tasks/[id]/status`
+- `PATCH /api/tasks/[id]/tags`
 - `POST /api/tasks/[id]/dispatch`
 - `GET /api/tasks/stream`
 
@@ -75,7 +76,9 @@ Key fields:
 
 - Task create/edit supports comma-separated tags with autocomplete from existing tags.
 - Saving a task can create new tags and assign multiple tags safely.
-- Task detail shows tags, total tracked time, manual time entry form, and full time-entry history.
+- Task detail shows tags as interactive chips with inline add/remove (no need to visit the edit page).
+- Task list and task form render tags as polished label chips instead of plain text.
+- Tags can be updated independently via `PATCH /api/tasks/[id]/tags` with a `{ tagNames }` JSON body.
 - Task list surfaces tracked time and tags inline for quick triage.
 
 ## Operational gotchas
