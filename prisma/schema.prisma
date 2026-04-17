@@ -29,6 +29,12 @@ enum TaskBillingType {
   hourly
 }
 
+enum TaskTimerState {
+  idle
+  running
+  paused
+}
+
 enum TaskRunStatus {
   queued
   running
@@ -69,6 +75,7 @@ model User {
   suggestions   Suggestion[]
   createdTasks  Task[]       @relation("TaskCreator")
   assignedTasks Task[]       @relation("TaskAssignee")
+  startedTimers Task[]       @relation("TaskTimerStarter")
   taskRuns      TaskRun[]
   timeEntries   TaskTimeEntry[]
   createdAt     DateTime     @default(now())
@@ -333,6 +340,9 @@ model Task {
   cronEnabled         Boolean             @default(false)
   cronLastRunAt       DateTime?
   cronNextRunAt       DateTime?
+  timerState          TaskTimerState      @default(idle)
+  timerStartedAt      DateTime?
+  timerStartedById    String?
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
   createdBy           User                @relation("TaskCreator", fields: [createdById], references: [id], onDelete: Restrict)
@@ -341,6 +351,7 @@ model Task {
   project             Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
   milestone           ProjectMilestone?   @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
   requesterEmployee   ClientEmployee?     @relation("TaskRequester", fields: [requesterEmployeeId], references: [id], onDelete: SetNull)
+  timerStartedBy      User?               @relation("TaskTimerStarter", fields: [timerStartedById], references: [id], onDelete: SetNull)
   taskRuns            TaskRun[]
   taskEvents          TaskRunEvent[]
   boardPlacement      TaskBoardPlacement?
@@ -355,6 +366,8 @@ model Task {
   @@index([milestoneId])
   @@index([requesterEmployeeId])
   @@index([dueDate])
+  @@index([timerState])
+  @@index([timerStartedById])
 }
 
 model TaskTag {

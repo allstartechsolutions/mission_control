@@ -1,4 +1,4 @@
-import { Prisma, TaskBillingType, TaskExecutorType, TaskStatus } from "@prisma/client";
+import { Prisma, TaskBillingType, TaskExecutorType, TaskStatus, TaskTimerState } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { computeNextRunAt } from "@/lib/cron";
 import { formatEnumLabel } from "@/lib/format";
@@ -9,6 +9,7 @@ export type TaskTagOption = { id: string; name: string; normalizedName: string }
 export const taskStatusOptions = Object.values(TaskStatus);
 export const taskExecutorTypeOptions = Object.values(TaskExecutorType);
 export const taskBillingTypeOptions = Object.values(TaskBillingType);
+export const taskTimerStateOptions = Object.values(TaskTimerState);
 export const defaultCronTimezone = "America/New_York";
 export const weekdayOptions = [
   { value: "1", label: "Monday", shortLabel: "Mon" },
@@ -343,6 +344,26 @@ export async function syncTaskTags(taskId: string, tagNames: string[]) {
 
   await prisma.taskTagAssignment.createMany({ data: tags.map((tag) => ({ taskId, tagId: tag.id })), skipDuplicates: true });
   return tags;
+}
+
+export function getTimerElapsedMinutes(startedAt: Date | string, endedAt: Date | string = new Date()) {
+  const started = new Date(startedAt);
+  const ended = new Date(endedAt);
+  const diffMs = ended.getTime() - started.getTime();
+  if (Number.isNaN(started.getTime()) || Number.isNaN(ended.getTime()) || diffMs <= 0) return 1;
+  return Math.max(1, Math.ceil(diffMs / 60000));
+}
+
+export function formatTimerState(value: TaskTimerState | string | null | undefined) {
+  switch (value) {
+    case "running":
+      return "Running";
+    case "paused":
+      return "Paused";
+    case "idle":
+    default:
+      return "Stopped";
+  }
 }
 
 export function parseTaskTimeEntryInput(input: { entryDate: string | null | undefined; startTime: string | null | undefined; minutes: string | null | undefined; }) {

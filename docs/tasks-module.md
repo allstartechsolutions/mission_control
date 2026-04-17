@@ -21,8 +21,9 @@ Key fields:
 - `createdById`, `assignedToId` (required)
 - optional `clientId`, `projectId`, `milestoneId`, `requesterEmployeeId`
 - optional scheduling fields: `cronEnabled`, `cronExpression`, `cronTimezone`, `cronLastRunAt`, `cronNextRunAt`
+- timer fields: `timerState` (`idle`, `running`, `paused`), `timerStartedAt`, `timerStartedById`
 - task tags via `TaskTag` + `TaskTagAssignment`
-- manual task time history via `TaskTimeEntry` (`startedAt`, `endedAt`, `minutes`, `note`, `recordedById`)
+- task time history via `TaskTimeEntry` (`startedAt`, `endedAt`, `minutes`, `note`, `recordedById`) for both manual entries and completed timer sessions
 
 ## Main pages
 
@@ -36,6 +37,8 @@ Key fields:
 - `GET|POST /api/tasks`
 - `GET|PATCH|DELETE /api/tasks/[id]`
 - `POST /api/tasks/[id]/time-entries`
+- `DELETE /api/tasks/[id]/time-entries/[entryId]`
+- `POST /api/tasks/[id]/timer`
 - `PATCH /api/tasks/[id]/status`
 - `PATCH /api/tasks/[id]/tags`
 - `POST /api/tasks/[id]/dispatch`
@@ -60,6 +63,15 @@ Key fields:
 - `agent`: dispatched as an OpenClaw agent-style run
 - `automation`: dispatched from a shell runbook in the task description
 
+## Time tracking behavior
+
+- Manual time entry remains available for backfill or corrections.
+- Live timer supports `start`, `pause`, `resume`, and `stop`.
+- `pause` and `stop` automatically write a `TaskTimeEntry` using the real timer start and end timestamps.
+- `resume` starts a new running segment, so total tracked time accumulates across multiple work sessions on the same task.
+- `stop` clears the running timer and leaves the task's tracked history intact.
+- Time tracking stays separate from billing. Billable state does not control whether time can be logged.
+
 ## Billing behavior
 
 - If `billable` is false, billing type is forced to `none` and amount is cleared.
@@ -71,6 +83,14 @@ Key fields:
 - Task descriptions for automation may contain executable shell. Treat them like code, not prose.
 - Dispatch is disabled for human tasks by API design.
 - Status-only updates create lifecycle run/event records, which is useful audit history.
+
+## Time tracking UI now available
+
+- Task detail shows total tracked time, current timer state, and who started the active timer.
+- Operators can start, pause, resume, or stop the task timer directly from the task page.
+- Running timers show the active session duration on the task page.
+- Existing time entries can now be deleted from the task page when cleanup is needed.
+- Manual entries still sit alongside timer-generated history in one timeline.
 
 ## Phase 1 UI now available
 
@@ -84,6 +104,7 @@ Key fields:
 ## Operational gotchas
 
 - Scheduled tasks can re-enter from `waiting`, not just `scheduled`, after cooldown.
+- Timer pause and stop currently stamp a simple system note (`Timer paused` or `Timer stopped`) onto the generated entry instead of prompting for a custom note.
 - Board placement sync uses task status mapping, but board drag does not sync status back.
 - Deleting tasks is allowed via API, so be cautious around tasks with useful run history.
 - `GET /api/tasks/stream` exists for live refresh behavior and should be considered part of UI runtime, not public API.

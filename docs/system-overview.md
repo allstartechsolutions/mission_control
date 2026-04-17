@@ -152,6 +152,9 @@ Treat this as an operational risk until role-based authorization is added.
 
 - `GET|POST /api/tasks`
 - `GET|PATCH|DELETE /api/tasks/[id]`
+- `POST /api/tasks/[id]/time-entries`
+- `DELETE /api/tasks/[id]/time-entries/[entryId]`
+- `POST /api/tasks/[id]/timer`
 - `PATCH /api/tasks/[id]/status`
 - `POST /api/tasks/[id]/dispatch`
 - `GET /api/tasks/stream`
@@ -184,6 +187,9 @@ Treat this as an operational risk until role-based authorization is added.
 - `Project`
 - `ProjectMilestone`
 - `Task`
+- `TaskTag`
+- `TaskTagAssignment`
+- `TaskTimeEntry`
 - `Board`
 - `BoardColumn`
 - `TaskBoardPlacement`

@@ -51,6 +51,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       project: { select: { id: true, name: true } },
       milestone: { select: { id: true, title: true } },
       requesterEmployee: { select: { id: true, name: true, title: true, email: true } },
+      timerStartedBy: { select: { name: true, email: true } },
       tagAssignments: { include: { tag: true }, orderBy: { createdAt: "asc" } },
       timeEntries: { orderBy: { startedAt: "desc" }, include: { recordedBy: { select: { name: true, email: true } } } },
     },

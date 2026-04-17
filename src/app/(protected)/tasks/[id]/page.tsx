@@ -8,7 +8,7 @@ import TaskStatusBadge from "@/components/TaskStatusBadge";
 import TaskTimePanel from "@/components/TaskTimePanel";
 import TaskWorkspaceShell, { TaskMetaCard, TaskStats } from "@/components/TaskWorkspaceShell";
 import { prisma } from "@/lib/prisma";
-import { describeCronSchedule, formatCurrency, formatDate, formatDateTime, formatMinutes, formatTaskLabel, getExecutorBehavior, isNonHumanExecutor } from "@/lib/tasks";
+import { describeCronSchedule, formatCurrency, formatDate, formatDateTime, formatMinutes, formatTaskLabel, formatTimerState, getExecutorBehavior, getTimerElapsedMinutes, isNonHumanExecutor } from "@/lib/tasks";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +28,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
       project: { select: { id: true, name: true } },
       milestone: { select: { id: true, title: true } },
       requesterEmployee: { select: { name: true, title: true, email: true } },
+      timerStartedBy: { select: { name: true, email: true } },
       tagAssignments: { include: { tag: true }, orderBy: { createdAt: "asc" } },
       timeEntries: { orderBy: { startedAt: "desc" }, include: { recordedBy: { select: { name: true, email: true } } } },
       taskRuns: {
@@ -52,6 +53,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
   const executorBehavior = getExecutorBehavior(task.executorType);
   const showSchedule = isNonHumanExecutor(task.executorType);
   const latestRun = task.taskRuns[0] || null;
+  const activeTimerMinutes = task.timerState === "running" && task.timerStartedAt ? getTimerElapsedMinutes(task.timerStartedAt) : 0;
   const totalTrackedMinutes = task.timeEntries.reduce((sum, entry) => sum + entry.minutes, 0);
 
   return (
@@ -137,11 +139,16 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
             <div className="rounded-lg bg-gray-50 px-4 py-3 text-sm text-gray-600">
               <div className="mb-2 font-medium text-gray-700">Current status</div>
               <TaskStatusBadge status={task.status} />
+              <div className="mt-3 border-t border-gray-200 pt-3">
+                <div className="mb-1 font-medium text-gray-700">Timer state</div>
+                <div className="text-sm text-gray-700">{formatTimerState(task.timerState)}</div>
+                {task.timerState === "running" && task.timerStartedAt ? <div className="mt-1 text-xs text-gray-500">Running since {formatDateTime(task.timerStartedAt)} by {task.timerStartedBy?.name || task.timerStartedBy?.email || "system"} • {formatMinutes(activeTimerMinutes)} so far</div> : null}
+              </div>
             </div>
           </div>
         </TaskMetaCard>
         <TaskMetaCard title="Time tracking" icon={CalendarDays}>
-          <TaskTimePanel taskId={task.id} entries={task.timeEntries} totalMinutes={totalTrackedMinutes} />
+          <TaskTimePanel taskId={task.id} entries={task.timeEntries} totalMinutes={totalTrackedMinutes} timerState={task.timerState} timerStartedAt={task.timerStartedAt} timerStartedBy={task.timerStartedBy} />
         </TaskMetaCard>
         <TaskMetaCard title="Execution runs" icon={AlertTriangle}>
           <div className="space-y-4">
