@@ -58,7 +58,7 @@ export default function DeleteTaskButton({
       type="button"
       onClick={handleDelete}
       disabled={disabled}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-200 text-red-600 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500 text-white shadow-sm ring-1 ring-inset ring-white/20 transition hover:bg-rose-400 disabled:cursor-not-allowed disabled:opacity-60"
       title="Delete task"
       aria-label="Delete task"
     >

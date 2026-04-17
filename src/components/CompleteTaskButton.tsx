@@ -57,7 +57,7 @@ export default function CompleteTaskButton({
       type="button"
       onClick={handleComplete}
       disabled={isDisabled}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-green-200 text-green-600 hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-sm ring-1 ring-inset ring-white/20 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
       title="Complete task"
       aria-label="Complete task"
     >
