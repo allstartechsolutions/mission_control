@@ -11,9 +11,6 @@ type LoginPageProps = {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = (await searchParams) ?? {};
   const error = params.error === "InvalidCredentials" ? "Invalid email or password" : "";
-  const authBaseUrl = process.env.NEXTAUTH_URL ?? process.env.AUTH_URL;
-  const dashboardRedirect = authBaseUrl ? new URL("/dashboard", authBaseUrl).toString() : "/dashboard";
-
   async function authenticate(formData: FormData) {
     "use server";
 
@@ -21,7 +18,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       await signIn("credentials", {
         email: formData.get("email"),
         password: formData.get("password"),
-        redirectTo: dashboardRedirect,
+        redirectTo: "/dashboard",
       });
     } catch (err) {
       if (err instanceof AuthError) {

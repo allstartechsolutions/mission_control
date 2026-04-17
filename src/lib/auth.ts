@@ -48,31 +48,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async redirect({ url, baseUrl }) {
       const resolvedBaseUrl = preferredAuthUrl ?? baseUrl;
+      const normalizedBaseUrl = new URL(baseUrl);
+      const normalizedPreferredBaseUrl = preferredAuthUrl ? new URL(preferredAuthUrl) : null;
       const localhostBaseUrl = "http://localhost:3001";
 
       if (url.startsWith("/")) {
-        return new URL(url, resolvedBaseUrl).toString();
+        return new URL(url, normalizedBaseUrl).toString();
       }
 
-      if (url.startsWith(localhostBaseUrl)) {
-        return url.replace(localhostBaseUrl, resolvedBaseUrl);
+      if (url.startsWith(localhostBaseUrl) && normalizedPreferredBaseUrl) {
+        return url.replace(localhostBaseUrl, normalizedPreferredBaseUrl.origin);
       }
 
       try {
         const targetUrl = new URL(url);
-        const normalizedBaseUrl = new URL(baseUrl);
 
-        if (targetUrl.origin === normalizedBaseUrl.origin) {
-          return new URL(
-            `${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`,
-            resolvedBaseUrl
-          ).toString();
+        if (
+          targetUrl.origin === normalizedBaseUrl.origin ||
+          (normalizedPreferredBaseUrl && targetUrl.origin === normalizedPreferredBaseUrl.origin)
+        ) {
+          return targetUrl.toString();
         }
       } catch {
         return resolvedBaseUrl;
       }
 
-      return url;
+      return resolvedBaseUrl;
     },
     async jwt({ token, user }) {
       if (user) {
