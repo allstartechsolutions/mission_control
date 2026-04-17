@@ -83,7 +83,7 @@ export default async function ProjectBoardPage({
   const shouldRenderEditModal = modal === "edit" && !!taskId;
   const needsModalData = shouldRenderCreateModal || shouldRenderEditModal;
 
-  const [teamMembers, clients, editTask] = needsModalData
+  const [teamMembers, clients, availableTags, editTask] = needsModalData
     ? await Promise.all([
         prisma.user.findMany({ orderBy: [{ name: "asc" }, { email: "asc" }], select: { id: true, name: true, email: true, role: true, status: true } }),
         prisma.client.findMany({
@@ -95,9 +95,10 @@ export default async function ProjectBoardPage({
             projects: { select: { id: true, name: true, milestones: { where: { status: { not: "archived" } }, select: { id: true, title: true }, orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] } }, orderBy: { name: "asc" } },
           },
         }),
-        shouldRenderEditModal ? prisma.task.findUnique({ where: { id: taskId! } }) : Promise.resolve(null),
+        prisma.taskTag.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
+        shouldRenderEditModal ? prisma.task.findUnique({ where: { id: taskId! }, include: { tagAssignments: { include: { tag: true }, orderBy: { createdAt: "asc" } } } }) : Promise.resolve(null),
       ])
-    : [null, null, null] as const;
+    : [null, null, null, null] as const;
 
   const selectedMilestoneId = milestone !== "all" && milestone !== "none" && project.milestones.some((item) => item.id === milestone) ? milestone : "";
 
@@ -139,12 +140,13 @@ export default async function ProjectBoardPage({
             }))}
           />
         </div>
-        {shouldRenderCreateModal && teamMembers && clients ? (
+        {shouldRenderCreateModal && teamMembers && clients && availableTags ? (
           <FullPageModal title="Add task" description="Create a task without losing your place on the board." closeHref={boardReturnHref}>
             <TaskForm
               mode="create"
               teamMembers={teamMembers}
               clients={clients}
+              availableTags={availableTags}
               context={{
                 clientLocked: true,
                 projectLocked: true,
@@ -162,13 +164,14 @@ export default async function ProjectBoardPage({
             />
           </FullPageModal>
         ) : null}
-        {shouldRenderEditModal && teamMembers && clients && editTask ? (
+        {shouldRenderEditModal && teamMembers && clients && availableTags && editTask ? (
           <FullPageModal title={`Edit task: ${editTask.title}`} description="Update the card, save, and drop right back into the same board view." closeHref={boardReturnHref}>
             <TaskForm
               mode="edit"
               taskId={editTask.id}
               teamMembers={teamMembers}
               clients={clients}
+              availableTags={availableTags}
               context={{ backHref: boardReturnHref, submitHref: boardReturnHref }}
               initialValues={{
                 title: editTask.title,
@@ -188,6 +191,7 @@ export default async function ProjectBoardPage({
                 cronEnabled: editTask.cronEnabled,
                 cronExpression: editTask.cronExpression || "",
                 cronTimezone: editTask.cronTimezone || "America/New_York",
+                tagNames: editTask.tagAssignments.map((assignment) => assignment.tag.name).join(", "),
               }}
             />
           </FullPageModal>

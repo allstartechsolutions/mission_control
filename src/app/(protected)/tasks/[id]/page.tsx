@@ -4,9 +4,10 @@ import { notFound } from "next/navigation";
 import { AlertTriangle, CalendarDays, CircleDollarSign, FileText, Link2, Workflow } from "lucide-react";
 import TaskLiveRefresh from "@/components/TaskLiveRefresh";
 import TaskStatusBadge from "@/components/TaskStatusBadge";
+import TaskTimePanel from "@/components/TaskTimePanel";
 import TaskWorkspaceShell, { TaskMetaCard, TaskStats } from "@/components/TaskWorkspaceShell";
 import { prisma } from "@/lib/prisma";
-import { describeCronSchedule, formatCurrency, formatDate, formatDateTime, formatTaskLabel, getExecutorBehavior, isNonHumanExecutor } from "@/lib/tasks";
+import { describeCronSchedule, formatCurrency, formatDate, formatDateTime, formatMinutes, formatTaskLabel, getExecutorBehavior, isNonHumanExecutor } from "@/lib/tasks";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +27,8 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
       project: { select: { id: true, name: true } },
       milestone: { select: { id: true, title: true } },
       requesterEmployee: { select: { name: true, title: true, email: true } },
+      tagAssignments: { include: { tag: true }, orderBy: { createdAt: "asc" } },
+      timeEntries: { orderBy: { startedAt: "desc" }, include: { recordedBy: { select: { name: true, email: true } } } },
       taskRuns: {
         include: {
           initiatedByUser: { select: { name: true, email: true } },
@@ -47,6 +50,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
   const executorBehavior = getExecutorBehavior(task.executorType);
   const showSchedule = isNonHumanExecutor(task.executorType);
   const latestRun = task.taskRuns[0] || null;
+  const totalTrackedMinutes = task.timeEntries.reduce((sum, entry) => sum + entry.minutes, 0);
 
   return (
     <TaskWorkspaceShell
@@ -112,12 +116,14 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
             { label: "Billable", value: task.billable ? "Yes" : "No" },
             { label: "Billing type", value: task.billable ? formatTaskLabel(task.billingType) : "Not billable" },
             { label: "Amount", value: task.billable ? formatCurrency(task.amount) : "Not billable" },
+            { label: "Tracked time", value: formatMinutes(totalTrackedMinutes) },
             { label: "Billed status", value: task.billedAt ? `Billed ${formatDate(task.billedAt)}` : "Not billed yet" },
           ]} />
         </TaskMetaCard>
-        <TaskMetaCard title="Linked records" icon={Link2}>
+        <TaskMetaCard title="Tags and linked records" icon={Link2}>
           <div className="space-y-4">
             <TaskStats items={[
+              { label: "Tags", value: task.tagAssignments.length ? task.tagAssignments.map((assignment) => assignment.tag.name).join(", ") : "No tags yet" },
               { label: "Client", value: task.client?.companyName || "Standalone" },
               { label: "Project", value: task.project?.name || "Not linked" },
               { label: "Milestone", value: task.milestone?.title || "Not linked" },
@@ -128,6 +134,9 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
               <TaskStatusBadge status={task.status} />
             </div>
           </div>
+        </TaskMetaCard>
+        <TaskMetaCard title="Time tracking" icon={CalendarDays}>
+          <TaskTimePanel taskId={task.id} entries={task.timeEntries} totalMinutes={totalTrackedMinutes} />
         </TaskMetaCard>
         <TaskMetaCard title="Execution runs" icon={AlertTriangle}>
           <div className="space-y-4">

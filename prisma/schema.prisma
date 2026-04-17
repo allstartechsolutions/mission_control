@@ -70,6 +70,7 @@ model User {
   createdTasks  Task[]       @relation("TaskCreator")
   assignedTasks Task[]       @relation("TaskAssignee")
   taskRuns      TaskRun[]
+  timeEntries   TaskTimeEntry[]
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
@@ -310,14 +311,14 @@ model SuggestionAttachment {
 }
 
 model Task {
-  id                  String            @id @default(cuid())
+  id                  String              @id @default(cuid())
   title               String
   description         String?
-  status              TaskStatus        @default(scheduled)
-  executorType        TaskExecutorType  @default(human)
-  billingType         TaskBillingType   @default(none)
-  billable            Boolean           @default(false)
-  amount              Decimal?          @db.Decimal(12, 2)
+  status              TaskStatus          @default(scheduled)
+  executorType        TaskExecutorType    @default(human)
+  billingType         TaskBillingType     @default(none)
+  billable            Boolean             @default(false)
+  amount              Decimal?            @db.Decimal(12, 2)
   billedAt            DateTime?
   startDate           DateTime?
   dueDate             DateTime
@@ -329,20 +330,22 @@ model Task {
   requesterEmployeeId String?
   cronExpression      String?
   cronTimezone        String?
-  cronEnabled         Boolean           @default(false)
+  cronEnabled         Boolean             @default(false)
   cronLastRunAt       DateTime?
   cronNextRunAt       DateTime?
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
-  createdBy           User              @relation("TaskCreator", fields: [createdById], references: [id], onDelete: Restrict)
-  assignedTo          User              @relation("TaskAssignee", fields: [assignedToId], references: [id], onDelete: Restrict)
-  client              Client?           @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  project             Project?          @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  milestone           ProjectMilestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
-  requesterEmployee   ClientEmployee?   @relation("TaskRequester", fields: [requesterEmployeeId], references: [id], onDelete: SetNull)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  createdBy           User                @relation("TaskCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  assignedTo          User                @relation("TaskAssignee", fields: [assignedToId], references: [id], onDelete: Restrict)
+  client              Client?             @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  project             Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  milestone           ProjectMilestone?   @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  requesterEmployee   ClientEmployee?     @relation("TaskRequester", fields: [requesterEmployeeId], references: [id], onDelete: SetNull)
   taskRuns            TaskRun[]
   taskEvents          TaskRunEvent[]
   boardPlacement      TaskBoardPlacement?
+  tagAssignments      TaskTagAssignment[]
+  timeEntries         TaskTimeEntry[]
 
   @@index([status])
   @@index([assignedToId])
@@ -352,6 +355,45 @@ model Task {
   @@index([milestoneId])
   @@index([requesterEmployeeId])
   @@index([dueDate])
+}
+
+model TaskTag {
+  id              String              @id @default(cuid())
+  name            String
+  normalizedName  String              @unique
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  taskAssignments TaskTagAssignment[]
+
+  @@index([name])
+}
+
+model TaskTagAssignment {
+  taskId    String
+  tagId     String
+  createdAt DateTime @default(now())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tag       TaskTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, tagId])
+  @@index([tagId])
+}
+
+model TaskTimeEntry {
+  id           String   @id @default(cuid())
+  taskId       String
+  recordedById String?
+  startedAt    DateTime
+  endedAt      DateTime
+  minutes      Int
+  note         String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  task         Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  recordedBy   User?    @relation(fields: [recordedById], references: [id], onDelete: SetNull)
+
+  @@index([taskId, startedAt])
+  @@index([recordedById])
 }
 
 model Board {

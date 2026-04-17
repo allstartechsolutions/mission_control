@@ -6,7 +6,7 @@
 
 ## Core data model
 
-Primary table: `Task`
+Primary tables: `Task`, `TaskTag`, `TaskTagAssignment`, `TaskTimeEntry`
 
 Key fields:
 
@@ -21,6 +21,8 @@ Key fields:
 - `createdById`, `assignedToId` (required)
 - optional `clientId`, `projectId`, `milestoneId`, `requesterEmployeeId`
 - optional scheduling fields: `cronEnabled`, `cronExpression`, `cronTimezone`, `cronLastRunAt`, `cronNextRunAt`
+- task tags via `TaskTag` + `TaskTagAssignment`
+- manual task time history via `TaskTimeEntry` (`startedAt`, `endedAt`, `minutes`, `note`, `recordedById`)
 
 ## Main pages
 
@@ -33,6 +35,7 @@ Key fields:
 
 - `GET|POST /api/tasks`
 - `GET|PATCH|DELETE /api/tasks/[id]`
+- `POST /api/tasks/[id]/time-entries`
 - `PATCH /api/tasks/[id]/status`
 - `POST /api/tasks/[id]/dispatch`
 - `GET /api/tasks/stream`
@@ -60,12 +63,20 @@ Key fields:
 
 - If `billable` is false, billing type is forced to `none` and amount is cleared.
 - If `billable` is true, amount is optional in schema but should be treated as intentionally set or intentionally blank by ops.
+- Time tracking is independent from billing. All tasks can log time, even when billing is `none` or fixed.
 
 ## Production and security notes
 
 - Task descriptions for automation may contain executable shell. Treat them like code, not prose.
 - Dispatch is disabled for human tasks by API design.
 - Status-only updates create lifecycle run/event records, which is useful audit history.
+
+## Phase 1 UI now available
+
+- Task create/edit supports comma-separated tags with autocomplete from existing tags.
+- Saving a task can create new tags and assign multiple tags safely.
+- Task detail shows tags, total tracked time, manual time entry form, and full time-entry history.
+- Task list surfaces tracked time and tags inline for quick triage.
 
 ## Operational gotchas
 

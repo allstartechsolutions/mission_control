@@ -46,6 +46,8 @@ export default async function TasksPage() {
       assignedTo: { select: { id: true, name: true, email: true } },
       requesterEmployee: { select: { name: true } },
       createdBy: { select: { id: true } },
+      tagAssignments: { include: { tag: true }, orderBy: { createdAt: "asc" } },
+      timeEntries: { select: { minutes: true } },
       taskRuns: {
         select: { status: true, updatedAt: true },
         orderBy: { createdAt: "desc" },
@@ -96,6 +98,8 @@ export default async function TasksPage() {
           dueDate: formatDate(task.dueDate),
           dueDateLabel: isOverdue ? `${formatDate(task.dueDate)} · overdue` : isDueToday ? `${formatDate(task.dueDate)} · today` : formatDate(task.dueDate),
           amount: task.billable ? `${formatTaskLabel(task.billingType)}${task.amount ? ` • ${formatCurrency(task.amount)}` : ""}` : "Not billable",
+          tagLabel: task.tagAssignments.map((assignment) => assignment.tag.name).join(", "),
+          totalTrackedMinutes: task.timeEntries.reduce((sum, entry) => sum + entry.minutes, 0),
           billableLabel: task.billable ? "Yes" : "No",
           isOverdue,
           isDueToday,

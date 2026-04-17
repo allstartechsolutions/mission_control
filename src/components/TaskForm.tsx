@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, InputHTMLAttributes, useEffect, useMemo, useState } from "react";
 import DatePicker from "@/components/DatePicker";
 import SearchableSelect from "@/components/SearchableSelect";
+import TaskTagsInput from "@/components/TaskTagsInput";
 import { cronExpressionFromBuilder, defaultCronTimezone, describeCronSchedule, formatTaskLabel, getDefaultTaskScheduleBuilderState, getExecutorBehavior, inferTaskScheduleBuilderState, isNonHumanExecutor, taskBillingTypeOptions, taskExecutorTypeOptions, taskStatusOptions, weekdayOptions, type TaskScheduleBuilderState } from "@/lib/tasks";
 
 type TaskFormValues = {
@@ -26,6 +27,7 @@ type TaskFormValues = {
   cronExpression: string;
   cronTimezone: string;
   boardColumnId: string;
+  tagNames: string;
 };
 
 type ClientOption = {
@@ -63,13 +65,14 @@ const defaultValues: TaskFormValues = {
   cronExpression: "",
   cronTimezone: defaultCronTimezone,
   boardColumnId: "",
+  tagNames: "",
 };
 
 function Field({ label, hint, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; hint?: string }) {
   return <label className="block space-y-1.5"><span className="text-sm font-medium text-gray-700">{label}</span><input {...props} className="form-control" />{hint ? <span className="block text-xs text-gray-500">{hint}</span> : null}</label>;
 }
 
-export default function TaskForm({ mode, taskId, initialValues, teamMembers, clients, context }: { mode: "create" | "edit"; taskId?: string; initialValues?: Partial<TaskFormValues>; teamMembers: Array<{ id: string; name: string | null; email: string; role: string; status: string }>; clients: ClientOption[]; context?: TaskContext; }) {
+export default function TaskForm({ mode, taskId, initialValues, teamMembers, clients, availableTags, context }: { mode: "create" | "edit"; taskId?: string; initialValues?: Partial<TaskFormValues>; teamMembers: Array<{ id: string; name: string | null; email: string; role: string; status: string }>; clients: ClientOption[]; availableTags: Array<{ id: string; name: string }>; context?: TaskContext; }) {
   const router = useRouter();
   const [values, setValues] = useState<TaskFormValues>({ ...defaultValues, ...initialValues });
   const [scheduleBuilder, setScheduleBuilder] = useState<TaskScheduleBuilderState>(() => inferTaskScheduleBuilderState(initialValues?.cronEnabled, initialValues?.cronExpression, initialValues?.cronTimezone));
@@ -163,6 +166,7 @@ export default function TaskForm({ mode, taskId, initialValues, teamMembers, cli
     formData.set("cronExpression", isNonHuman ? derivedCronExpression : "");
     formData.set("cronTimezone", isNonHuman ? derivedCronTimezone : "");
     formData.set("boardColumnId", values.boardColumnId);
+    formData.set("tagNames", values.tagNames);
 
     const response = await fetch(endpoint, { method, body: formData });
     const data = await response.json().catch(() => ({}));
@@ -207,6 +211,7 @@ export default function TaskForm({ mode, taskId, initialValues, teamMembers, cli
             {isNonHuman ? <p className="mt-2 text-xs text-gray-500">Non-human executors can be scheduled with a simple builder below. Mission Control still stores the cron behind the scenes.</p> : <p className="mt-2 text-xs text-gray-500">Human tasks stay manually operated, so scheduling controls stay hidden.</p>}
           </div>
           <div className="md:col-span-2"><label className="block space-y-1.5"><span className="text-sm font-medium text-gray-700">Description</span><textarea value={values.description} onChange={(event) => updateValue("description", event.target.value)} rows={4} placeholder="Add delivery notes, dependencies, or next steps." className="form-control" /></label></div>
+          <div className="md:col-span-2"><TaskTagsInput value={values.tagNames} onChange={(value) => updateValue("tagNames", value)} options={availableTags} /></div>
         </div>
       </div>
 

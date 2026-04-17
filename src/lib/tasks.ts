@@ -4,6 +4,8 @@ import { computeNextRunAt } from "@/lib/cron";
 import { formatEnumLabel } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
+export type TaskTagOption = { id: string; name: string; normalizedName: string };
+
 export const taskStatusOptions = Object.values(TaskStatus);
 export const taskExecutorTypeOptions = Object.values(TaskExecutorType);
 export const taskBillingTypeOptions = Object.values(TaskBillingType);
@@ -299,6 +301,65 @@ export function parseDate(value: string | null | undefined, label = "date") {
   const date = new Date(`${trimmed}T00:00:00`);
   if (Number.isNaN(date.getTime())) throw new Error(`Invalid ${label} value.`);
   return date;
+}
+
+export function formatMinutes(totalMinutes: number | null | undefined) {
+  const minutes = Number(totalMinutes || 0);
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+  if (!hours) return `${remainder}m`;
+  if (!remainder) return `${hours}h`;
+  return `${hours}h ${remainder}m`;
+}
+
+export function normalizeTagName(value: string) {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+export function normalizeTagKey(value: string) {
+  return normalizeTagName(value).toLowerCase();
+}
+
+export function parseTagNames(value: string | null | undefined) {
+  const raw = (value || "").split(",").map((part) => normalizeTagName(part)).filter(Boolean);
+  return Array.from(new Map(raw.map((name) => [normalizeTagKey(name), name])).values());
+}
+
+export async function syncTaskTags(taskId: string, tagNames: string[]) {
+  const normalized = tagNames.map((name) => ({ name, normalizedName: normalizeTagKey(name) }));
+  const unique = Array.from(new Map(normalized.map((tag) => [tag.normalizedName, tag])).values());
+
+  await prisma.taskTagAssignment.deleteMany({ where: { taskId } });
+  if (!unique.length) return [];
+
+  await prisma.$transaction(unique.map((tag) => prisma.taskTag.upsert({
+    where: { normalizedName: tag.normalizedName },
+    update: { name: tag.name },
+    create: tag,
+  })));
+
+  const tags = await prisma.taskTag.findMany({ where: { normalizedName: { in: unique.map((tag) => tag.normalizedName) } } });
+  if (!tags.length) return [];
+
+  await prisma.taskTagAssignment.createMany({ data: tags.map((tag) => ({ taskId, tagId: tag.id })), skipDuplicates: true });
+  return tags;
+}
+
+export function parseTaskTimeEntryInput(input: { entryDate: string | null | undefined; startTime: string | null | undefined; minutes: string | null | undefined; }) {
+  const entryDate = input.entryDate?.trim();
+  const startTime = input.startTime?.trim();
+  const minutesValue = Number(input.minutes?.trim() || "0");
+
+  if (!entryDate) throw new Error("Entry date is required.");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(entryDate)) throw new Error("Choose a valid entry date.");
+  if (!startTime || !/^\d{2}:\d{2}$/.test(startTime)) throw new Error("Choose a valid start time.");
+  if (!Number.isInteger(minutesValue) || minutesValue < 1) throw new Error("Duration must be at least 1 minute.");
+
+  const startedAt = new Date(`${entryDate}T${startTime}:00`);
+  if (Number.isNaN(startedAt.getTime())) throw new Error("Choose a valid start date and time.");
+
+  const endedAt = new Date(startedAt.getTime() + (minutesValue * 60 * 1000));
+  return { startedAt, endedAt, minutes: minutesValue };
 }
 
 export function serializeCurrency(value: Prisma.Decimal | number | string | null | undefined) {

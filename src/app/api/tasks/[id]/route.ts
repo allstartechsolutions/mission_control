@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { syncTaskBoardPlacement } from "@/lib/boards";
 import { prisma } from "@/lib/prisma";
-import { parseCurrency, parseDate, sanitizeCronFields, taskBillingTypeOptions, taskExecutorTypeOptions, taskStatusOptions, toNullableString } from "@/lib/tasks";
+import { parseCurrency, parseDate, parseTagNames, sanitizeCronFields, syncTaskTags, taskBillingTypeOptions, taskExecutorTypeOptions, taskStatusOptions, toNullableString } from "@/lib/tasks";
 
 export const dynamic = "force-dynamic";
 
@@ -51,11 +51,13 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       project: { select: { id: true, name: true } },
       milestone: { select: { id: true, title: true } },
       requesterEmployee: { select: { id: true, name: true, title: true, email: true } },
+      tagAssignments: { include: { tag: true }, orderBy: { createdAt: "asc" } },
+      timeEntries: { orderBy: { startedAt: "desc" }, include: { recordedBy: { select: { name: true, email: true } } } },
     },
   });
 
   if (!task) return NextResponse.json({ error: "Task not found." }, { status: 404 });
-  return NextResponse.json({ task });
+  return NextResponse.json({ task: { ...task, tags: task.tagAssignments.map((assignment) => assignment.tag), totalTrackedMinutes: task.timeEntries.reduce((sum, entry) => sum + entry.minutes, 0) } });
 }
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
@@ -77,6 +79,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     const requesterEmployeeId = toNullableString(formData.get("requesterEmployeeId"));
     const clientId = toNullableString(formData.get("clientId"));
     const cronEnabled = formData.get("cronEnabled") === "true";
+    const tagNames = parseTagNames(toNullableString(formData.get("tagNames")));
 
     if (!title) return NextResponse.json({ error: "Task title is required." }, { status: 400 });
     if (!assignedToId) return NextResponse.json({ error: "Assigned to is required." }, { status: 400 });
@@ -117,6 +120,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       },
     });
 
+    await syncTaskTags(task.id, tagNames);
     await syncTaskBoardPlacement(task.id, projectId, status);
 
     revalidatePath("/tasks");

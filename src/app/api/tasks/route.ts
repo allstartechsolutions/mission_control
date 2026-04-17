@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { ensureProjectBoard, syncTaskBoardPlacement } from "@/lib/boards";
 import { prisma } from "@/lib/prisma";
-import { parseCurrency, parseDate, resolveTaskActorId, sanitizeCronFields, taskBillingTypeOptions, taskExecutorTypeOptions, taskStatusOptions, toNullableString } from "@/lib/tasks";
+import { parseCurrency, parseDate, parseTagNames, resolveTaskActorId, sanitizeCronFields, syncTaskTags, taskBillingTypeOptions, taskExecutorTypeOptions, taskStatusOptions, toNullableString } from "@/lib/tasks";
 
 export const dynamic = "force-dynamic";
 
@@ -49,11 +49,13 @@ export async function GET() {
       project: { select: { id: true, name: true } },
       milestone: { select: { id: true, title: true } },
       requesterEmployee: { select: { id: true, name: true } },
+      tagAssignments: { include: { tag: true }, orderBy: { createdAt: "asc" } },
+      timeEntries: { select: { minutes: true } },
     },
     orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
   });
 
-  return NextResponse.json({ tasks });
+  return NextResponse.json({ tasks: tasks.map((task) => ({ ...task, tags: task.tagAssignments.map((assignment) => assignment.tag), totalTrackedMinutes: task.timeEntries.reduce((sum, entry) => sum + entry.minutes, 0) })) });
 }
 
 export async function POST(request: Request) {
@@ -72,6 +74,7 @@ export async function POST(request: Request) {
     const clientId = toNullableString(formData.get("clientId"));
     const cronEnabled = formData.get("cronEnabled") === "true";
     const boardColumnId = toNullableString(formData.get("boardColumnId"));
+    const tagNames = parseTagNames(toNullableString(formData.get("tagNames")));
 
     if (!title) return NextResponse.json({ error: "Task title is required." }, { status: 400 });
     if (!assignedToId) return NextResponse.json({ error: "Assigned to is required." }, { status: 400 });
@@ -115,6 +118,8 @@ export async function POST(request: Request) {
         ...cronFields,
       },
     });
+
+    await syncTaskTags(task.id, tagNames);
 
     if (projectId) {
       if (boardColumnId) {
