@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Check, Circle, Eye, Pencil, Play, Plus, Search } from "lucide-react";
+import CompleteTaskButton from "@/components/CompleteTaskButton";
 import DeleteTaskButton from "@/components/DeleteTaskButton";
 import TaskStatusBadge from "@/components/TaskStatusBadge";
 import TaskTagChip from "@/components/TaskTagChip";
@@ -285,7 +286,8 @@ export default function TasksTable({ tasks }: { tasks: TaskRow[] }) {
                     <td className="px-4 py-4 align-top">
                       <div className="flex justify-end gap-1.5">
                         <Link href={`/tasks/${task.id}`} className="inline-flex h-8 w-8 items-center justify-center rounded-md bg-[#405189] text-white hover:bg-[#364474]" title="Open task"><Eye size={15} /></Link>
-                        <Link href={`/tasks/${task.id}/edit`} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 text-gray-600 hover:border-[#405189] hover:text-[#405189]" title="Edit task"><Pencil size={15} /></Link>
+                        <Link href={`/tasks/${task.id}/edit`} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100" title="Edit task"><Pencil size={15} /></Link>
+                        {task.status !== "completed" ? <CompleteTaskButton taskId={task.id} taskTitle={task.title} /> : <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-green-200 bg-green-50 text-green-600" title="Task completed" aria-label="Task completed"><Check size={15} /></span>}
                         <DeleteTaskButton taskId={task.id} taskTitle={task.title} />
                       </div>
                     </td>
