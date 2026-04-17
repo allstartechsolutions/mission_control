@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Pencil, type LucideIcon } from "lucide-react";
+import { Check, Pencil, type LucideIcon } from "lucide-react";
+import CompleteTaskButton from "@/components/CompleteTaskButton";
 import DeleteTaskButton from "@/components/DeleteTaskButton";
 import DispatchTaskButton from "@/components/DispatchTaskButton";
 import TaskStatusBadge from "@/components/TaskStatusBadge";
@@ -47,8 +48,11 @@ export default function TaskWorkspaceShell({ task, activeTab, children, liveBadg
             </div>
             <div className="flex flex-wrap gap-2 xl:justify-end">
               {task.canDispatch ? <DispatchTaskButton taskId={task.id} /> : null}
-              <Link href={`/tasks/${task.id}/edit`} className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/15"><Pencil size={15} />Edit task</Link>
-              <DeleteTaskButton taskId={task.id} taskTitle={task.title} variant="button" />
+              <div className="flex items-center gap-2">
+                <Link href={`/tasks/${task.id}/edit`} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100" title="Edit task" aria-label="Edit task"><Pencil size={15} /></Link>
+                {task.status !== "completed" ? <CompleteTaskButton taskId={task.id} taskTitle={task.title} /> : <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-green-200 bg-green-50 text-green-600" title="Task completed" aria-label="Task completed"><Check size={15} /></span>}
+                <DeleteTaskButton taskId={task.id} taskTitle={task.title} />
+              </div>
             </div>
           </div>
         </div>
