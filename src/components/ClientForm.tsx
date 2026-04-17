@@ -147,7 +147,8 @@ export default function ClientForm({
       return;
     }
 
-    router.push("/clients");
+    const destinationClientId = mode === "create" ? data?.client?.id : clientId;
+    router.push(destinationClientId ? `/clients/${destinationClientId}` : "/clients");
     router.refresh();
   }
 
