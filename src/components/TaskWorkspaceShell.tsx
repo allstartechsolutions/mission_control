@@ -48,9 +48,9 @@ export default function TaskWorkspaceShell({ task, activeTab, children, liveBadg
             </div>
             <div className="flex flex-wrap gap-2 xl:justify-end">
               {task.canDispatch ? <DispatchTaskButton taskId={task.id} /> : null}
-              <div className="flex items-center gap-2">
-                <Link href={`/tasks/${task.id}/edit`} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100" title="Edit task" aria-label="Edit task"><Pencil size={15} /></Link>
-                {task.status !== "completed" ? <CompleteTaskButton taskId={task.id} taskTitle={task.title} /> : <span className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-green-200 bg-green-50 text-green-600" title="Task completed" aria-label="Task completed"><Check size={15} /></span>}
+              <div className="flex items-center gap-2 rounded-xl bg-white/10 p-1.5 ring-1 ring-inset ring-white/10 backdrop-blur-sm">
+                <Link href={`/tasks/${task.id}/edit`} className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm ring-1 ring-inset ring-white/20 transition hover:bg-blue-400" title="Edit task" aria-label="Edit task"><Pencil size={15} /></Link>
+                {task.status !== "completed" ? <CompleteTaskButton taskId={task.id} taskTitle={task.title} /> : <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-sm ring-1 ring-inset ring-white/20" title="Task completed" aria-label="Task completed"><Check size={15} /></span>}
                 <DeleteTaskButton taskId={task.id} taskTitle={task.title} />
               </div>
             </div>
