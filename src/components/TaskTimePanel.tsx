@@ -1,6 +1,8 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { FormEvent, useEffect, useMemo, useState, useTransition } from "react";
 import { formatDateTime, formatMinutes, formatTimerState, getTimerElapsedMinutes } from "@/lib/tasks";
 
 type TimeEntry = {
@@ -36,6 +38,8 @@ export default function TaskTimePanel({
   timerStartedAt?: string | Date | null;
   timerStartedBy?: { name: string | null; email: string } | null;
 }) {
+  const router = useRouter();
+  const [, startTransition] = useTransition();
   const [entryDate, setEntryDate] = useState(getToday());
   const [startTime, setStartTime] = useState(getDefaultStartTime());
   const [minutes, setMinutes] = useState("30");
@@ -43,10 +47,16 @@ export default function TaskTimePanel({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [localEntries, setLocalEntries] = useState(entries);
   const [elapsedLabel, setElapsedLabel] = useState(timerStartedAt ? formatMinutes(getTimerElapsedMinutes(timerStartedAt)) : "0m");
 
-  const sortedEntries = useMemo(() => [...entries].sort((a, b) => +new Date(b.startedAt) - +new Date(a.startedAt)), [entries]);
-  const displayedTotalMinutes = totalMinutes + (timerState === "running" && timerStartedAt ? getTimerElapsedMinutes(timerStartedAt) : 0);
+  useEffect(() => {
+    setLocalEntries(entries);
+  }, [entries]);
+
+  const sortedEntries = useMemo(() => [...localEntries].sort((a, b) => +new Date(b.startedAt) - +new Date(a.startedAt)), [localEntries]);
+  const localTotalMinutes = useMemo(() => localEntries.reduce((sum, entry) => sum + entry.minutes, 0), [localEntries]);
+  const displayedTotalMinutes = localTotalMinutes + (timerState === "running" && timerStartedAt ? getTimerElapsedMinutes(timerStartedAt) : 0);
 
   useEffect(() => {
     if (timerState !== "running" || !timerStartedAt) return;
@@ -103,15 +113,22 @@ export default function TaskTimePanel({
     setDeletingId(entryId);
     setError("");
 
+    const previousEntries = localEntries;
+    setLocalEntries((current) => current.filter((entry) => entry.id !== entryId));
+
     const response = await fetch(`/api/tasks/${taskId}/time-entries/${entryId}`, { method: "DELETE" });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
+      setLocalEntries(previousEntries);
       setError(data.error || "Unable to delete time entry.");
       setDeletingId(null);
       return;
     }
 
-    window.location.reload();
+    setDeletingId(null);
+    startTransition(() => {
+      router.refresh();
+    });
   }
 
   return (
@@ -167,7 +184,16 @@ export default function TaskTimePanel({
                 <div className="mt-1 text-sm text-gray-600">{formatDateTime(entry.startedAt)} to {formatDateTime(entry.endedAt)}</div>
                 <div className="mt-1 text-xs text-gray-400">Logged by {entry.recordedBy?.name || entry.recordedBy?.email || "system"} • Added {formatDateTime(entry.createdAt)}</div>
               </div>
-              <button type="button" onClick={() => handleDelete(entry.id)} disabled={deletingId === entry.id} className="inline-flex items-center justify-center rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60">{deletingId === entry.id ? "Deleting..." : "Delete"}</button>
+              <button
+                type="button"
+                onClick={() => handleDelete(entry.id)}
+                disabled={deletingId === entry.id}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-rose-200 text-rose-600 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                title={deletingId === entry.id ? "Deleting time entry" : "Delete time entry"}
+                aria-label={deletingId === entry.id ? "Deleting time entry" : "Delete time entry"}
+              >
+                <Trash2 size={15} className={deletingId === entry.id ? "animate-pulse" : undefined} />
+              </button>
             </div>
             {entry.note ? <div className="mt-3 rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-700">{entry.note}</div> : null}
           </article>
