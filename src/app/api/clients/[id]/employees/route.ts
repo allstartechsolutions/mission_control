@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { saveClientEmployeeImageFile } from "@/lib/client-employee-storage";
+import { normalizePhoneNumber } from "@/lib/phone";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -45,9 +46,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         name,
         title: toNullableString(formData.get("title")),
         email: toNullableString(formData.get("email")),
-        phone: toNullableString(formData.get("phone")),
-        mobile: toNullableString(formData.get("mobile")),
-        whatsapp: toNullableString(formData.get("whatsapp")),
+        phone: normalizePhoneNumber(toNullableString(formData.get("phone"))),
+        mobile: normalizePhoneNumber(toNullableString(formData.get("mobile"))),
+        whatsapp: normalizePhoneNumber(toNullableString(formData.get("whatsapp"))),
         status: allowedStatuses.has(status) ? status : "active",
         primaryLocationId,
         secondaryLocations: {

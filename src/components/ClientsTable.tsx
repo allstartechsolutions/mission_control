@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Building2, Eye, Mail, Pencil, Phone, Plus, Search } from "lucide-react";
-import { formatEnumLabel } from "@/lib/format";
+import { Building2, Eye, Globe, Mail, Pencil, Phone, Plus, Search } from "lucide-react";
+import { formatEnumLabel, formatPhoneDisplay } from "@/lib/format";
 
 type ClientRow = {
   id: string;
@@ -14,6 +14,8 @@ type ClientRow = {
   primaryContactTitle: string | null;
   primaryContactEmail: string | null;
   primaryContactPhone: string | null;
+  businessEmail: string | null;
+  website: string | null;
   phone: string | null;
   status: string;
   employeeCount: number;
@@ -53,6 +55,8 @@ export default function ClientsTable({ clients }: { clients: ClientRow[] }) {
         client.primaryContactName,
         client.primaryContactEmail,
         client.primaryContactPhone,
+        client.businessEmail,
+        client.website,
         client.phone,
         client.city,
         client.state,
@@ -132,11 +136,15 @@ export default function ClientsTable({ clients }: { clients: ClientRow[] }) {
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-2 text-gray-700">
                       <Phone size={13} className="text-gray-400" />
-                      <span>{client.primaryContactPhone || client.phone || "No phone"}</span>
+                      <span>{formatPhoneDisplay(client.primaryContactPhone || client.phone, "No phone")}</span>
                     </div>
                     <div className="mt-1 flex items-center gap-2 text-gray-500">
                       <Mail size={13} className="text-gray-400" />
-                      <span>{client.primaryContactEmail || "No email"}</span>
+                      <span>{client.primaryContactEmail || client.businessEmail || "No email"}</span>
+                    </div>
+                    <div className="mt-1 flex items-center gap-2 text-gray-500">
+                      <Globe size={13} className="text-gray-400" />
+                      <span className="truncate">{client.website || "No website"}</span>
                     </div>
                   </td>
                   <td className="px-4 py-4 font-medium text-gray-700">{client.employeeCount}</td>

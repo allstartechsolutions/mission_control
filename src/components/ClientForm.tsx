@@ -12,6 +12,8 @@ import { formatEnumLabel } from "@/lib/format";
 type ClientFormValues = {
   companyName: string;
   logoPath: string;
+  businessEmail: string;
+  website: string;
   addressLine1: string;
   addressLine2: string;
   city: string;
@@ -31,6 +33,8 @@ type ClientFormValues = {
 const defaultValues: ClientFormValues = {
   companyName: "",
   logoPath: "",
+  businessEmail: "",
+  website: "",
   addressLine1: "",
   addressLine2: "",
   city: "",
@@ -281,9 +285,11 @@ export default function ClientForm({
           <p className="mt-1 text-sm text-gray-500">Primary business channels for the client account.</p>
         </div>
         <div className="grid gap-4 p-5 md:grid-cols-2">
-          <Field label="Main phone" name="phone" value={values.phone} onChange={(event) => updateValue("phone", event.target.value)} placeholder="(214) 555-0143" />
-          <Field label="Mobile" name="mobile" value={values.mobile} onChange={(event) => updateValue("mobile", event.target.value)} placeholder="(214) 555-0198" />
-          <Field label="WhatsApp" name="whatsapp" value={values.whatsapp} onChange={(event) => updateValue("whatsapp", event.target.value)} placeholder="+1 214 555 0198" />
+          <Field label="Business email" name="businessEmail" type="email" value={values.businessEmail} onChange={(event) => updateValue("businessEmail", event.target.value)} placeholder="support@northstarlg.com" />
+          <Field label="Website" name="website" type="url" value={values.website} onChange={(event) => updateValue("website", event.target.value)} placeholder="https://northstarlg.com" />
+          <Field label="Main phone" name="phone" value={values.phone} onChange={(event) => updateValue("phone", event.target.value)} placeholder="(214) 555-0143" hint="Saved as +1XXXXXXXXXX when the number is a valid US number." />
+          <Field label="Mobile" name="mobile" value={values.mobile} onChange={(event) => updateValue("mobile", event.target.value)} placeholder="(214) 555-0198" hint="Saved as +1XXXXXXXXXX when the number is a valid US number." />
+          <Field label="WhatsApp" name="whatsapp" value={values.whatsapp} onChange={(event) => updateValue("whatsapp", event.target.value)} placeholder="+1 214 555 0198" hint="Saved as +1XXXXXXXXXX when the number is a valid US number." />
           <label className="block space-y-1.5">
             <span className="text-sm font-medium text-gray-700">Status</span>
             <select
@@ -311,7 +317,7 @@ export default function ClientForm({
           <Field label="Contact name" name="primaryContactName" value={values.primaryContactName} onChange={(event) => updateValue("primaryContactName", event.target.value)} placeholder="Melissa Grant" />
           <Field label="Contact title" name="primaryContactTitle" value={values.primaryContactTitle} onChange={(event) => updateValue("primaryContactTitle", event.target.value)} placeholder="Director of Operations" />
           <Field label="Contact email" name="primaryContactEmail" type="email" value={values.primaryContactEmail} onChange={(event) => updateValue("primaryContactEmail", event.target.value)} placeholder="melissa.grant@northstarlg.com" />
-          <Field label="Contact phone" name="primaryContactPhone" value={values.primaryContactPhone} onChange={(event) => updateValue("primaryContactPhone", event.target.value)} placeholder="(214) 555-0143" />
+          <Field label="Contact phone" name="primaryContactPhone" value={values.primaryContactPhone} onChange={(event) => updateValue("primaryContactPhone", event.target.value)} placeholder="(214) 555-0143" hint="Saved as +1XXXXXXXXXX when the number is a valid US number." />
         </div>
       </div>
 

@@ -47,6 +47,8 @@ export default async function EditClientPage({ params }: { params: Promise<{ id:
         initialValues={{
           companyName: client.companyName,
           logoPath: client.logoPath ?? "",
+          businessEmail: client.businessEmail ?? "",
+          website: client.website ?? "",
           addressLine1: client.addressLine1 ?? "",
           addressLine2: client.addressLine2 ?? "",
           city: client.city ?? "",

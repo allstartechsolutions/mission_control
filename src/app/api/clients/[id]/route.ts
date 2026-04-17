@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { saveClientLogoFile } from "@/lib/client-logo-storage";
+import { normalizePhoneNumber } from "@/lib/phone";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -29,19 +30,21 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
     const updateData = {
       companyName,
+      businessEmail: toNullableString(formData.get("businessEmail")),
+      website: toNullableString(formData.get("website")),
       addressLine1: toNullableString(formData.get("addressLine1")),
       addressLine2: toNullableString(formData.get("addressLine2")),
       city: toNullableString(formData.get("city")),
       state: toNullableString(formData.get("state")),
       zipCode: toNullableString(formData.get("zipCode")),
       country: toNullableString(formData.get("country")),
-      phone: toNullableString(formData.get("phone")),
-      mobile: toNullableString(formData.get("mobile")),
-      whatsapp: toNullableString(formData.get("whatsapp")),
+      phone: normalizePhoneNumber(toNullableString(formData.get("phone"))),
+      mobile: normalizePhoneNumber(toNullableString(formData.get("mobile"))),
+      whatsapp: normalizePhoneNumber(toNullableString(formData.get("whatsapp"))),
       primaryContactName: toNullableString(formData.get("primaryContactName")),
       primaryContactTitle: toNullableString(formData.get("primaryContactTitle")),
       primaryContactEmail: toNullableString(formData.get("primaryContactEmail")),
-      primaryContactPhone: toNullableString(formData.get("primaryContactPhone")),
+      primaryContactPhone: normalizePhoneNumber(toNullableString(formData.get("primaryContactPhone"))),
       status: allowedStatuses.has(status) ? status : "active",
     };
 

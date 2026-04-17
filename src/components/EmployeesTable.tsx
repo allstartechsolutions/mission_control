@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { Mail, MapPin, Pencil, Phone, Plus, Search, UserRound } from "lucide-react";
-import { formatEnumLabel } from "@/lib/format";
+import { formatEnumLabel, formatPhoneDisplay } from "@/lib/format";
 
 type EmployeeRow = {
   id: string;
@@ -150,7 +150,7 @@ export default function EmployeesTable({
                         <div className="font-semibold text-gray-800">{employee.name}</div>
                         <div className="mt-1 flex items-center gap-1 text-xs text-gray-500">
                           <UserRound size={13} />
-                          <span>{employee.whatsapp || employee.mobile || "No mobile contact"}</span>
+                          <span>{formatPhoneDisplay(employee.whatsapp || employee.mobile, "No mobile contact")}</span>
                         </div>
                       </div>
                     </div>
@@ -169,7 +169,7 @@ export default function EmployeesTable({
                   <td className="px-4 py-4">
                     <div className="flex items-center gap-2 text-gray-700">
                       <Phone size={13} className="text-gray-400" />
-                      <span>{employee.phone || employee.mobile || "No phone"}</span>
+                      <span>{formatPhoneDisplay(employee.phone || employee.mobile, "No phone")}</span>
                     </div>
                     <div className="mt-1 flex items-center gap-2 text-gray-500">
                       <Mail size={13} className="text-gray-400" />

@@ -80,6 +80,8 @@ model Client {
   id                  String           @id @default(cuid())
   companyName         String
   logoPath            String?
+  businessEmail       String?
+  website             String?
   addressLine1        String?
   addressLine2        String?
   city                String?

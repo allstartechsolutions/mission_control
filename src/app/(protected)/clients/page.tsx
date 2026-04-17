@@ -61,6 +61,8 @@ export default async function ClientsPage() {
           primaryContactTitle: client.primaryContactTitle,
           primaryContactEmail: client.primaryContactEmail,
           primaryContactPhone: client.primaryContactPhone,
+          businessEmail: client.businessEmail,
+          website: client.website,
           phone: client.phone,
           status: client.status,
           employeeCount: client._count.employees,

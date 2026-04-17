@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { MapPin, Pencil, Phone, Plus, Search } from "lucide-react";
-import { formatEnumLabel } from "@/lib/format";
+import { formatEnumLabel, formatPhoneDisplay } from "@/lib/format";
 
 type LocationRow = {
   id: string;
@@ -147,7 +147,7 @@ export default function LocationsTable({
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2 text-gray-700">
                         <Phone size={13} className="text-gray-400" />
-                        <span>{loc.phone || "No phone"}</span>
+                        <span>{formatPhoneDisplay(loc.phone, "No phone")}</span>
                       </div>
                     </td>
                     <td className="px-4 py-4 text-gray-600">{totalEmployees}</td>

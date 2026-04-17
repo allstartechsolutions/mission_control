@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
+import { normalizePhoneNumber } from "@/lib/phone";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -40,7 +41,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         state: toNullableString(formData.get("state")),
         zipCode: toNullableString(formData.get("zipCode")),
         country: toNullableString(formData.get("country")),
-        phone: toNullableString(formData.get("phone")),
+        phone: normalizePhoneNumber(toNullableString(formData.get("phone"))),
         status: allowedStatuses.has(status) ? status : "active",
       },
     });

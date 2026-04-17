@@ -2,7 +2,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { notFound } from "next/navigation";
 import { Building2, Mail, MapPin, UserRound } from "lucide-react";
 import { ClientWorkspaceShell, DetailList, InfoCard } from "@/components/ClientWorkspaceShell";
-import { formatEnumLabel } from "@/lib/format";
+import { formatEnumLabel, formatPhoneDisplay } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +18,8 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
       companyName: true,
       logoPath: true,
       status: true,
+      businessEmail: true,
+      website: true,
       addressLine1: true,
       addressLine2: true,
       city: true,
@@ -56,6 +58,8 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
         primaryContactTitle: client.primaryContactTitle,
         primaryContactEmail: client.primaryContactEmail,
         primaryContactPhone: client.primaryContactPhone,
+        businessEmail: client.businessEmail,
+        website: client.website,
         phone: client.phone,
         city: client.city,
         state: client.state,
@@ -82,9 +86,11 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
         <InfoCard title="Communication info" icon={Mail}>
           <DetailList
             items={[
-              { label: "Main phone", value: client.phone || "Not set" },
-              { label: "Mobile", value: client.mobile || "Not set" },
-              { label: "WhatsApp", value: client.whatsapp || "Not set" },
+              { label: "Business email", value: client.businessEmail || "Not set" },
+              { label: "Website", value: client.website || "Not set" },
+              { label: "Main phone", value: formatPhoneDisplay(client.phone, "Not set") },
+              { label: "Mobile", value: formatPhoneDisplay(client.mobile, "Not set") },
+              { label: "WhatsApp", value: formatPhoneDisplay(client.whatsapp, "Not set") },
               { label: "Primary email", value: client.primaryContactEmail || "Not set" },
             ]}
           />
@@ -107,7 +113,7 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
               { label: "Name", value: client.primaryContactName || "Not set" },
               { label: "Title", value: client.primaryContactTitle || "Not set" },
               { label: "Email", value: client.primaryContactEmail || "Not set" },
-              { label: "Phone", value: client.primaryContactPhone || client.phone || "Not set" },
+              { label: "Phone", value: formatPhoneDisplay(client.primaryContactPhone || client.phone, "Not set") },
             ]}
           />
         </InfoCard>

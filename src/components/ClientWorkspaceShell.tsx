@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Mail, Pencil, Plus, type LucideIcon } from "lucide-react";
-import { formatEnumLabel } from "@/lib/format";
+import { Globe, Mail, Pencil, Plus, type LucideIcon } from "lucide-react";
+import { formatEnumLabel, formatPhoneDisplay } from "@/lib/format";
 
 const statusStyles: Record<string, string> = {
   active: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
@@ -18,6 +18,8 @@ export type ClientWorkspaceSummary = {
   primaryContactTitle: string | null;
   primaryContactEmail: string | null;
   primaryContactPhone: string | null;
+  businessEmail?: string | null;
+  website?: string | null;
   phone: string | null;
   city: string | null;
   state: string | null;
@@ -59,8 +61,8 @@ export function ClientWorkspaceShell({
 }) {
   const location = [client.city, client.state].filter(Boolean).join(", ") || "Location pending";
   const primaryContact = client.primaryContactName || "No primary contact assigned";
-  const primaryContactMeta = [client.primaryContactTitle, client.primaryContactEmail].filter(Boolean).join(" • ") || "Contact details pending";
-  const preferredPhone = client.primaryContactPhone || client.phone || "No phone on file";
+  const primaryContactMeta = [client.primaryContactTitle, client.primaryContactEmail ?? client.businessEmail].filter(Boolean).join(" • ") || "Contact details pending";
+  const preferredPhone = formatPhoneDisplay(client.primaryContactPhone || client.phone, "No phone on file");
 
   return (
     <div className="space-y-6">
@@ -125,13 +127,24 @@ export function ClientWorkspaceShell({
                 <Pencil size={15} />
                 Edit client
               </Link>
-              {client.primaryContactEmail ? (
+              {client.primaryContactEmail || client.businessEmail ? (
                 <a
-                  href={`mailto:${client.primaryContactEmail}`}
+                  href={`mailto:${client.primaryContactEmail || client.businessEmail}`}
                   className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-medium text-[#405189] hover:bg-slate-100"
                 >
                   <Mail size={15} />
                   Email contact
+                </a>
+              ) : null}
+              {client.website ? (
+                <a
+                  href={client.website.startsWith("http://") || client.website.startsWith("https://") ? client.website : `https://${client.website}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm font-medium text-white hover:bg-white/15"
+                >
+                  <Globe size={15} />
+                  Visit website
                 </a>
               ) : null}
             </div>
