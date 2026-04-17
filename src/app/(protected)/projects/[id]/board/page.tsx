@@ -4,13 +4,23 @@ import BoardLiveRefresh from "@/components/BoardLiveRefresh";
 import FullPageModal from "@/components/FullPageModal";
 import ProjectBoard from "@/components/ProjectBoard";
 import ProjectWorkspaceShell from "@/components/ProjectWorkspaceShell";
+import TaskDetailContent from "@/components/TaskDetailContent";
 import TaskForm from "@/components/TaskForm";
+import TaskWorkspaceShell from "@/components/TaskWorkspaceShell";
 import { ensureProjectBoard, ensureProjectTaskPlacements } from "@/lib/boards";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency, formatDate } from "@/lib/projects";
 import { serializeCurrency } from "@/lib/tasks";
 
 export const dynamic = "force-dynamic";
+
+function pathnameForBoard(projectId: string, milestone: string, taskId: string, modal: "show" | "edit") {
+  const params = new URLSearchParams();
+  params.set("modal", modal);
+  params.set("taskId", taskId);
+  if (milestone && milestone !== "all") params.set("milestone", milestone);
+  return `/projects/${projectId}/board?${params.toString()}`;
+}
 
 export default async function ProjectBoardPage({
   params,
@@ -80,10 +90,11 @@ export default async function ProjectBoardPage({
   })));
 
   const shouldRenderCreateModal = modal === "new";
+  const shouldRenderShowModal = modal === "show" && !!taskId;
   const shouldRenderEditModal = modal === "edit" && !!taskId;
-  const needsModalData = shouldRenderCreateModal || shouldRenderEditModal;
+  const needsModalData = shouldRenderCreateModal || shouldRenderShowModal || shouldRenderEditModal;
 
-  const [teamMembers, clients, availableTags, editTask] = needsModalData
+  const [teamMembers, clients, availableTags, selectedTask] = needsModalData
     ? await Promise.all([
         prisma.user.findMany({ orderBy: [{ name: "asc" }, { email: "asc" }], select: { id: true, name: true, email: true, role: true, status: true } }),
         prisma.client.findMany({
@@ -96,7 +107,35 @@ export default async function ProjectBoardPage({
           },
         }),
         prisma.taskTag.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
-        shouldRenderEditModal ? prisma.task.findUnique({ where: { id: taskId! }, include: { tagAssignments: { include: { tag: true }, orderBy: { createdAt: "asc" } } } }) : Promise.resolve(null),
+        (shouldRenderShowModal || shouldRenderEditModal)
+          ? prisma.task.findUnique({
+              where: { id: taskId! },
+              include: {
+                assignedTo: { select: { name: true, email: true } },
+                createdBy: { select: { name: true, email: true } },
+                client: { select: { id: true, companyName: true } },
+                project: { select: { id: true, name: true } },
+                milestone: { select: { id: true, title: true } },
+                requesterEmployee: { select: { name: true, title: true, email: true } },
+                timerStartedBy: { select: { name: true, email: true } },
+                tagAssignments: { include: { tag: true }, orderBy: { createdAt: "asc" } },
+                timeEntries: { orderBy: { startedAt: "desc" }, include: { recordedBy: { select: { name: true, email: true } } } },
+                taskRuns: {
+                  include: {
+                    initiatedByUser: { select: { name: true, email: true } },
+                    events: { orderBy: { createdAt: "desc" }, take: 8 },
+                  },
+                  orderBy: { createdAt: "desc" },
+                  take: 8,
+                },
+                taskEvents: {
+                  where: { runId: null },
+                  orderBy: { createdAt: "desc" },
+                  take: 12,
+                },
+              },
+            })
+          : Promise.resolve(null),
       ])
     : [null, null, null, null] as const;
 
@@ -164,34 +203,58 @@ export default async function ProjectBoardPage({
             />
           </FullPageModal>
         ) : null}
-        {shouldRenderEditModal && teamMembers && clients && availableTags && editTask ? (
-          <FullPageModal title={`Edit task: ${editTask.title}`} description="Update the card, save, and drop right back into the same board view." closeHref={boardReturnHref}>
+        {shouldRenderShowModal && availableTags && selectedTask ? (
+          <FullPageModal title={selectedTask.title} description="Review task details without losing your place on the board." closeHref={boardReturnHref}>
+            <TaskWorkspaceShell
+              activeTab="overview"
+              listHref={boardReturnHref}
+              listLabel="Board"
+              overviewHref={`${pathnameForBoard(id, milestone, selectedTask.id, "show")}`}
+              editHref={`${pathnameForBoard(id, milestone, selectedTask.id, "edit")}`}
+              task={{
+                id: selectedTask.id,
+                title: selectedTask.title,
+                status: selectedTask.status,
+                executorType: selectedTask.executorType,
+                assignedToName: selectedTask.assignedTo.name || selectedTask.assignedTo.email,
+                dueDate: formatDate(selectedTask.dueDate),
+                clientName: selectedTask.client?.companyName || "Standalone",
+                projectName: selectedTask.project?.name || "No linked project",
+                canDispatch: selectedTask.executorType !== "human" && selectedTask.status !== "completed" && selectedTask.status !== "canceled",
+              }}
+            >
+              <TaskDetailContent task={selectedTask} availableTags={availableTags} backHref={boardReturnHref} backLabel="Back to board" />
+            </TaskWorkspaceShell>
+          </FullPageModal>
+        ) : null}
+        {shouldRenderEditModal && teamMembers && clients && availableTags && selectedTask ? (
+          <FullPageModal title={`Edit task: ${selectedTask.title}`} description="Update the card, save, and drop right back into the same board view." closeHref={boardReturnHref}>
             <TaskForm
               mode="edit"
-              taskId={editTask.id}
+              taskId={selectedTask.id}
               teamMembers={teamMembers}
               clients={clients}
               availableTags={availableTags}
               context={{ backHref: boardReturnHref, submitHref: boardReturnHref }}
               initialValues={{
-                title: editTask.title,
-                description: editTask.description || "",
-                assignedToId: editTask.assignedToId,
-                status: editTask.status,
-                dueDate: new Date(editTask.dueDate).toISOString().slice(0, 10),
-                startDate: editTask.startDate ? new Date(editTask.startDate).toISOString().slice(0, 10) : "",
-                executorType: editTask.executorType,
-                clientId: editTask.clientId || "",
-                projectId: editTask.projectId || "",
-                milestoneId: editTask.milestoneId || "",
-                requesterEmployeeId: editTask.requesterEmployeeId || "",
-                billable: editTask.billable,
-                billingType: editTask.billingType === "none" ? "fixed" : editTask.billingType,
-                amount: serializeCurrency(editTask.amount),
-                cronEnabled: editTask.cronEnabled,
-                cronExpression: editTask.cronExpression || "",
-                cronTimezone: editTask.cronTimezone || "America/New_York",
-                tagNames: editTask.tagAssignments.map((assignment) => assignment.tag.name).join(", "),
+                title: selectedTask.title,
+                description: selectedTask.description || "",
+                assignedToId: selectedTask.assignedToId,
+                status: selectedTask.status,
+                dueDate: new Date(selectedTask.dueDate).toISOString().slice(0, 10),
+                startDate: selectedTask.startDate ? new Date(selectedTask.startDate).toISOString().slice(0, 10) : "",
+                executorType: selectedTask.executorType,
+                clientId: selectedTask.clientId || "",
+                projectId: selectedTask.projectId || "",
+                milestoneId: selectedTask.milestoneId || "",
+                requesterEmployeeId: selectedTask.requesterEmployeeId || "",
+                billable: selectedTask.billable,
+                billingType: selectedTask.billingType === "none" ? "fixed" : selectedTask.billingType,
+                amount: serializeCurrency(selectedTask.amount),
+                cronEnabled: selectedTask.cronEnabled,
+                cronExpression: selectedTask.cronExpression || "",
+                cronTimezone: selectedTask.cronTimezone || "America/New_York",
+                tagNames: selectedTask.tagAssignments.map((assignment) => assignment.tag.name).join(", "),
               }}
             />
           </FullPageModal>

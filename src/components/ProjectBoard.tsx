@@ -199,7 +199,7 @@ export default function ProjectBoard({
                       <div className="flex items-start gap-2">
                         <GripVertical size={16} className="mt-0.5 text-gray-300" />
                         <div>
-                          <Link href={`${pathname}?modal=edit&taskId=${encodeURIComponent(task.id)}${selectedMilestone === "all" ? "" : `&milestone=${encodeURIComponent(selectedMilestone)}`}`} scroll={false} className="text-sm font-semibold text-gray-900 hover:text-[#405189] hover:underline">{task.title}</Link>
+                          <Link href={`${pathname}?modal=show&taskId=${encodeURIComponent(task.id)}${selectedMilestone === "all" ? "" : `&milestone=${encodeURIComponent(selectedMilestone)}`}`} scroll={false} className="text-sm font-semibold text-gray-900 hover:text-[#405189] hover:underline">{task.title}</Link>
                           <p className="mt-1 text-xs leading-5 text-gray-500">{task.description || "No additional notes yet."}</p>
                         </div>
                       </div>

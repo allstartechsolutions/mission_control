@@ -18,12 +18,13 @@ export type TaskWorkspaceSummary = {
   canDispatch: boolean;
 };
 
-const tabs = [
-  { label: "Overview", href: (id: string) => `/tasks/${id}` },
-  { label: "Edit", href: (id: string) => `/tasks/${id}/edit` },
-];
-
-export default function TaskWorkspaceShell({ task, activeTab, children, liveBadge }: { task: TaskWorkspaceSummary; activeTab: "overview" | "edit"; children: React.ReactNode; liveBadge?: React.ReactNode }) {
+export default function TaskWorkspaceShell({ task, activeTab, children, liveBadge, listHref = "/tasks", listLabel = "Tasks", overviewHref, editHref }: { task: TaskWorkspaceSummary; activeTab: "overview" | "edit"; children: React.ReactNode; liveBadge?: React.ReactNode; listHref?: string; listLabel?: string; overviewHref?: string; editHref?: string }) {
+  const resolvedOverviewHref = overviewHref || `/tasks/${task.id}`;
+  const resolvedEditHref = editHref || `/tasks/${task.id}/edit`;
+  const tabs = [
+    { label: "Overview", href: resolvedOverviewHref },
+    { label: "Edit", href: resolvedEditHref },
+  ];
   return (
     <div className="space-y-6">
       <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -31,7 +32,7 @@ export default function TaskWorkspaceShell({ task, activeTab, children, liveBadg
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div className="space-y-4">
               <div>
-                <nav className="text-sm text-white/70"><Link href="/tasks" className="hover:text-white">Tasks</Link><span className="mx-2">&rsaquo;</span><span className="text-white">{task.title}</span></nav>
+                <nav className="text-sm text-white/70"><Link href={listHref} scroll={false} className="hover:text-white">{listLabel}</Link><span className="mx-2">&rsaquo;</span><span className="text-white">{task.title}</span></nav>
                 <div className="mt-2 flex flex-wrap items-center gap-3">
                   <h1 className="text-2xl font-semibold tracking-tight">{task.title}</h1>
                   <TaskStatusBadge status={task.status} />
@@ -49,14 +50,14 @@ export default function TaskWorkspaceShell({ task, activeTab, children, liveBadg
             <div className="flex flex-wrap gap-2 xl:justify-end">
               {task.canDispatch ? <DispatchTaskButton taskId={task.id} /> : null}
               <div className="flex items-center gap-2 rounded-xl bg-white/10 p-1.5 ring-1 ring-inset ring-white/10 backdrop-blur-sm">
-                <Link href={`/tasks/${task.id}/edit`} className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm ring-1 ring-inset ring-white/20 transition hover:bg-blue-400" title="Edit task" aria-label="Edit task"><Pencil size={15} /></Link>
+                <Link href={resolvedEditHref} scroll={false} className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500 text-white shadow-sm ring-1 ring-inset ring-white/20 transition hover:bg-blue-400" title="Edit task" aria-label="Edit task"><Pencil size={15} /></Link>
                 {task.status !== "completed" ? <CompleteTaskButton taskId={task.id} taskTitle={task.title} /> : <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-sm ring-1 ring-inset ring-white/20" title="Task completed" aria-label="Task completed"><Check size={15} /></span>}
                 <DeleteTaskButton taskId={task.id} taskTitle={task.title} />
               </div>
             </div>
           </div>
         </div>
-        <div className="border-b border-gray-200 bg-gray-50 px-3 sm:px-4"><div className="flex flex-wrap gap-2 py-3">{tabs.map((tab) => { const isActive = (activeTab === "overview" && tab.label === "Overview") || (activeTab === "edit" && tab.label === "Edit"); return <Link key={tab.label} href={tab.href(task.id)} className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition ${isActive ? "bg-[#405189] text-white shadow-sm" : "bg-white text-gray-600 ring-1 ring-inset ring-gray-200 hover:text-[#405189]"}`}>{tab.label}</Link>; })}</div></div>
+        <div className="border-b border-gray-200 bg-gray-50 px-3 sm:px-4"><div className="flex flex-wrap gap-2 py-3">{tabs.map((tab) => { const isActive = (activeTab === "overview" && tab.label === "Overview") || (activeTab === "edit" && tab.label === "Edit"); return <Link key={tab.label} href={tab.href} scroll={false} className={`inline-flex items-center rounded-full px-4 py-2 text-sm font-medium transition ${isActive ? "bg-[#405189] text-white shadow-sm" : "bg-white text-gray-600 ring-1 ring-inset ring-gray-200 hover:text-[#405189]"}`}>{tab.label}</Link>; })}</div></div>
       </section>
       {children}
     </div>
