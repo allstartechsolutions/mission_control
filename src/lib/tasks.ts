@@ -383,6 +383,36 @@ export function parseTaskTimeEntryInput(input: { entryDate: string | null | unde
   return { startedAt, endedAt, minutes: minutesValue };
 }
 
+export function formatDateTimeLocalValue(value: Date | string | null | undefined) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const local = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+  return local.toISOString().slice(0, 16);
+}
+
+export function parseTaskTimeEntryEditInput(input: { startedAt: string | null | undefined; endedAt: string | null | undefined; minutes: string | null | undefined; }) {
+  const startedAtValue = input.startedAt?.trim();
+  const endedAtValue = input.endedAt?.trim();
+  const minutesValue = Number(input.minutes?.trim() || "0");
+
+  if (!startedAtValue) throw new Error("Start date and time are required.");
+  if (!endedAtValue) throw new Error("End date and time are required.");
+  if (!Number.isInteger(minutesValue) || minutesValue < 1) throw new Error("Duration must be at least 1 minute.");
+
+  const startedAt = new Date(startedAtValue);
+  const endedAt = new Date(endedAtValue);
+
+  if (Number.isNaN(startedAt.getTime())) throw new Error("Choose a valid start date and time.");
+  if (Number.isNaN(endedAt.getTime())) throw new Error("Choose a valid end date and time.");
+  if (endedAt.getTime() <= startedAt.getTime()) throw new Error("End time must be after the start time.");
+
+  const diffMinutes = Math.round((endedAt.getTime() - startedAt.getTime()) / 60000);
+  if (diffMinutes !== minutesValue) throw new Error("Duration must match the selected start and end time.");
+
+  return { startedAt, endedAt, minutes: minutesValue };
+}
+
 export function serializeCurrency(value: Prisma.Decimal | number | string | null | undefined) {
   if (value == null) return "";
   return Number(value).toFixed(2);
