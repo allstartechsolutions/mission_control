@@ -13,7 +13,7 @@ type TaskDetailRecord = {
   status: string;
   executorType: string;
   startDate: Date | null;
-  dueDate: Date;
+  dueDate: Date | null;
   billable: boolean;
   billingType: string;
   amount: any;

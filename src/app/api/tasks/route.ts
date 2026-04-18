@@ -52,7 +52,7 @@ export async function GET() {
       tagAssignments: { include: { tag: true }, orderBy: { createdAt: "asc" } },
       timeEntries: { select: { minutes: true } },
     },
-    orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
+    orderBy: [{ dueDate: { sort: "asc", nulls: "last" } }, { createdAt: "desc" }],
   });
 
   return NextResponse.json({ tasks: tasks.map((task) => ({ ...task, tags: task.tagAssignments.map((assignment) => assignment.tag), totalTrackedMinutes: task.timeEntries.reduce((sum, entry) => sum + entry.minutes, 0) })) });
@@ -78,8 +78,6 @@ export async function POST(request: Request) {
 
     if (!title) return NextResponse.json({ error: "Task title is required." }, { status: 400 });
     if (!assignedToId) return NextResponse.json({ error: "Assigned to is required." }, { status: 400 });
-    if (!dueDateValue) return NextResponse.json({ error: "Due date is required." }, { status: 400 });
-
     normalizeTaskEnums({ status, executorType, billingType });
 
     const assignedTo = await prisma.user.findFirst({ where: { id: assignedToId, status: "active" }, select: { id: true } });
@@ -108,7 +106,7 @@ export async function POST(request: Request) {
         billable,
         amount: billable ? parseCurrency(toNullableString(formData.get("amount"))) : null,
         startDate: parseDate(toNullableString(formData.get("startDate")), "start date"),
-        dueDate: parseDate(dueDateValue, "due date")!,
+        dueDate: parseDate(dueDateValue, "due date"),
         createdById,
         assignedToId,
         clientId: resolvedClientId,

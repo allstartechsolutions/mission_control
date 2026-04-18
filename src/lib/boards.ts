@@ -134,7 +134,7 @@ export async function ensureProjectTaskPlacements(projectId: string, boardId?: s
       status: true,
       boardPlacement: { select: { id: true } },
     },
-    orderBy: [{ dueDate: "asc" }, { createdAt: "asc" }],
+    orderBy: [{ dueDate: { sort: "asc", nulls: "last" } }, { createdAt: "asc" }],
   });
 
   for (const task of tasks) {

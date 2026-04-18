@@ -17,7 +17,7 @@ Key fields:
 - `billingType` (`none`, `fixed`, `hourly`)
 - `billable`
 - `amount`, `billedAt`
-- `startDate`, `dueDate` (due date required)
+- `startDate`, `dueDate` (both optional)
 - `createdById`, `assignedToId` (required)
 - optional `clientId`, `projectId`, `milestoneId`, `requesterEmployeeId`
 - optional scheduling fields: `cronEnabled`, `cronExpression`, `cronTimezone`, `cronLastRunAt`, `cronNextRunAt`
@@ -46,7 +46,7 @@ Key fields:
 
 ## Important behaviors
 
-- Title, assignee, and due date are required.
+- Title and assignee are required. Due date is optional.
 - `createdById` resolves from session, with fallback to `hulk@allstartech.com`.
 - Relationship validation is strict:
   - selected project must exist
@@ -119,7 +119,6 @@ Require:
 
 - title
 - assignee
-- due date
 
 Decide carefully:
 

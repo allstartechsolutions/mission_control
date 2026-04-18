@@ -84,8 +84,6 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
     if (!title) return NextResponse.json({ error: "Task title is required." }, { status: 400 });
     if (!assignedToId) return NextResponse.json({ error: "Assigned to is required." }, { status: 400 });
-    if (!dueDateValue) return NextResponse.json({ error: "Due date is required." }, { status: 400 });
-
     normalizeTaskEnums({ status, executorType, billingType });
 
     const assignedTo = await prisma.user.findFirst({ where: { id: assignedToId, status: "active" }, select: { id: true } });
@@ -110,7 +108,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         billable,
         amount: billable ? parseCurrency(toNullableString(formData.get("amount"))) : null,
         startDate: parseDate(toNullableString(formData.get("startDate")), "start date"),
-        dueDate: parseDate(dueDateValue, "due date")!,
+        dueDate: parseDate(dueDateValue, "due date"),
         assignedToId,
         clientId: resolvedClientId,
         projectId,

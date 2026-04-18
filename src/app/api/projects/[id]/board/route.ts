@@ -39,43 +39,43 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       select: { id: true },
     });
 
-    const nextIndex = Math.max(0, Math.min(targetIndex, siblingPlacements.length));
+    const movingWithinSameColumn = placement.columnId === columnId;
+    const maxTargetIndex = movingWithinSameColumn ? Math.max(0, siblingPlacements.length - 1) : siblingPlacements.length;
+    const nextIndex = Math.max(0, Math.min(targetIndex, maxTargetIndex));
 
     await prisma.$transaction(async (tx) => {
-      const oldColumnId = placement.columnId;
-
-      await tx.taskBoardPlacement.updateMany({
-        where: {
-          boardId: board.id,
-          columnId,
-          sortOrder: { gte: nextIndex },
-        },
-        data: { sortOrder: { increment: 1 } },
-      });
+      const originalColumnId = placement.columnId;
 
       await tx.taskBoardPlacement.update({
         where: { taskId },
-        data: { columnId, sortOrder: nextIndex },
+        data: { sortOrder: -1 },
       });
 
-      const oldPlacements = await tx.taskBoardPlacement.findMany({
-        where: { boardId: board.id, columnId: oldColumnId },
-        orderBy: [{ sortOrder: "asc" }, { updatedAt: "asc" }],
-        select: { id: true },
-      });
-
-      for (const [index, item] of oldPlacements.entries()) {
-        await tx.taskBoardPlacement.update({ where: { id: item.id }, data: { sortOrder: index } });
-      }
-
-      const newPlacements = await tx.taskBoardPlacement.findMany({
+      const destinationPlacements = await tx.taskBoardPlacement.findMany({
         where: { boardId: board.id, columnId },
         orderBy: [{ sortOrder: "asc" }, { updatedAt: "asc" }],
         select: { id: true },
       });
 
-      for (const [index, item] of newPlacements.entries()) {
-        await tx.taskBoardPlacement.update({ where: { id: item.id }, data: { sortOrder: index } });
+      const destinationIds = destinationPlacements.map((item) => item.id).filter((id) => id !== placement.id);
+      destinationIds.splice(nextIndex, 0, placement.id);
+
+      if (destinationIds.length > 0) {
+        await Promise.all(destinationIds.map((id, index) => tx.taskBoardPlacement.update({ where: { id }, data: { columnId, sortOrder: index + 1000 } })));
+        await Promise.all(destinationIds.map((id, index) => tx.taskBoardPlacement.update({ where: { id }, data: { columnId, sortOrder: index } })));
+      }
+
+      if (originalColumnId !== columnId) {
+        const sourcePlacements = await tx.taskBoardPlacement.findMany({
+          where: { boardId: board.id, columnId: originalColumnId },
+          orderBy: [{ sortOrder: "asc" }, { updatedAt: "asc" }],
+          select: { id: true },
+        });
+
+        if (sourcePlacements.length > 0) {
+          await Promise.all(sourcePlacements.map((item, index) => tx.taskBoardPlacement.update({ where: { id: item.id }, data: { sortOrder: index + 1000 } })));
+          await Promise.all(sourcePlacements.map((item, index) => tx.taskBoardPlacement.update({ where: { id: item.id }, data: { sortOrder: index } })));
+        }
       }
     });
 
