@@ -241,7 +241,7 @@ export default async function ProjectBoardPage({
                 description: selectedTask.description || "",
                 assignedToId: selectedTask.assignedToId,
                 status: selectedTask.status,
-                dueDate: new Date(selectedTask.dueDate).toISOString().slice(0, 10),
+                dueDate: selectedTask.dueDate ? new Date(selectedTask.dueDate).toISOString().slice(0, 10) : "",
                 startDate: selectedTask.startDate ? new Date(selectedTask.startDate).toISOString().slice(0, 10) : "",
                 executorType: selectedTask.executorType,
                 clientId: selectedTask.clientId || "",

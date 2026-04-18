@@ -65,7 +65,7 @@ export default async function EditTaskPage({ params, searchParams }: { params: P
           description: task.description || "",
           assignedToId: task.assignedToId,
           status: task.status,
-          dueDate: new Date(task.dueDate).toISOString().slice(0, 10),
+          dueDate: task.dueDate ? new Date(task.dueDate).toISOString().slice(0, 10) : "",
           startDate: task.startDate ? new Date(task.startDate).toISOString().slice(0, 10) : "",
           executorType: task.executorType,
           clientId: task.clientId || "",

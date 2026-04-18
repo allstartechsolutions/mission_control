@@ -57,6 +57,7 @@ Payload shape:
 - Stale non-default columns are deleted during board normalization.
 - Placement create/sync happens when project tasks are created or when board consistency is ensured.
 - Rebalance logic rewrites sort orders after moves.
+- Dragging supports reordering within the same column as well as cross-column moves.
 
 ## Production and security notes
 

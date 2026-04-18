@@ -54,14 +54,14 @@ export default async function TasksPage() {
         take: 1,
       },
     },
-    orderBy: [{ dueDate: "asc" }, { createdAt: "desc" }],
+    orderBy: [{ dueDate: { sort: "asc", nulls: "last" } }, { createdAt: "desc" }],
   });
 
   const openTasks = tasks.filter((task) => task.status !== "completed" && task.status !== "canceled").length;
   const failedTasks = tasks.filter((task) => task.status === "failed").length;
   const billableValue = tasks.reduce((sum, task) => sum + Number(task.amount || 0), 0);
-  const overdueTasks = tasks.filter((task) => task.status !== "completed" && task.status !== "canceled" && new Date(task.dueDate) < todayStart).length;
-  const dueToday = tasks.filter((task) => task.status !== "completed" && task.status !== "canceled" && new Date(task.dueDate) >= todayStart && new Date(task.dueDate) <= todayEnd).length;
+  const overdueTasks = tasks.filter((task) => task.status !== "completed" && task.status !== "canceled" && task.dueDate && new Date(task.dueDate) < todayStart).length;
+  const dueToday = tasks.filter((task) => task.status !== "completed" && task.status !== "canceled" && task.dueDate && new Date(task.dueDate) >= todayStart && new Date(task.dueDate) <= todayEnd).length;
 
   return (
     <div className="space-y-6">
@@ -84,8 +84,8 @@ export default async function TasksPage() {
 
       <TasksTable tasks={tasks.map((task) => {
         const isClosed = task.status === "completed" || task.status === "canceled";
-        const isOverdue = !isClosed && new Date(task.dueDate) < todayStart;
-        const isDueToday = !isClosed && new Date(task.dueDate) >= todayStart && new Date(task.dueDate) <= todayEnd;
+        const isOverdue = !isClosed && !!task.dueDate && new Date(task.dueDate) < todayStart;
+        const isDueToday = !isClosed && !!task.dueDate && new Date(task.dueDate) >= todayStart && new Date(task.dueDate) <= todayEnd;
         return {
           id: task.id,
           title: task.title,

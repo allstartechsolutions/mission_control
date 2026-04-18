@@ -197,12 +197,12 @@ export default function TaskForm({ mode, taskId, initialValues, teamMembers, cli
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-        <div className="border-b border-gray-200 px-5 py-4"><h2 className="text-sm font-semibold text-gray-800">Task details</h2><p className="mt-1 text-sm text-gray-500">Capture ownership, status, due dates, and optional client delivery context.</p></div>
+        <div className="border-b border-gray-200 px-5 py-4"><h2 className="text-sm font-semibold text-gray-800">Task details</h2><p className="mt-1 text-sm text-gray-500">Capture ownership, status, optional due dates, and client delivery context.</p></div>
         <div className="grid gap-4 p-5 md:grid-cols-2">
           <div className="md:col-span-2"><Field label="Task title" value={values.title} onChange={(event) => updateValue("title", event.target.value)} placeholder="Follow up on mobile rollout blockers" required /></div>
           <SearchableSelect label="Assigned to" placeholder="Select a team member" searchPlaceholder="Search team..." emptyMessage="No active team members matched." value={values.assignedToId} onChange={(value) => updateValue("assignedToId", value)} options={assigneeOptions} hint="Required. Defaults are validated against active team members." />
           <label className="block space-y-1.5"><span className="text-sm font-medium text-gray-700">Status</span><select value={values.status} onChange={(event) => updateValue("status", event.target.value)} className="form-select">{taskStatusOptions.map((option) => <option key={option} value={option}>{formatTaskLabel(option)}</option>)}</select></label>
-          <DatePicker label="Due date" value={values.dueDate} onChange={(value) => updateValue("dueDate", value)} required hint="Required for every task." />
+          <DatePicker label="Due date" value={values.dueDate} onChange={(value) => updateValue("dueDate", value)} hint="Optional. Leave blank when the task is not scheduled yet." />
           <DatePicker label="Start date" value={values.startDate} onChange={(value) => updateValue("startDate", value)} />
           <label className="block space-y-1.5"><span className="text-sm font-medium text-gray-700">Executor type</span><select value={values.executorType} onChange={(event) => updateValue("executorType", event.target.value)} className="form-select">{taskExecutorTypeOptions.map((option) => <option key={option} value={option}>{formatTaskLabel(option)}</option>)}</select></label>
           <div className="md:col-span-2 rounded-lg border border-[#405189]/15 bg-[#405189]/5 px-4 py-3 text-sm text-gray-700">

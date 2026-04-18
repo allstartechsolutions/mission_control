@@ -64,7 +64,7 @@ export default function ProjectBoard({
   const boardHref = `${pathname}${selectedMilestone === "all" ? "" : `?milestone=${encodeURIComponent(selectedMilestone)}`}`;
   const createTaskHref = `${pathname}?modal=new${selectedMilestone === "all" ? "" : `&milestone=${encodeURIComponent(selectedMilestone)}`}${selectedMilestone !== "all" && selectedMilestone !== "none" ? `&milestoneId=${encodeURIComponent(selectedMilestone)}` : ""}${columns[0] ? `&boardColumnId=${encodeURIComponent(columns[0].id)}` : ""}`;
   const [draggingTaskId, setDraggingTaskId] = useState<string | null>(null);
-  const [droppingColumnId, setDroppingColumnId] = useState<string | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ columnId: string; index: number } | null>(null);
   const [moving, setMoving] = useState<string | null>(null);
 
   const filteredTasks = useMemo(() => {
@@ -88,9 +88,8 @@ export default function ProjectBoard({
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   }
 
-  async function moveTask(taskId: string, columnId: string) {
+  async function moveTask(taskId: string, columnId: string, targetIndex: number) {
     setMoving(taskId);
-    const targetIndex = filteredTasks.filter((task) => task.columnId === columnId && task.id !== taskId).length;
     const response = await fetch(`/api/projects/${projectId}/board`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -98,7 +97,7 @@ export default function ProjectBoard({
     });
     setMoving(null);
     setDraggingTaskId(null);
-    setDroppingColumnId(null);
+    setDropTarget(null);
     if (!response.ok) return;
     router.refresh();
   }
@@ -166,54 +165,87 @@ export default function ProjectBoard({
               key={column.id}
               onDragOver={(event) => {
                 event.preventDefault();
-                setDroppingColumnId(column.id);
+                if (columnTasks.length === 0) setDropTarget({ columnId: column.id, index: 0 });
               }}
-              onDragLeave={() => setDroppingColumnId((current) => (current === column.id ? null : current))}
+              onDragLeave={() => setDropTarget((current) => (current?.columnId === column.id && columnTasks.length === 0 ? null : current))}
               onDrop={(event) => {
                 event.preventDefault();
                 const taskId = event.dataTransfer.getData("text/taskId");
-                if (taskId) void moveTask(taskId, column.id);
+                if (!taskId) return;
+                const fallbackIndex = columnTasks.filter((task) => task.id !== taskId).length;
+                const targetIndex = dropTarget?.columnId === column.id ? dropTarget.index : fallbackIndex;
+                void moveTask(taskId, column.id, targetIndex);
               }}
-              className={`rounded-xl border p-3 shadow-sm ${columnStyles[column.color || "slate"] || columnStyles.slate} ${droppingColumnId === column.id ? "ring-2 ring-[#405189]/30" : ""}`}
+              className={`rounded-xl border p-3 shadow-sm ${columnStyles[column.color || "slate"] || columnStyles.slate} ${dropTarget?.columnId === column.id ? "ring-2 ring-[#405189]/30" : ""}`}
             >
               <div className="mb-3 flex items-center justify-between rounded-lg bg-white px-3 py-2 ring-1 ring-inset ring-gray-200">
                 <h3 className="text-sm font-semibold text-gray-800">{column.name}</h3>
                 <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">{columnTasks.length}</span>
               </div>
               <div className="min-h-24 space-y-3">
-                {columnTasks.map((task) => (
-                  <article
-                    key={task.id}
-                    draggable
-                    onDragStart={(event) => {
-                      event.dataTransfer.setData("text/taskId", task.id);
-                      setDraggingTaskId(task.id);
-                    }}
-                    onDragEnd={() => {
-                      setDraggingTaskId(null);
-                      setDroppingColumnId(null);
-                    }}
-                    className={`rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md ${draggingTaskId === task.id || moving === task.id ? "opacity-60" : ""}`}
-                  >
-                    <div className="mb-3 flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-2">
-                        <GripVertical size={16} className="mt-0.5 text-gray-300" />
-                        <div>
-                          <Link href={`${pathname}?modal=show&taskId=${encodeURIComponent(task.id)}${selectedMilestone === "all" ? "" : `&milestone=${encodeURIComponent(selectedMilestone)}`}`} scroll={false} className="text-sm font-semibold text-gray-900 hover:text-[#405189] hover:underline">{task.title}</Link>
-                          <p className="mt-1 text-xs leading-5 text-gray-500">{task.description || "No additional notes yet."}</p>
+                {columnTasks.map((task, index) => (
+                  <div key={task.id} className="space-y-3">
+                    <div
+                      onDragOver={(event) => {
+                        event.preventDefault();
+                        setDropTarget({ columnId: column.id, index });
+                      }}
+                      onDrop={(event) => {
+                        event.preventDefault();
+                        const taskId = event.dataTransfer.getData("text/taskId");
+                        if (taskId) void moveTask(taskId, column.id, index);
+                      }}
+                      className={`h-2 rounded-full transition ${dropTarget?.columnId === column.id && dropTarget.index === index ? "bg-[#405189]/20" : "bg-transparent"}`}
+                    />
+                    <article
+                      draggable
+                      onDragStart={(event) => {
+                        event.dataTransfer.setData("text/taskId", task.id);
+                        setDraggingTaskId(task.id);
+                      }}
+                      onDragEnd={() => {
+                        setDraggingTaskId(null);
+                        setDropTarget(null);
+                      }}
+                      onDragOver={(event) => {
+                        event.preventDefault();
+                        setDropTarget({ columnId: column.id, index });
+                      }}
+                      className={`rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md ${draggingTaskId === task.id || moving === task.id ? "opacity-60" : ""}`}
+                    >
+                      <div className="mb-3 flex items-start justify-between gap-3">
+                        <div className="flex items-start gap-2">
+                          <GripVertical size={16} className="mt-0.5 text-gray-300" />
+                          <div>
+                            <Link href={`${pathname}?modal=show&taskId=${encodeURIComponent(task.id)}${selectedMilestone === "all" ? "" : `&milestone=${encodeURIComponent(selectedMilestone)}`}`} scroll={false} className="text-sm font-semibold text-gray-900 hover:text-[#405189] hover:underline">{task.title}</Link>
+                            <p className="mt-1 text-xs leading-5 text-gray-500">{task.description || "No additional notes yet."}</p>
+                          </div>
                         </div>
+                        <TaskStatusBadge status={task.status} />
                       </div>
-                      <TaskStatusBadge status={task.status} />
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-600">
-                      <span className="rounded-full bg-slate-100 px-2 py-1 ring-1 ring-inset ring-slate-200">{task.milestoneTitle || "No Milestone"}</span>
-                      <span className="rounded-full bg-slate-100 px-2 py-1 ring-1 ring-inset ring-slate-200">{task.assignee}</span>
-                      <span className="rounded-full bg-slate-100 px-2 py-1 ring-1 ring-inset ring-slate-200">Due {task.dueLabel}</span>
-                      <Link href={`${pathname}?modal=edit&taskId=${encodeURIComponent(task.id)}${selectedMilestone === "all" ? "" : `&milestone=${encodeURIComponent(selectedMilestone)}`}`} scroll={false} className="inline-flex items-center gap-1 rounded-full border border-[#405189]/15 bg-[#405189]/5 px-2.5 py-1 font-semibold text-[#405189] hover:border-[#405189]/30 hover:bg-[#405189]/10"><Pencil size={12} /> Edit</Link>
-                    </div>
-                  </article>
+                      <div className="flex flex-wrap items-center gap-2 text-[11px] text-gray-600">
+                        <span className="rounded-full bg-slate-100 px-2 py-1 ring-1 ring-inset ring-slate-200">{task.milestoneTitle || "No Milestone"}</span>
+                        <span className="rounded-full bg-slate-100 px-2 py-1 ring-1 ring-inset ring-slate-200">{task.assignee}</span>
+                        <span className="rounded-full bg-slate-100 px-2 py-1 ring-1 ring-inset ring-slate-200">Due {task.dueLabel}</span>
+                        <Link href={`${pathname}?modal=edit&taskId=${encodeURIComponent(task.id)}${selectedMilestone === "all" ? "" : `&milestone=${encodeURIComponent(selectedMilestone)}`}`} scroll={false} className="inline-flex items-center gap-1 rounded-full border border-[#405189]/15 bg-[#405189]/5 px-2.5 py-1 font-semibold text-[#405189] hover:border-[#405189]/30 hover:bg-[#405189]/10"><Pencil size={12} /> Edit</Link>
+                      </div>
+                    </article>
+                  </div>
                 ))}
-                {columnTasks.length === 0 ? <div className="rounded-xl border border-dashed border-gray-300 bg-white/70 px-4 py-8 text-center text-xs text-gray-500">Drop a card here.</div> : null}
+                <div
+                  onDragOver={(event) => {
+                    event.preventDefault();
+                    setDropTarget({ columnId: column.id, index: columnTasks.length });
+                  }}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    const taskId = event.dataTransfer.getData("text/taskId");
+                    if (taskId) void moveTask(taskId, column.id, columnTasks.length);
+                  }}
+                  className={`rounded-xl border ${columnTasks.length === 0 ? "border-dashed border-gray-300 bg-white/70 px-4 py-8 text-center text-xs text-gray-500" : dropTarget?.columnId === column.id && dropTarget.index === columnTasks.length ? "border-[#405189]/30 bg-[#405189]/5 px-4 py-3 text-center text-xs font-medium text-[#405189]" : "border-transparent bg-transparent px-4 py-3 text-center text-xs text-transparent"}`}
+                >
+                  {columnTasks.length === 0 ? "Drop a card here." : "Drop here to place at the end."}
+                </div>
               </div>
             </div>
           );

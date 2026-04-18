@@ -528,7 +528,7 @@ export function getExecutorBehavior(executorType: string) {
 
 export function buildTaskNextStepLabel(task: {
   status: string;
-  dueDate: Date;
+  dueDate: Date | null;
   executorType: string;
   cronEnabled?: boolean | null;
   cronExpression?: string | null;
@@ -541,7 +541,7 @@ export function buildTaskNextStepLabel(task: {
   todayStart.setHours(0, 0, 0, 0);
   const todayEnd = new Date();
   todayEnd.setHours(23, 59, 59, 999);
-  const dueDate = new Date(task.dueDate);
+  const dueDate = task.dueDate ? new Date(task.dueDate) : null;
   const requesterName = task.requesterEmployee?.name || "requester";
   const ownerName = task.assignedTo.name || task.assignedTo.email;
   const executor = getExecutorBehavior(task.executorType);
@@ -556,8 +556,8 @@ export function buildTaskNextStepLabel(task: {
   if (task.status === "waiting") return `${executor.waitingAction}.${scheduleSuffix}`.trim();
   if (task.status === "failed") return `${executor.failedAction}. Review the latest run output before retrying.${scheduleSuffix}`.trim();
   if (task.status === "completed") return `${executor.completedAction}. Review outputs, follow-up, and billing cleanup.`;
-  if (dueDate < todayStart) return `${executor.label} is past due. Follow up with ${ownerName} now.${scheduleSuffix}`.trim();
-  if (dueDate >= todayStart && dueDate <= todayEnd) return `${executor.inProgressAction} is due today. Keep ${ownerName} moving.${scheduleSuffix}`.trim();
+  if (dueDate && dueDate < todayStart) return `${executor.label} is past due. Follow up with ${ownerName} now.${scheduleSuffix}`.trim();
+  if (dueDate && dueDate >= todayStart && dueDate <= todayEnd) return `${executor.inProgressAction} is due today. Keep ${ownerName} moving.${scheduleSuffix}`.trim();
   if (task.status === "scheduled") {
     if (task.executorType === "human") return `Queued next for ${ownerName}.`;
     return `${executor.scheduledAction} when ready.${scheduleSuffix}`.trim();
